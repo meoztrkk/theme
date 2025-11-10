@@ -218,33 +218,33 @@ export class FuseVerticalNavigationComponent
     // @ Decorated methods
     // -----------------------------------------------------------------------------------------------------
 
-    /**
-     * On mouseenter
-     *
-     * @private
-     */
-    @HostListener('mouseenter')
-    private _onMouseenter(): void {
-        // Enable the animations
-        this._enableAnimations();
+    // /**
+    //  * On mouseenter
+    //  *
+    //  * @private
+    //  */
+    // @HostListener('mouseenter')
+    // private _onMouseenter(): void {
+    //     // Enable the animations
+    //     this._enableAnimations();
 
-        // Set the hovered
-        this._hovered = true;
-    }
+    //     // Set the hovered
+    //     this._hovered = true;
+    // }
 
-    /**
-     * On mouseleave
-     *
-     * @private
-     */
-    @HostListener('mouseleave')
-    private _onMouseleave(): void {
-        // Enable the animations
-        this._enableAnimations();
+    // /**
+    //  * On mouseleave
+    //  *
+    //  * @private
+    //  */
+    // @HostListener('mouseleave')
+    // private _onMouseleave(): void {
+    //     // Enable the animations
+    //     this._enableAnimations();
 
-        // Set the hovered
-        this._hovered = false;
-    }
+    //     // Set the hovered
+    //     this._hovered = false;
+    // }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
