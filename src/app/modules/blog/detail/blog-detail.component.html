@@ -1,0 +1,68 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+    <ng-container *ngIf="blogPost$ | async as post; else loadingOrError">
+
+        <div class="relative h-96 lg:h-112 w-full bg-cover bg-center"
+             [style.background-image]="'url(' + post.imageUrl + ')'">
+
+            <div class="absolute top-0 right-0 p-6 z-10 space-x-4">
+                <a mat-flat-button color="accent" [routerLink]="['/blog/edit', post.id]">
+                    <mat-icon [svgIcon]="'heroicons_outline:pencil-square'"></mat-icon>
+                    <span class="ml-2">Düzenle</span>
+                </a>
+                <button mat-flat-button color="warn" (click)="deletePost(post.id)">
+                    <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                    <span class="ml-2">Sil</span>
+                </button>
+            </div>
+
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-80"></div>
+
+            <div class="absolute inset-x-0 bottom-0 p-6 sm:p-10 text-white w-full max-w-7xl mx-auto">
+                <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">{{ post.title }}</h1>
+
+                <div class="flex flex-wrap items-center text-md mt-4 opacity-80">
+                    <span class="mr-4 font-medium">{{ post.author }}</span>
+                    <mat-icon [svgIcon]="'heroicons_outline:calendar'" class="icon-size-5 mr-1"></mat-icon>
+                    <span>{{ post.publishDate | date: 'longDate' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col flex-auto w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 md:py-12 bg-card">
+            <div class="prose max-w-none dark:prose-invert">
+                <p class="text-xl font-medium mb-8 text-secondary italic border-l-4 border-primary pl-4">{{ post.summary }}</p>
+
+                <div [innerHTML]="post.content"></div>
+            </div>
+
+            <div class="mt-12">
+                <button mat-button [routerLink]="['/blog']" color="primary">
+                    <mat-icon [svgIcon]="'heroicons_outline:arrow-long-left'"></mat-icon>
+                    <span class="ml-2">Blog Listesine Geri Dön</span>
+                </button>
+            </div>
+        </div>
+
+    </ng-container>
+
+    <ng-template #loadingOrError>
+        <div class="flex items-center justify-center h-screen-50 p-12">
+
+            <mat-progress-spinner
+                *ngIf="!((blogPost$ | async) === undefined) && (route.paramMap | async)?.get('id')"
+                [diameter]="50"
+                mode="indeterminate">
+            </mat-progress-spinner>
+
+            <fuse-alert
+                *ngIf="((blogPost$ | async) === undefined) && (route.paramMap | async)?.get('id')"
+                type="error"
+                name="blogErrorAlert"
+                [showIcon]="true"
+                class="w-full max-w-lg mx-auto">
+                Blog yazısı bulunamadı veya yüklenirken bir hata oluştu. Lütfen URL'yi kontrol edin.
+            </fuse-alert>
+        </div>
+    </ng-template>
+</div>

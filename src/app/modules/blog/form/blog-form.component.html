@@ -1,0 +1,82 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <div class="relative pt-8 pb-12 sm:pt-16 sm:pb-20 bg-default">
+        <div class="w-full max-w-7xl mx-auto px-6 lg:px-8">
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-none">
+                {{ isEditMode ? 'Blog Yazısını Düzenle' : 'Yeni Blog Yazısı Oluştur' }}
+            </h1>
+            <div class="mt-0.5 font-medium text-secondary">
+                {{ isEditMode ? 'Mevcut içeriği güncelleyin.' : 'Yazınızı hazırlayın ve hemen yayınlayın.' }}
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col flex-auto w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 md:py-12">
+
+        <form [formGroup]="blogForm" (ngSubmit)="savePost()" class="flex flex-col">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+
+                <mat-form-field appearance="outline" class="fuse-mat-dense">
+                    <mat-label>Başlık</mat-label>
+                    <input matInput formControlName="title" required>
+                    <mat-icon matPrefix [svgIcon]="'heroicons_outline:pencil-square'"></mat-icon>
+                    <mat-error *ngIf="blogForm.get('title')?.hasError('required')">Başlık zorunludur.</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="fuse-mat-dense">
+                    <mat-label>Yazar</mat-label>
+                    <input matInput formControlName="author" required>
+                    <mat-icon matPrefix [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
+                    <mat-error *ngIf="blogForm.get('author')?.hasError('required')">Yazar adı zorunludur.</mat-error>
+                </mat-form-field>
+
+            </div>
+
+            <mat-form-field appearance="outline" class="fuse-mat-dense">
+                <mat-label>Görsel URL (Örn: https://.../gorsel.jpg)</mat-label>
+                <input matInput formControlName="imageUrl" required>
+                <mat-icon matPrefix [svgIcon]="'heroicons_outline:photo'"></mat-icon>
+                <mat-error *ngIf="blogForm.get('imageUrl')?.hasError('required')">Görsel URL zorunludur.</mat-error>
+                <mat-error *ngIf="blogForm.get('imageUrl')?.hasError('pattern')">Geçerli bir görsel URL'si girin (http/https ve dosya uzantısı içermeli).</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="fuse-mat-dense">
+                <mat-label>Özet</mat-label>
+                <textarea matInput formControlName="summary" rows="3" required></textarea>
+                <mat-error *ngIf="blogForm.get('summary')?.hasError('required')">Özet zorunludur.</mat-error>
+            </mat-form-field>
+
+            <div class="mt-4 mb-8">
+                <label class="block text-secondary text-sm font-medium mb-2">İçerik (Rich Text)</label>
+
+                <quill-editor formControlName="content" [modules]="quillModules"
+                    [styles]="{height: '300px', 'background-color': 'var(--fuse-bg-card)'}"
+                    placeholder="Blog yazınızın detaylı içeriğini buraya girin..." [sanitize]="true" theme="snow"
+                    class="min-h-300 w-full">
+                </quill-editor>
+
+                <mat-error *ngIf="blogForm.get('content')?.hasError('required') && blogForm.get('content')?.touched" class="mt-2 text-red-600 text-xs">
+                    İçerik zorunludur.
+                </mat-error>
+            </div>
+
+
+            <div class="flex items-center justify-end border-t border-solid border-gray-200 pt-6 mt-6">
+                <a mat-stroked-button [routerLink]="['/blog']">
+                    İptal
+                </a>
+                <button mat-flat-button
+                        color="primary"
+                        type="submit"
+                        [disabled]="blogForm.invalid || isSaving"
+                        class="ml-4">
+                    <mat-icon *ngIf="!isSaving" [svgIcon]="isEditMode ? 'heroicons_outline:arrow-path' : 'heroicons_outline:check-circle'"></mat-icon>
+                    <mat-progress-spinner *ngIf="isSaving" [diameter]="20" mode="indeterminate" class="mr-2"></mat-progress-spinner>
+                    <span class="ml-2">
+                        {{ isSaving ? 'Kaydediliyor...' : (isEditMode ? 'Güncelle' : 'Yayınla') }}
+                    </span>
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>

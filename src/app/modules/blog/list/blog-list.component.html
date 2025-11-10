@@ -1,0 +1,54 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+    <div class="relative pt-8 pb-12 sm:pt-16 sm:pb-20 bg-default">
+        <div class="flex flex-col sm:flex-row items-center justify-between w-full max-w-7xl mx-auto px-6 lg:px-8">
+            <div>
+                <div class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-none">Blog Yazıları</div>
+                <div class="mt-0.5 font-medium text-secondary">En son yayınlananları inceleyin ve yönetin.</div>
+            </div>
+            <div class="flex items-center mt-4 sm:mt-0">
+                <button mat-flat-button color="primary" [routerLink]="['/blog/new']">
+                    <mat-icon [svgIcon]="'heroicons_outline:pencil-square'"></mat-icon>
+                    <span class="ml-2">Yeni Yazı Ekle</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col flex-auto w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 md:py-12">
+        <div *ngIf="(blogPosts$ | async) as posts; else loading" class="w-full">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <fuse-card *ngFor="let post of posts" class="flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <div class="h-48 overflow-hidden">
+                        <img class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" [src]="post.imageUrl" [alt]="post.title">
+                    </div>
+
+                    <div class="flex flex-col flex-auto p-6">
+                        <div class="text-secondary text-sm font-medium">
+                            {{ post.publishDate | date: 'mediumDate' }} - {{ post.author }}
+                        </div>
+                        <div class="text-xl font-semibold mt-2 line-clamp-2 min-h-14">{{ post.title }}</div>
+                        <div class="mt-4 text-secondary line-clamp-3 min-h-16">{{ post.summary }}</div>
+
+                        <div class="flex justify-start mt-6">
+                            <a mat-button color="primary" [routerLink]="['/blog', post.id]">
+                                <span class="mr-1">Devamını Oku</span>
+                                <mat-icon [svgIcon]="'heroicons_outline:arrow-long-right'" class="icon-size-5"></mat-icon>
+                            </a>
+                        </div>
+                    </div>
+                </fuse-card>
+            </div>
+
+            <div *ngIf="posts.length === 0" class="p-8 text-center text-secondary w-full">
+                Henüz blog yazısı bulunmamaktadır.
+            </div>
+
+        </div>
+
+        <ng-template #loading>
+            <div class="p-8 text-center text-secondary w-full">Yazılar yükleniyor...</div>
+        </ng-template>
+    </div>
+</div>
