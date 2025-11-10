@@ -1,0 +1,150 @@
+<!-- GİRİŞ -->
+<div *ngIf="view === 'login'" class="auth-shell">
+  <div class="auth-header">
+    <span class="auth-title">Giriş Yap</span>
+    <button class="auth-close" (click)="close()">×</button>
+  </div>
+  <div class="auth-divider"></div>
+
+  <form class="auth-content" [formGroup]="loginForm">
+    <label class="auth-label">Telefon numarası</label>
+    <div class="auth-phone">
+      <div class="auth-flag">🇹🇷</div>
+      <input
+        class="auth-input phone"
+        placeholder="0 (5xx) xxx xx xx"
+        formControlName="phone"
+        type="tel"
+      />
+    </div>
+
+    <label class="auth-label">Şifre</label>
+    <input
+      class="auth-input"
+      type="password"
+      formControlName="password"
+      placeholder="Şifre"
+    />
+
+    <button type="button" class="auth-btn primary" (click)="submitLogin()">
+      Giriş Yap
+    </button>
+
+    <div class="auth-footer">
+      Üye değil misiniz?
+      <button type="button" class="auth-link" (click)="switchTo('register')">
+        Kayıt ol
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- KAYIT -->
+<div *ngIf="view === 'register'" class="auth-shell">
+  <div class="auth-header">
+    <span class="auth-title">Kayıt</span>
+    <button class="auth-close" (click)="close()">×</button>
+  </div>
+  <div class="auth-divider"></div>
+
+  <form class="auth-content" [formGroup]="registerForm">
+    <label class="auth-label">Telefon numarası</label>
+    <div class="auth-phone">
+      <div class="auth-flag">🇹🇷</div>
+      <input
+        class="auth-input phone"
+        placeholder="0 (5xx) xxx xx xx"
+        formControlName="phone"
+        type="tel"
+      />
+    </div>
+
+    <label class="auth-label">İsim</label>
+    <input
+      class="auth-input"
+      formControlName="name"
+      placeholder="Adınız"
+      type="text"
+    />
+
+    <label class="auth-label">Şifre</label>
+    <input
+      class="auth-input"
+      formControlName="password"
+      type="password"
+      placeholder="En az 6 karakter"
+    />
+
+    <button
+      type="button"
+      class="auth-btn primary"
+      (click)="submitRegister()"
+      [disabled]="isSending"
+    >
+      Kayıt ol
+    </button>
+
+    <div class="auth-footer">
+      Zaten üye misiniz?
+      <button type="button" class="auth-link" (click)="switchTo('login')">
+        Giriş Yap
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- SMS DOĞRULAMA -->
+<div *ngIf="view === 'verify'" class="auth-shell">
+  <div class="auth-header">
+    <button class="auth-back" (click)="switchTo('register')">←</button>
+    <span class="auth-title">Telefon doğrulama</span>
+    <button class="auth-close" (click)="close()">×</button>
+  </div>
+  <div class="auth-divider"></div>
+
+  <div class="auth-content verify" [formGroup]="verifyForm">
+    <p class="verify-text">Telefonunuza bir doğrulama kodu gönderdik:</p>
+    <p class="verify-phone">{{ phoneForVerify }}</p>
+
+    <div class="verify-codes">
+      <input
+        #codeInput
+        maxlength="1"
+        formControlName="code1"
+        (input)="onCodeInput(0, $event)"
+      />
+      <input
+        #codeInput
+        maxlength="1"
+        formControlName="code2"
+        (input)="onCodeInput(1, $event)"
+      />
+      <input
+        #codeInput
+        maxlength="1"
+        formControlName="code3"
+        (input)="onCodeInput(2, $event)"
+      />
+      <input
+        #codeInput
+        maxlength="1"
+        formControlName="code4"
+        (input)="onCodeInput(3, $event)"
+      />
+    </div>
+
+    <button type="button" class="auth-btn primary" (click)="submitVerify()">
+      Doğrula
+    </button>
+
+    <p class="verify-resend">
+      Mesaj gelmedi mi?
+      <ng-container *ngIf="countdown > 0">
+        {{ countdown }} saniye sonra tekrar gönder
+      </ng-container>
+      <button *ngIf="countdown <= 0" class="auth-link" (click)="resendCode()">
+        Tekrar gönder
+      </button>
+    </p>
+  </div>
+</div>

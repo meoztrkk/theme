@@ -1,0 +1,513 @@
+<div class="flex min-w-0 flex-auto flex-col">
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10">
+
+        <!-- CONTENT GOES HERE -->
+        <div class="rounded-lg h-700 min-h-700">
+
+
+            <!-- <button mat-flat-button color="primary" (click)="onGetOfferClick()">
+                Firmalardan Teklif Al
+            </button> -->
+
+            <!-- seçim barı -->
+            <div class="bg-card px-4 py-2 flex items-center gap-2 min-h-[44px]">
+                <ng-container *ngIf="breadcrumb().length; else noSelection">
+                    <span class="text-sm text-gray-500">Seçimler:</span>
+                    <div class="flex gap-2 flex-wrap">
+                        <button *ngFor="let c of breadcrumb()" mat-stroked-button color="primary"
+                            class="!h-7 !min-h-7 !py-0 !px-3 text-xs" (click)="setStep(c.step)">
+                            {{ c.label }}
+                        </button>
+                    </div>
+                </ng-container>
+                <ng-template #noSelection>
+                    <span class="text-sm text-gray-400">Seçim yapılmadı…</span>
+                </ng-template>
+            </div>
+
+            <!-- stepper -->
+            <div class="wizard-stepbar">
+                <div class="wizard-stepbar-inner">
+                    <ng-container *ngFor="let t of stepTitles; let i = index">
+                        <div class="wizard-step">
+                            <button type="button" class="step-dot" [class.step-active]="(i+1) === step"
+                                [class.step-done]="(i+1) < step" (click)="setStep(i+1)">
+                                <mat-icon>{{ stepIcons[i] }}</mat-icon>
+                            </button>
+                            <div class="step-label">
+                                {{ t }}
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- butonlar -->
+            <div class="flex gap-2 items-center wizard-button">
+                <button mat-stroked-button (click)="back()" [disabled]="step === 1">
+                    Geri
+                </button>
+                <button mat-flat-button color="primary" (click)="next()"
+                    [disabled]="step === stepTitles.length || !isStepFilled(step, s())">
+                    İleri
+                </button>
+            </div>
+            <!-- içerik -->
+            <div class="bg-card p-4 min-h-[500px] flex flex-col gap-4">
+                <div class="flex items-center justify-between gap-2">
+                    <h2 class="text-base font-semibold leading-none">
+                        {{ stepTitles[step - 1] }}
+                    </h2>
+                    <span class="text-xs text-gray-400">Adım {{ step }} / {{ stepTitles.length }}</span>
+                </div>
+
+                <!-- 1. YIL -->
+                <div *ngIf="step === 1" class="wiz-grid">
+                    <button *ngFor="let y of getGridItems(years)" type="button" class="wiz-card"
+                        [class.selected]="s().year === y" (click)="selectYear(y)">
+                        {{ y }}
+                    </button>
+                    <button *ngIf="hasMore(years)" type="button" class="wiz-card wiz-card-more"
+                        [matMenuTriggerFor]="yearMenu">
+                        Diğer...
+                    </button>
+                </div>
+                <mat-menu #yearMenu="matMenu">
+                    <button mat-menu-item *ngFor="let y of getRestItems(years)" [disabled]="s().year === y"
+                        (click)="selectYear(y)">
+                        {{ y }}
+                    </button>
+                </mat-menu>
+
+                <!-- 2. MARKA -->
+                <div *ngIf="step === 2" class="wiz-grid">
+                    <button *ngFor="let b of getGridItems(brands)" type="button" class="wiz-card"
+                        [class.selected]="s().brandId === b.id" (click)="selectBrand(b)">
+                        {{ b.name }}
+                    </button>
+
+                    <button *ngIf="hasMore(brands)" type="button" class="wiz-card wiz-card-more"
+                        [matMenuTriggerFor]="brandMenu">
+                        Diğer...
+                    </button>
+                </div>
+                <mat-menu #brandMenu="matMenu">
+                    <button mat-menu-item *ngFor="let b of getRestItems(brands)" [disabled]="s().brandId === b.id"
+                        (click)="selectBrand(b)">
+                        {{ b.name }}
+                    </button>
+                </mat-menu>
+
+
+                <!-- 3. MODEL -->
+                <div *ngIf="step === 3" class="wiz-grid">
+                    <button *ngFor="let m of getGridItems(models)" type="button" class="wiz-card"
+                        [class.selected]="s().modelId === m.id" (click)="selectModel(m)">
+                        {{ m.name }}
+                    </button>
+                    <button *ngIf="hasMore(models)" type="button" class="wiz-card wiz-card-more"
+                        [matMenuTriggerFor]="modelMenu">
+                        Diğer...
+                    </button>
+                </div>
+                <mat-menu #modelMenu="matMenu">
+                    <button mat-menu-item *ngFor="let m of getRestItems(models)" [disabled]="s().modelId === m.id"
+                        (click)="selectModel(m)">
+                        {{ m.name }}
+                    </button>
+                </mat-menu>
+
+
+                <!-- 4. GÖVDE -->
+                <div *ngIf="step === 4" class="wiz-grid">
+                    <button *ngFor="let bt of getGridItems(bodyTypes)" type="button" class="wiz-card"
+                        [class.selected]="s().bodyTypeId === bt.id" (click)="selectBodyType(bt)">
+                        {{ bt.name }}
+                    </button>
+
+                    <button *ngIf="hasMore(bodyTypes)" type="button" class="wiz-card wiz-card-more"
+                        [matMenuTriggerFor]="bodyMenu">
+                        Diğer...
+                    </button>
+                </div>
+                <mat-menu #bodyMenu="matMenu">
+                    <button mat-menu-item *ngFor="let bt of getRestItems(bodyTypes)"
+                        [disabled]="s().bodyTypeId === bt.id" (click)="selectBodyType(bt)">
+                        {{ bt.name }}
+                    </button>
+                </mat-menu>
+
+
+                <!-- 5. ŞANZIMAN -->
+                <div *ngIf="step === 5" class="wiz-grid">
+                    <button *ngFor="let tr of getGridItems(transmissions)" type="button" class="wiz-card"
+                        [class.selected]="s().transmissionTypeId === tr.id" (click)="selectTransmission(tr)">
+                        {{ tr.name }}
+                    </button>
+
+                    <button *ngIf="hasMore(transmissions)" type="button" class="wiz-card wiz-card-more"
+                        [matMenuTriggerFor]="transmissionMenu">
+                        Diğer...
+                    </button>
+                </div>
+
+                <mat-menu #transmissionMenu="matMenu">
+                    <button mat-menu-item *ngFor="let tr of getRestItems(transmissions)"
+                        [disabled]="s().transmissionTypeId === tr.id" (click)="selectTransmission(tr)">
+                        {{ tr.name }}
+                    </button>
+                </mat-menu>
+
+
+                <!-- 6. YAKIT -->
+                <div *ngIf="step === 6" class="wiz-grid">
+                    <button *ngFor="let fu of getGridItems(fuels)" type="button" class="wiz-card"
+                        [class.selected]="s().fuelTypeId === fu.id" (click)="selectFuel(fu)">
+                        {{ fu.name }}
+                    </button>
+
+                    <button *ngIf="hasMore(fuels)" type="button" class="wiz-card wiz-card-more"
+                        [matMenuTriggerFor]="fuelMenu">
+                        Diğer...
+                    </button>
+                </div>
+                <mat-menu #fuelMenu="matMenu">
+                    <button mat-menu-item *ngFor="let fu of getRestItems(fuels)" [disabled]="s().fuelTypeId === fu.id"
+                        (click)="selectFuel(fu)">
+                        {{ fu.name }}
+                    </button>
+                </mat-menu>
+
+
+                <!-- 7. RENK -->
+                <div *ngIf="step === 7" class="wiz-grid">
+                    <button *ngFor="let c of getGridItems(colors)" type="button"
+                        class="wiz-card flex items-center gap-2" [class.selected]="s().colorId === c.id"
+                        (click)="selectColor(c)">
+                        <span class="w-6 h-6 rounded-md ring-1 ring-gray-200"
+                            [style.background]="c.hex || '#ddd'"></span>
+                        <span>{{ c.name }}</span>
+                    </button>
+                    <button *ngIf="hasMore(colors)" type="button" class="wiz-card wiz-card-more"
+                        [matMenuTriggerFor]="colorMenu">
+                        Diğer...
+                    </button>
+                </div>
+                <mat-menu #colorMenu="matMenu">
+                    <button mat-menu-item *ngFor="let c of getRestItems(colors)" [disabled]="s().colorId === c.id"
+                        (click)="selectColor(c)">
+                        {{ c.name }}
+                    </button>
+                </mat-menu>
+
+                <!-- 8. DONANIM -->
+                <div *ngIf="step === 8" class="wiz-grid">
+                    <button *ngFor="let t of getGridItems(trims)" type="button" class="wiz-card"
+                        [class.selected]="s().trimId === t.id" (click)="selectTrim(t)">
+                        {{ t.name }}
+                    </button>
+
+                    <button *ngIf="hasMore(trims)" type="button" class="wiz-card wiz-card-more"
+                        [matMenuTriggerFor]="trimMenu">
+                        Diğer...
+                    </button>
+                </div>
+                <mat-menu #trimMenu="matMenu">
+                    <button mat-menu-item *ngFor="let t of getRestItems(trims)" [disabled]="s().trimId === t.id"
+                        (click)="selectTrim(t)">
+                        {{ t.name }}
+                    </button>
+                </mat-menu>
+
+                <!-- 9. PLAKA -->
+                <div *ngIf="step === 9" class="max-w-xs">
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label>Plaka</mat-label>
+                        <input matInput maxlength="9" placeholder="Örnek: 34ABC123" [value]="s().plate || ''"
+                            (input)="onPlateInput($event)" />
+                        <mat-hint align="end">{{ s().plate?.length || 0 }}/9</mat-hint>
+                        <mat-error *ngIf="plateError">{{ plateError }}</mat-error>
+                    </mat-form-field>
+                </div>
+
+
+                <!-- 10. KİLOMETRE -->
+                <div *ngIf="step === 10" class="max-w-xs">
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label>Kilometre</mat-label>
+                        <input matInput type="number" min="0" placeholder="Örnek: 45000" [value]="s().kilometer || ''"
+                            (input)="onKmInput($event)" />
+                        <mat-error *ngIf="kmError">{{ kmError }}</mat-error>
+                    </mat-form-field>
+                </div>
+
+
+                <!-- 11. ŞEHİR -->
+                <div *ngIf="step === 11" class="wiz-grid">
+                    <button *ngFor="let c of getGridItems(cities)" type="button" class="wiz-card"
+                        [class.selected]="s().cityId === c.id" (click)="selectCity(c)">
+                        {{ c.name }}
+                    </button>
+
+                    <button *ngIf="hasMore(cities)" type="button" class="wiz-card wiz-card-more"
+                        [matMenuTriggerFor]="cityMenu">
+                        Diğer...
+                    </button>
+                </div>
+                <mat-menu #cityMenu="matMenu">
+                    <button mat-menu-item *ngFor="let c of getRestItems(cities)" [disabled]="s().cityId === c.id"
+                        (click)="selectCity(c)">
+                        {{ c.name }}
+                    </button>
+                </mat-menu>
+
+
+                <!-- 12. TRAMER -->
+                <div *ngIf="step === 12" class="tramer-wrapper">
+
+                    <!-- üst bar -->
+                    <div class="tramer-top">
+                        <div class="text">
+                            Aracınızın tüm parçaları orijinal ve tramer kaydı yoksa, bu adımı atlayabilirsiniz.
+                        </div>
+                        <button mat-flat-button color="primary" (click)="setNoAccidentAllOriginal()">
+                            Orijinal ve Tramer Yok →
+                        </button>
+                    </div>
+
+                    <!-- orta içerik -->
+                    <div class="tramer-content">
+                        <!-- sol tablo -->
+                        <div class="tramer-left">
+                            <table class="tramer-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-part">Parça</th>
+                                        <th *ngFor="let stt of panelStatusDefs" class="col-status">
+                                            {{ stt.label }}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let p of panelDefs">
+                                        <td class="col-part">{{ p.label }}</td>
+                                        <td *ngFor="let stt of panelStatusDefs" class="col-status">
+                                            <mat-radio-group
+                                                [value]="(s().panels && s().panels[p.key] !== undefined) ? s().panels[p.key] : 0"
+                                                (change)="onPanelStatusChange(p.key, stt.value)">
+                                                <mat-radio-button [value]="stt.value"
+                                                    [checked]="(s().panels && s().panels[p.key] === stt.value)">
+                                                </mat-radio-button>
+                                            </mat-radio-group>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- sağ araç + legend -->
+                        <div class="tramer-right">
+                            <div class="legend">
+                                <span class="legend-item original">Orijinal</span>
+                                <span class="legend-item lokal">Lokal</span>
+                                <span class="legend-item painted">Boyalı</span>
+                                <span class="legend-item changed">Değişen</span>
+                            </div>
+                            <div class="car-box">
+                                <svg id="carSvgOverlay" viewBox="-130 -50 650 700" xmlns="http://www.w3.org/2000/svg"
+                                    class="car-svg">
+
+                                    <!-- ön tampon -->
+                                    <path id="FrontBumper" [ngClass]="getPanelStatusClass('FrontBumper')"
+                                        (click)="onSvgPanelClick('FrontBumper')"
+                                        d="M120 40 Q120 30 150 30 L 240 30 Q250 30 250 40 L 250 65 L 120 65 Z" />
+
+                                    <!-- motor kaputu -->
+                                    <path id="Hood" [ngClass]="getPanelStatusClass('Hood')"
+                                        (click)="onSvgPanelClick('Hood')"
+                                        d="M130 120 L 245 120 L 245 210 L 130 210 Z" />
+
+                                    <!-- tavan -->
+                                    <path id="Roof" [ngClass]="getPanelStatusClass('Roof')"
+                                        (click)="onSvgPanelClick('Roof')"
+                                        d="M135 280 L 240 280 L 240 390 L 135 390 Z" />
+
+                                    <!-- arka kaput -->
+                                    <path id="TrunkLid" [ngClass]="getPanelStatusClass('TrunkLid')"
+                                        (click)="onSvgPanelClick('TrunkLid')"
+                                        d="M125 470 L 125 477 Q125 500 142 500 L 238 500 Q255 500 255 477 L 255 470 Z" />
+
+                                    <!-- arka tampon -->
+                                    <path id="RearBumper" [ngClass]="getPanelStatusClass('RearBumper')"
+                                        (click)="onSvgPanelClick('RearBumper')"
+                                        d="M120 585 L 260 585 L 260 545 Q260 550 250 550 L 150 550 Q120 550 120 545 Z" />
+
+                                    <!-- sol taraf -->
+                                    <path id="LeftFrontFender" [ngClass]="getPanelStatusClass('LeftFrontFender')"
+                                        (click)="onSvgPanelClick('LeftFrontFender')"
+                                        d="M35 185 L 95 185 L 90 133 Q90 115 75 115 L 55 115 Q35 115 35 140 Z" />
+
+                                    <path id="LeftFrontDoor" [ngClass]="getPanelStatusClass('LeftFrontDoor')"
+                                        (click)="onSvgPanelClick('LeftFrontDoor')"
+                                        d="M15 225 L 75 225 L 75 325 L 15 325 Z" />
+
+                                    <path id="LeftRearDoor" [ngClass]="getPanelStatusClass('LeftRearDoor')"
+                                        (click)="onSvgPanelClick('LeftRearDoor')"
+                                        d="M15 325 L 75 325 L 75 420 L 15 385 Z" />
+
+                                    <path id="LeftRearFender" [ngClass]="getPanelStatusClass('LeftRearFender')"
+                                        (click)="onSvgPanelClick('LeftRearFender')"
+                                        d="M35 415 L 95 415 L 90 467 Q90 485 75 485 L 55 485 Q35 485 35 460 Z" />
+
+                                    <!-- sağ taraf -->
+                                    <path id="RightFrontFender" [ngClass]="getPanelStatusClass('RightFrontFender')"
+                                        (click)="onSvgPanelClick('RightFrontFender')"
+                                        d="M365 185 L 305 185 L 310 133 Q310 115 325 115 L 345 115 Q365 115 365 140 Z" />
+
+                                    <path id="RightFrontDoor" [ngClass]="getPanelStatusClass('RightFrontDoor')"
+                                        (click)="onSvgPanelClick('RightFrontDoor')"
+                                        d="M365 225 L 305 225 L 305 325 L 365 325 Z" />
+
+                                    <path id="RightRearDoor" [ngClass]="getPanelStatusClass('RightRearDoor')"
+                                        (click)="onSvgPanelClick('RightRearDoor')"
+                                        d="M365 325 L 305 325 L 305 410 L 365 385 Z" />
+
+                                    <path id="RightRearFender" [ngClass]="getPanelStatusClass('RightRearFender')"
+                                        (click)="onSvgPanelClick('RightRearFender')"
+                                        d="M365 425 L 305 425 L 310 477 Q310 495 325 495 L 345 495 Q365 495 365 470 Z" />
+                                </svg>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- alt form -->
+                    <div class="tramer-bottom">
+                        <mat-form-field appearance="outline" class="tramer-select">
+                            <mat-label>Tramer seçin...</mat-label>
+                            <mat-select [value]="s().accident || ''" (selectionChange)="onAccidentChange($event.value)">
+                                <mat-option *ngFor="let opt of accidentOptions" [value]="opt.value">
+                                    {{ opt.label }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="tramer-note">
+                            <mat-label>Açıklama (ops)</mat-label>
+                            <textarea matInput rows="1" [value]="s().accidentNote || ''"
+                                (input)="onAccidentNoteChange($any($event.target).value)"></textarea>
+                        </mat-form-field>
+                    </div>
+
+                </div>
+
+
+
+                <!-- 13. adım: Lastik / Bakım / Yedek Anahtar -->
+                <div *ngIf="step === 13" class="grid grid-cols-1 md:grid-cols-1 gap-4 max-w-5xl">
+                    <!-- Lastik -->
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label>Lastik durumu</mat-label>
+                        <mat-select [value]="s().tire ?? null" (selectionChange)="selectTireStatus($event.value)">
+                            <mat-option [value]="null">Seçiniz</mat-option>
+                            <mat-option *ngFor="let t of tireStatuses" [value]="t.id">
+                                {{ t.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <br>
+                    <!-- Bakım -->
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label>Bakım durumu</mat-label>
+                        <mat-select [value]="s().maintenance ?? null"
+                            (selectionChange)="selectMaintenanceStatus($event.value)">
+                            <mat-option [value]="null">Seçiniz</mat-option>
+                            <mat-option *ngFor="let m of maintenanceStatuses" [value]="m.id">
+                                {{ m.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <br>
+                    <!-- Yedek anahtar -->
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label>Yedek anahtar</mat-label>
+                        <mat-select [value]="s().spareKey ?? null"
+                            (selectionChange)="selectSpareKeyStatus($event.value)">
+                            <mat-option [value]="null">Seçiniz</mat-option>
+                            <mat-option *ngFor="let sk of spareKeyStatuses" [value]="sk.id">
+                                {{ sk.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+
+                <!-- 14. SATIŞ ZAMANI -->
+                <div *ngIf="step === 14" class="wiz-grid">
+                    <button *ngFor="let st of saleTimes" type="button" class="wiz-card" (click)="selectSaleTime(st)">
+                        {{ st.name }}
+                    </button>
+                </div>
+
+                <!-- 15. ADIM: Ek donanımlar + özet -->
+                <div *ngIf="step === 15" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h3 class="text-sm font-semibold mb-2">Ek donanımlar</h3>
+                        <div class="extras-box">
+                            <mat-checkbox *ngFor="let ex of extras" class="extras-item"
+                                [checked]="s().extras?.includes(ex)"
+                                (change)="onExtraCheckboxChange(ex, $event.checked)">
+                                {{ ex }}
+                            </mat-checkbox>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-semibold mb-2">Seçim özeti</h3>
+                        <pre class="bg-gray-50 rounded-lg p-3 text-xs max-h-60 overflow-auto">{{ s() | json }}</pre>
+                        <!-- TEKLİF AL butonunu buraya aldık -->
+                        <button mat-flat-button color="primary" (click)="onGetOfferClick()">
+                            Firmalardan Teklif Al
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 16. ADIM: Teklifler -->
+                <!-- 16. ADIM: Teklifler -->
+                <div *ngIf="step === 16" class="offer-step">
+                    <h3 class="text-sm font-semibold mb-3">Size uygun teklifler</h3>
+
+                    <div class="offer-list">
+                        <div class="offer-item" *ngFor="let o of offers">
+                            <div class="offer-left">
+                                <div class="offer-logo" *ngIf="o.logo; else noLogo">
+                                    <img [src]="o.logo" alt="{{ o.name }}" />
+                                </div>
+                                <ng-template #noLogo>
+                                    <div class="offer-logo placeholder">
+                                        {{ o.name[0] }}
+                                    </div>
+                                </ng-template>
+                                <div class="offer-name-price">
+                                    <div class="offer-name">{{ o.name }}</div>
+                                    <div class="offer-price">₺{{ o.price | number: '1.0-0' }}</div>
+                                </div>
+                            </div>
+
+                            <div class="offer-middle">
+                                Randevu: {{ o.appointment }} · {{ o.location }}
+                            </div>
+
+                            <div class="offer-right">
+                                <button class="offer-btn">Randevu Al</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>

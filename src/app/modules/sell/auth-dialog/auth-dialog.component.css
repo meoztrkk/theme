@@ -1,0 +1,183 @@
+/* dialog kabuğu */
+:host {
+  display: block;
+}
+
+/* mat dialog’un kendi yüzeyini yuvarla */
+::ng-deep .auth-dialog .mat-mdc-dialog-surface,
+::ng-deep .mat-mdc-dialog-surface {
+  border-radius: 16px !important;
+  padding: 0 !important;
+}
+
+/* bizim içerik */
+.auth-shell {
+  width: 420px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px 16px 12px 16px;
+  box-sizing: border-box;
+}
+
+/* üst bar */
+.auth-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.auth-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #1f2937;
+}
+
+.auth-close,
+.auth-back {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #4b5563;
+}
+
+.auth-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 12px -16px 14px -16px;
+}
+
+/* içerik */
+.auth-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-label {
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 2px;
+}
+
+/* input kutusu */
+.auth-input {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  height: 42px;
+  padding: 0 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.15s ease-in-out;
+}
+
+.auth-input:focus {
+  border-color: #2563eb;
+}
+
+/* telefon satırı */
+.auth-phone {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.auth-flag {
+  width: 52px;
+  height: 42px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  background: #fff;
+}
+
+.auth-input.phone {
+  flex: 1;
+}
+
+/* buton */
+.auth-btn.primary {
+  margin-top: 6px;
+  background: #22c55e;
+  color: #fff;
+  border: none;
+  height: 44px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform .1s;
+}
+
+.auth-btn.primary:active {
+  transform: translateY(1px);
+}
+
+.auth-btn.primary[disabled] {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* footer */
+.auth-footer {
+  text-align: center;
+  margin-top: 4px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.auth-link {
+  background: none;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+  font-weight: 500;
+  padding-left: 4px;
+}
+
+/* verify ekranı */
+.auth-content.verify {
+  align-items: center;
+}
+
+.verify-text {
+  font-size: 13px;
+  color: #374151;
+  text-align: center;
+}
+
+.verify-phone {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.verify-codes {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.verify-codes input {
+  width: 46px;
+  height: 46px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 20px;
+  outline: none;
+}
+
+.verify-codes input:focus {
+  border-color: #2563eb;
+}
+
+.verify-resend {
+  font-size: 11px;
+  color: #6b7280;
+  text-align: center;
+}
