@@ -79,14 +79,9 @@ export const appRoutes: Route[] = [
         },
         children: [
             {path: 'example', loadChildren: () => import('app/modules/admin/example/example.routes')},
-            {path: 'blog', loadChildren: () => import('app/modules/blog/list/blog-list.routes')},
-            {path: 'blog/new', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
-            {path: 'blog/:id', loadChildren: () => import('app/modules/blog/detail/blog-detail.routes')},
-            {path: 'blog/edit/:id', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
         ]
     },
 
-    // Test routes
     {
         path: '',
         canActivate: [AuthGuard],
@@ -100,6 +95,10 @@ export const appRoutes: Route[] = [
         },
         children: [
             {path: 'wizard', component: WizardComponent},
+            {path: 'blog', loadChildren: () => import('app/modules/blog/list/blog-list.routes')},
+            {path: 'blog/new', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
+            {path: 'blog/:id', loadChildren: () => import('app/modules/blog/detail/blog-detail.routes')},
+            {path: 'blog/edit/:id', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
         ]
     }
 ];

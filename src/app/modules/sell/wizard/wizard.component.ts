@@ -88,7 +88,7 @@ export class WizardComponent implements OnInit {
         'Ek Bilgi',
         'Satış Zamanı',
         'Özet',
-        '',
+        'Teklifler',
     ];
 
     stepIcons = [

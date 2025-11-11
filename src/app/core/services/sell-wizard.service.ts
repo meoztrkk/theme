@@ -21,7 +21,7 @@ export class SellWizardService {
   getYears(): Observable<number[]> {
     const current = new Date().getFullYear();
     const years: number[] = [];
-    for (let i = 0; i <= 30; i++) {
+    for (let i = 0; i <= 40; i++) {
       years.push(current - i);
     }
     return of(years);

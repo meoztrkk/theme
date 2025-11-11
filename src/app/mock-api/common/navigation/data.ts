@@ -7,22 +7,35 @@ export const defaultNavigation: FuseNavigationItem[] = [
         title: 'Example',
         type: 'basic',
         icon: 'heroicons_outline:chart-pie',
-        link: '/example'
+        link: '/example',
     },
     {
         id: 'wizard',
         title: 'Aracını Sat',
         type: 'basic',
         icon: 'heroicons_outline:truck',
-        link: '/wizard'
+        link: '/wizard',
     },
     {
         id: 'blog',
-        title: 'Blog',
-        type: 'basic',
-        icon: 'heroicons_outline:document-text',
-        link: '/blog'
-    }
+        title: 'BLOG',
+        type: 'collapsable',
+        icon: 'heroicons_outline:newspaper',
+        children: [
+            {
+                id: 'blog.list',
+                title: 'Blog Listesi',
+                type: 'basic',
+                link: '/blog',
+            },
+            {
+                id: 'blog.form',
+                title: 'Blog Ekle',
+                type: 'basic',
+                link: '/blog/new',
+            },
+        ],
+    },
 ];
 
 export const compactNavigation: FuseNavigationItem[] = [
@@ -31,22 +44,35 @@ export const compactNavigation: FuseNavigationItem[] = [
         title: 'Example',
         type: 'basic',
         icon: 'heroicons_outline:chart-pie',
-        link: '/example'
+        link: '/example',
     },
     {
         id: 'wizard',
         title: 'Aracını Sat',
         type: 'basic',
         icon: 'heroicons_outline:truck',
-        link: '/wizard'
+        link: '/wizard',
     },
     {
         id: 'blog',
-        title: 'Blog',
-        type: 'basic',
-        icon: 'heroicons_outline:document-text',
-        link: '/blog'
-    }
+        title: 'BLOG',
+        type: 'collapsable',
+        icon: 'heroicons_outline:newspaper',
+        children: [
+            {
+                id: 'blog.list',
+                title: 'Blog Listesi',
+                type: 'basic',
+                link: '/blog',
+            },
+            {
+                id: 'blog.form',
+                title: 'Blog Ekle',
+                type: 'basic',
+                link: '/blog/new',
+            },
+        ],
+    },
 ];
 
 export const futuristicNavigation: FuseNavigationItem[] = [
@@ -55,44 +81,70 @@ export const futuristicNavigation: FuseNavigationItem[] = [
         title: 'Example',
         type: 'basic',
         icon: 'heroicons_outline:chart-pie',
-        link: '/example'
+        link: '/example',
     },
     {
         id: 'wizard',
         title: 'Aracını Sat',
         type: 'basic',
         icon: 'heroicons_outline:truck',
-        link: '/wizard'
+        link: '/wizard',
     },
     {
         id: 'blog',
-        title: 'Blog',
-        type: 'basic',
-        icon: 'heroicons_outline:document-text',
-        link: '/blog'
-    }
+        title: 'BLOG',
+        type: 'collapsable',
+        icon: 'heroicons_outline:newspaper',
+        children: [
+            {
+                id: 'blog.list',
+                title: 'Blog Listesi',
+                type: 'basic',
+                link: '/blog',
+            },
+            {
+                id: 'blog.form',
+                title: 'Blog Ekle',
+                type: 'basic',
+                link: '/blog/new',
+            },
+        ],
+    },
 ];
 
 export const horizontalNavigation: FuseNavigationItem[] = [
     {
         id: 'example',
-        title: 'Ana Sayfa',
+        title: 'Anasayfa',
         type: 'basic',
         icon: 'heroicons_outline:chart-pie',
-        link: '/example'
+        link: '/example',
     },
     {
         id: 'wizard',
         title: 'Aracını Sat',
         type: 'basic',
         icon: 'heroicons_outline:truck',
-        link: '/wizard'
+        link: '/wizard',
     },
     {
         id: 'blog',
-        title: 'Blog',
-        type: 'basic',
-        icon: 'heroicons_outline:document-text',
-        link: '/blog'
-    }
+        title: 'BLOG',
+        type: 'collapsable',
+        icon: 'heroicons_outline:newspaper',
+        children: [
+            {
+                id: 'blog.list',
+                title: 'Blog Listesi',
+                type: 'basic',
+                link: '/blog',
+            },
+            {
+                id: 'blog.form',
+                title: 'Blog Ekle',
+                type: 'basic',
+                link: '/blog/new',
+            },
+        ],
+    },
 ];
