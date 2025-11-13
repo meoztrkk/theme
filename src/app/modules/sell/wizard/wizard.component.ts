@@ -87,7 +87,7 @@ export class WizardComponent implements OnInit {
         'Tramer',
         'Ek Bilgi',
         'Satış Zamanı',
-        'Özet',
+        'Ek Özellikler',
         'Teklifler',
     ];
 
@@ -131,6 +131,20 @@ export class WizardComponent implements OnInit {
             name: 'OtopBid',
             price: 640000,
             appointment: '30 Eki 12:58',
+            location: 'Üsküdar',
+            logo: '/images/apps/sell/otobid.png',
+        },
+        {
+            name: 'OtopBid',
+            price: 660000,
+            appointment: '29 Eki 12:58',
+            location: 'Üsküdar',
+            logo: '/images/apps/sell/otobid.png',
+        },
+        {
+            name: 'OtopBid',
+            price: 660000,
+            appointment: '28 Eki 12:58',
             location: 'Üsküdar',
             logo: '/images/apps/sell/otobid.png',
         },

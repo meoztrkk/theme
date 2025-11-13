@@ -73,7 +73,7 @@ export class BlogFormComponent implements OnInit {
             summary: ['', Validators.required],
             content: ['', Validators.required],
             imageUrl: ['', [Validators.required, Validators.pattern('(https?://.*\\.(?:png|jpg|jpeg|gif|svg))')]],
-            author: ['Yazar Adı', Validators.required],
+            author: ['', Validators.required],
         });
 
         // URL'deki ID'yi kontrol et

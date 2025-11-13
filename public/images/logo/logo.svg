@@ -1,37 +1,32 @@
-<svg
-    width="32"
-    height="32"
-    viewBox="0 0 32 32"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg">
-    <path
-        d="M16 6.75556V0L1.02839 14.6389C0.462304 15.1924 0.457197 16.1016 1.01703 16.6615L3.55556 19.2"
-        fill="#2196F3"/>
-    <path
-        d="M16 6.75556V0L30.9716 14.6389C31.5377 15.1924 31.5428 16.1016 30.983 16.6615L28.4444 19.2"
-        fill="#1878C6"/>
-    <path
-        d="M3.55556 19.2L9.6 13.1556H16V19.2"
-        fill="#1565C0"/>
-    <path
-        d="M28.4444 19.2L22.4 13.1556H16V19.2"
-        fill="#10519D"/>
-    <path
-        d="M16 25.9556H9.95555L12.9778 22.7556L16 25.9556Z"
-        fill="#1565C0"/>
-    <path
-        d="M16 32L22.0444 25.9556L16 25.9556V32Z"
-        fill="#1878C6"/>
-    <path
-        d="M16 32L9.95555 25.9556H16V32Z"
-        fill="#2196F3"/>
-    <path
-        d="M16 25.9556H22.0444L19.0222 22.7556L16 25.9556Z"
-        fill="#10519D"/>
-    <path
-        d="M7.72363 21.7502C7.18605 22.3085 7.19441 23.1944 7.74243 23.7424L9.95556 25.9556L16 19.5556V13.1556"
-        fill="#2196F3"/>
-    <path
-        d="M24.2764 21.7502C24.814 22.3085 24.8056 23.1944 24.2576 23.7424L22.0444 25.9556L16 19.5556V13.1556"
-        fill="#1878C6"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="640" height="380" viewBox="0 0 640 380" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Direkt Satış logo icon">
+  <defs>
+    <style>
+      .car { fill: #111111; }
+      .accent { fill: #22C55E; }
+    </style>
+  </defs>
+
+  <!-- Car silhouette (front view) -->
+  <g class="car" transform="translate(20,60)">
+    <path d="M20,130 C24,90 54,62 120,50 L230,50 C296,62 326,90 330,130 L330,162 C330,172 322,180 312,180 H38 C28,180 20,172 20,162 Z"/>
+    <rect x="60" y="128" width="52" height="24" rx="8" ry="8"/>
+    <rect x="140" y="136" width="120" height="10" rx="5"/>
+    <path d="M110,52 C138,32 166,24 194,24 C222,24 250,32 278,52 L222,52 L182,52 Z"/>
+  </g>
+
+  <!-- Tag + handshake overlay -->
+  <g transform="translate(210,20) rotate(-12)">
+    <path class="accent" d="M10,70 L210,40 L260,90 L240,210 L30,240 L10,220 Z"/>
+    <circle cx="210" cy="92" r="14" fill="#111111"/>
+    <g transform="rotate(12) translate(45,120)">
+      <path d="M0,0 h95 a12,12 0 0 1 12,12 v26 a12,12 0 0 1 -12,12 H0 a12,12 0 0 1 -12,-12 V12 A12,12 0 0 1 0,0 Z" fill="#F0FDF4"/>
+      <path d="M90,-12 h46 a12,12 0 0 1 12,12 v22 a12,12 0 0 1 -12,12 h-46 a12,12 0 0 1 -12,-12 v-22 a12,12 0 0 1 12,-12 Z" fill="#D1FAE5"/>
+      <rect x="10" y="48" width="22" height="36" rx="9" fill="#111111" opacity="0.2"/>
+      <rect x="36" y="48" width="22" height="36" rx="9" fill="#111111" opacity="0.2"/>
+      <rect x="62" y="48" width="22" height="36" rx="9" fill="#111111" opacity="0.2"/>
+      <rect x="88" y="48" width="22" height="36" rx="9" fill="#111111" opacity="0.2"/>
+    </g>
+    <path d="M10,70 L210,40 L260,90 L240,210 L30,240 L10,220 Z" fill="none" stroke="#0A0A0A" stroke-width="4" opacity="0.25"/>
+  </g>
 </svg>
