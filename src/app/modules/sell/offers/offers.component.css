@@ -1,9 +1,67 @@
 
-
 .offers-full-bleed {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Araç Özeti Stilleri */
+.vehicle-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .vehicle-summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .vehicle-summary-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.summary-item:hover {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summary-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+.summary-value-plate {
+  font-family: 'Courier New', monospace;
+  font-size: 1.25rem;
+  letter-spacing: 0.1em;
+  color: #1e40af;
 }
 
 .offer-step {
@@ -27,13 +85,29 @@
     gap: 14px;
     border: 1px solid rgb(0, 0, 0);
     box-shadow: 0 4px 15px rgba(15, 23, 42, 0.39);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .offer-left {
     display: flex;
     align-items: center;
     gap: 12px;
-    min-width: 420px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+@media (min-width: 768px) {
+    .offer-left {
+        min-width: 300px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .offer-left {
+        min-width: 420px;
+    }
 }
 
 .offer-logo {
@@ -78,10 +152,14 @@
 }
 
 .offer-middle {
-    flex: 1;
+    flex: 1 1 auto;
     text-align: right;
     font-size: 12px;
     color: #64748b;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .offer-right {
@@ -109,10 +187,19 @@
         flex-direction: column;
         align-items: flex-start;
     }
+    .offer-left {
+        width: 100%;
+        min-width: 0;
+    }
     .offer-middle {
         text-align: left;
+        width: 100%;
     }
     .offer-right {
         margin-left: 0;
+        width: 100%;
+    }
+    .offer-btn {
+        width: 100%;
     }
 }

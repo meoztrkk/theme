@@ -1,17 +1,41 @@
 <div class="offers-full-bleed">
     <div class="p-4 sm:p-6">
         <!-- Özet kartı -->
-        <div class="bg-white rounded-xl shadow p-4 mb-4">
-            <h2 class="text-base font-semibold mb-3">Araç Özeti</h2>
-            <div class="text-sm text-gray-700 grid grid-cols-2 md:grid-cols-3 gap-2">
-                <div><b>Yıl:</b> {{summary?.year}}</div>
-                <div><b>Marka:</b> {{summary?.brandName}}</div>
-                <div><b>Model:</b> {{summary?.modelName}}</div>
-                <div><b>Donanım:</b> {{summary?.trimName}}</div>
-                <div><b>Renk:</b> {{summary?.colorName}}</div>
-                <div><b>KM:</b> {{summary?.kilometer | number}}</div>
-                <div><b>Şehir:</b> {{summary?.cityName}}</div>
-                <div><b>Plaka:</b> {{summary?.plate}}</div>
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-100">
+            <h2 class="text-xl font-bold mb-5 text-gray-900">Araç Özeti</h2>
+            <div class="vehicle-summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">Yıl</div>
+                    <div class="summary-value">{{summary?.year}}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Marka</div>
+                    <div class="summary-value">{{summary?.brandName}}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Model</div>
+                    <div class="summary-value">{{summary?.modelName}}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Donanım</div>
+                    <div class="summary-value">{{summary?.trimName}}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Renk</div>
+                    <div class="summary-value">{{summary?.colorName}}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Kilometre</div>
+                    <div class="summary-value">{{summary?.kilometer | number}} km</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Şehir</div>
+                    <div class="summary-value">{{summary?.cityName}}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Plaka</div>
+                    <div class="summary-value summary-value-plate">{{summary?.plate}}</div>
+                </div>
             </div>
         </div>
 
@@ -31,8 +55,8 @@
                         <div class="offer-price">₺{{o.price | number:'1.0-0'}}</div>
                     </div>
                 </div>
-                <div class="offer-middle">Randevu: {{o.appointment}} · {{o.location}}</div>
-                <div class="offer-right"><button class="offer-btn">Randevu Al</button></div>
+                <div class="offer-middle">Randevu : {{o.appointment}} · {{o.location}}</div>
+                <div class="offer-right"><button class="offer-btn" (click)="openAppointmentDialog(o)">Randevu Al</button></div>
             </div>
         </div>
     </div>

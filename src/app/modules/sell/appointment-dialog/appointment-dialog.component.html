@@ -1,0 +1,84 @@
+<div class="appointment-shell">
+    <div class="appointment-header">
+        <span class="appointment-title">Randevu Al</span>
+        <button class="appointment-close" (click)="close()">×</button>
+    </div>
+    <div class="appointment-divider"></div>
+
+    <div class="appointment-content">
+        <!-- Konum Bilgisi -->
+        <div class="appointment-info-section">
+            <div class="appointment-info-item">
+                <span class="appointment-info-label">Firma:</span>
+                <span class="appointment-info-value">{{ data.offerName }}</span>
+            </div>
+            <div class="appointment-info-item">
+                <span class="appointment-info-label">Konum:</span>
+                <span class="appointment-info-value">{{ data.location }}</span>
+            </div>
+            <div class="appointment-info-item">
+                <span class="appointment-info-label">Teklif:</span>
+                <span class="appointment-info-value">₺{{ data.price | number:'1.0-0' }}</span>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form [formGroup]="appointmentForm" class="appointment-form">
+            <!-- Tarih Seçici -->
+            <div class="appointment-field">
+                <label class="appointment-label">Tarih Seçiniz</label>
+                <mat-form-field appearance="outline" class="appointment-form-field">
+                    <input
+                        matInput
+                        [matDatepicker]="picker"
+                        [min]="minDate"
+                        formControlName="date"
+                        placeholder="Tarih seçiniz"
+                    />
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                    <mat-error *ngIf="appointmentForm.get('date')?.hasError('required') && appointmentForm.get('date')?.touched">
+                        Tarih seçimi zorunludur
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <!-- Saat Seçici -->
+            <div class="appointment-field">
+                <label class="appointment-label">Saat Seçiniz</label>
+                <mat-form-field appearance="outline" class="appointment-form-field">
+                    <mat-select formControlName="time" placeholder="Saat seçiniz">
+                        <mat-option *ngFor="let slot of timeSlots" [value]="slot">
+                            {{ slot }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="appointmentForm.get('time')?.hasError('required') && appointmentForm.get('time')?.touched">
+                        Saat seçimi zorunludur
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <!-- Butonlar -->
+            <div class="appointment-actions">
+                <button
+                    type="button"
+                    class="appointment-btn secondary"
+                    (click)="close()"
+                    [disabled]="isSubmitting"
+                >
+                    İptal
+                </button>
+                <button
+                    type="button"
+                    class="appointment-btn primary"
+                    (click)="submitAppointment()"
+                    [disabled]="isSubmitting || appointmentForm.invalid"
+                >
+                    <span *ngIf="!isSubmitting">Randevu Al</span>
+                    <span *ngIf="isSubmitting">Kaydediliyor...</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
