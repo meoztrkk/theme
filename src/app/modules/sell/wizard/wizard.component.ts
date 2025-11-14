@@ -822,54 +822,91 @@ export class WizardComponent implements OnInit {
     }
 
     onGetOfferClick() {
-        if (
-            !this.isStepFilled(14, this.s()) ||
-            !this.isStepFilled(15, this.s())
-        )
+        const currentState = this.s();
+
+        // Step validation kontrolü
+        const step14Filled = this.isStepFilled(14, currentState);
+        const step15Filled = this.isStepFilled(15, currentState);
+
+        console.log('[Wizard.onGetOfferClick] Step validation:', {
+            step14: step14Filled,
+            step15: step15Filled,
+            step14Value: currentState.saleTime,
+            currentStep: this.step
+        });
+
+        if (!step14Filled || !step15Filled) {
+            console.warn('[Wizard.onGetOfferClick] Steps not filled, cannot proceed');
+            // Kullanıcıya feedback ver
+            if (!step14Filled) {
+                console.warn('[Wizard.onGetOfferClick] Step 14 (Satış Zamanı) doldurulmamış');
+            }
+            if (!step15Filled) {
+                console.warn('[Wizard.onGetOfferClick] Step 15 (Ek Özellikler) doldurulmamış');
+            }
             return;
+        }
+
+        // Token durumunu logla
+        const token = this.authService.accessToken;
+        console.log('[Wizard.onGetOfferClick] Token check:', {
+            hasToken: !!token,
+            tokenLength: token?.length || 0,
+            isJwt: token && token.split('.').length === 3
+        });
 
         // Session kontrolü - kullanıcı 1 saat içinde giriş yapmış mı?
-        this.authService.check().subscribe((isAuthenticated) => {
-            if (isAuthenticated) {
-                // Kullanıcı zaten giriş yapmış, direkt teklif oluştur
-                const payload = this.buildCreatePayload();
-                console.log('payload:', payload);
+        this.authService.check().subscribe({
+            next: (isAuthenticated) => {
+                console.log('[Wizard.onGetOfferClick] Authentication check result:', isAuthenticated);
 
-                this.wiz.createSellRequest(payload).subscribe({
-                    next: ({ id }) => {
-                        console.log('talep oluşturuldu, id:', id);
-                        this.router.navigate(['/offers', id]);
-                    },
-                    error: (err) => {
-                        console.error('createSellRequest hata:', err);
-                    },
-                });
-            } else {
-                // Kullanıcı giriş yapmamış, auth dialog aç
-                const ref = this.dialog.open(AuthDialogComponent, {
-                    width: '420px',
-                    panelClass: 'auth-dialog',
-                });
+                if (isAuthenticated) {
+                    // Kullanıcı zaten giriş yapmış, direkt teklif oluştur
+                    const payload = this.buildCreatePayload();
+                    console.log('[Wizard.onGetOfferClick] Creating sell request with payload:', payload);
 
-                ref.afterClosed().subscribe((res) => {
-                    console.log('auth dialog closed with:', res);
+                    this.wiz.createSellRequest(payload).subscribe({
+                        next: ({ id }) => {
+                            console.log('[Wizard.onGetOfferClick] Sell request created, id:', id);
+                            this.router.navigate(['/offers', id]);
+                        },
+                        error: (err) => {
+                            console.error('[Wizard.onGetOfferClick] createSellRequest error:', err);
+                        },
+                    });
+                } else {
+                    // Kullanıcı giriş yapmamış, auth dialog aç
+                    console.log('[Wizard.onGetOfferClick] User not authenticated, opening auth dialog');
+                    const ref = this.dialog.open(AuthDialogComponent, {
+                        width: '420px',
+                        panelClass: 'auth-dialog',
+                    });
 
-                    // Giriş başarılı ise teklif oluştur
-                    if (res === 'authenticated') {
-                        const payload = this.buildCreatePayload();
-                        console.log('payload:', payload);
+                    ref.afterClosed().subscribe((res) => {
+                        console.log('[Wizard.onGetOfferClick] Auth dialog closed with:', res);
 
-                        this.wiz.createSellRequest(payload).subscribe({
-                            next: ({ id }) => {
-                                console.log('talep oluşturuldu, id:', id);
-                                this.router.navigate(['/offers', id]);
-                            },
-                            error: (err) => {
-                                console.error('createSellRequest hata:', err);
-                            },
-                        });
-                    }
-                });
+                        // Giriş başarılı ise teklif oluştur
+                        if (res === 'authenticated') {
+                            const payload = this.buildCreatePayload();
+                            console.log('[Wizard.onGetOfferClick] Creating sell request after auth, payload:', payload);
+
+                            this.wiz.createSellRequest(payload).subscribe({
+                                next: ({ id }) => {
+                                    console.log('[Wizard.onGetOfferClick] Sell request created after auth, id:', id);
+                                    this.router.navigate(['/offers', id]);
+                                },
+                                error: (err) => {
+                                    console.error('[Wizard.onGetOfferClick] createSellRequest error after auth:', err);
+                                },
+                            });
+                        } else {
+                            console.log('[Wizard.onGetOfferClick] Auth dialog closed without authentication');
+                        }
+                    });
+                }
+            },
+            error: (err) => {
+                console.error('[Wizard.onGetOfferClick] Authentication check error:', err);
             }
         });
     }

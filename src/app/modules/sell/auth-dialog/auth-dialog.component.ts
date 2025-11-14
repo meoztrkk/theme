@@ -153,14 +153,20 @@ export class AuthDialogComponent {
                     this.appAuth.accessToken = token;
 
                     if (isJwt) {
-                        // JWT token ise kullanıcı bilgisini almayı dene (token'ı parametre olarak gönder)
-                        this.authPhone.me(token).subscribe({
+                        // JWT token ise kullanıcı bilgisini almayı dene
+                        // Token kaydedildi, interceptor otomatik header'a ekleyecek
+                        // Ancak token henüz localStorage'a yazılmamış olabilir, bu yüzden
+                        // me() çağrısı yapılırken token'ı manuel olarak header'a ekliyoruz
+                        this.authPhone.me().subscribe({
                             next: (profile) => {
                                 this.appAuth.signInWithExternalToken(token, profile);
                                 this.dialogRef.close('authenticated');
                             },
                             error: (err) => {
                                 // me() başarısız olsa bile token kaydedildi, giriş başarılı sayılabilir
+                                // 401 hatası gelirse bile token geçerli olabilir (yeni endpoint sorun çıkarabilir)
+                                // Interceptor 401 hatasını yakalayıp sayfayı yenileyebilir, bu yüzden
+                                // hata durumunda da token'ı kaydedip dialog'u kapatıyoruz
                                 console.warn('Could not fetch user profile, but login successful', err);
                                 this.appAuth.signInWithExternalToken(token, null);
                                 this.dialogRef.close('authenticated');

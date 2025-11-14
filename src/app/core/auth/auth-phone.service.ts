@@ -7,13 +7,10 @@ import { Observable } from 'rxjs';
 export class AuthPhoneService {
   constructor(private http: HttpClient) {}
 
-  // login olmuş mu?
-  me(token?: string): Observable<any> {
-    let headers = new HttpHeaders();
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    }
-    return this.http.get(`${API_BASE_URL}/api/account/my-profile`, { headers });
+  // login olmuş mu? - Yeni endpoint kullanıyoruz (ABP'nin my-profile yerine)
+  // Token artık interceptor tarafından otomatik ekleniyor, bu yüzden token parametresine gerek yok
+  me(): Observable<any> {
+    return this.http.get(`${API_BASE_URL}/api/app/app-account/current-user`);
   }
 
   // TELEFONLA KAYIT

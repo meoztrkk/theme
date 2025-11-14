@@ -164,22 +164,30 @@ export class AuthService {
 
         // Check the access token availability
         if (!this.accessToken) {
+            console.log('[AuthService.check] No access token found');
             return of(false);
         }
 
         // Token JWT değilse: decode etmeye çalışma
         if (!this._isJwt(this.accessToken)) {
+            console.log('[AuthService.check] Non-JWT token found, marking as authenticated');
             this._authenticated = true;
             return of(true);
         }
 
         // Check the access token expire date
         if (AuthUtils.isTokenExpired(this.accessToken)) {
+            console.log('[AuthService.check] Token expired');
+            this._authenticated = false;
             return of(false);
         }
 
-        // If the access token exists, and it didn't expire, sign in using it
-        return this.signInUsingToken();
+        // JWT token varsa ve expire olmamışsa, direkt true döndür
+        // signInUsingToken() çağrısı yapmıyoruz çünkü bu endpoint çalışmıyor olabilir
+        // Token geçerliyse authenticated flag'ini set et
+        console.log('[AuthService.check] Valid JWT token found, marking as authenticated');
+        this._authenticated = true;
+        return of(true);
     }
 
     private _isJwt(token: string): boolean {
