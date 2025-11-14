@@ -61,7 +61,9 @@ export class AuthDialogComponent {
     ) {
         this.registerForm = this.fb.group({
             phone: ['', [Validators.required]],
-            name: ['', [Validators.required]],
+            firstName: ['', [Validators.required]],
+            lastName: ['', [Validators.required]],
+            email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required, Validators.minLength(6)]],
         });
     }
@@ -88,7 +90,9 @@ export class AuthDialogComponent {
         const raw = this.registerForm.getRawValue();
         const phone = (raw.phone || '').trim();
         const normalizedPhone = this.normalizePhone(phone);
-        const name = raw.name?.trim();
+        const firstName = raw.firstName?.trim() || '';
+        const lastName = raw.lastName?.trim() || '';
+        const email = raw.email?.trim() || '';
         const password = raw.password;
 
         this.isSending = true;
@@ -97,7 +101,9 @@ export class AuthDialogComponent {
             .registerByPhone({
                 phoneNumber: normalizedPhone,
                 password: password!,
-                name: name,
+                firstName: firstName,
+                lastName: lastName,
+                emailAddress: email,
             })
             .subscribe({
                 next: () => {

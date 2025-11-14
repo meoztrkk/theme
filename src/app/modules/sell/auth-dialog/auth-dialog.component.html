@@ -59,12 +59,28 @@
       />
     </div>
 
-    <label class="auth-label">İsim</label>
+    <label class="auth-label">Ad</label>
     <input
       class="auth-input"
-      formControlName="name"
+      formControlName="firstName"
       placeholder="Adınız"
       type="text"
+    />
+
+    <label class="auth-label">Soyad</label>
+    <input
+      class="auth-input"
+      formControlName="lastName"
+      placeholder="Soyadınız"
+      type="text"
+    />
+
+    <label class="auth-label">Email</label>
+    <input
+      class="auth-input"
+      formControlName="email"
+      placeholder="email@example.com"
+      type="email"
     />
 
     <label class="auth-label">Şifre</label>

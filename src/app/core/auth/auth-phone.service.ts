@@ -16,7 +16,9 @@ export class AuthPhoneService {
   registerByPhone(input: {
     phoneNumber: string;
     password: string;
-    name?: string;
+    firstName: string;
+    lastName: string;
+    emailAddress: string;
   }): Observable<any> {
     return this.http.post(`${API_BASE_URL}/api/app/app-account/register-by-phone`, input);
   }

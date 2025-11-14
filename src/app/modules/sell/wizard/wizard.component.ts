@@ -17,6 +17,7 @@ import {
     SellWizardService,
 } from 'app/core/services/sell-wizard.service';
 import { AuthDialogComponent } from '../auth-dialog/auth-dialog.component';
+import { AuthService } from 'app/core/auth/auth.service';
 
 interface WizardState {
     step: number;
@@ -216,7 +217,8 @@ export class WizardComponent implements OnInit {
         private wiz: SellWizardService,
         private dialog: MatDialog,
         private route: ActivatedRoute,
-        private router: Router
+        private router: Router,
+        private authService: AuthService
     ) {}
 
     private buildCreatePayload() {
@@ -793,21 +795,10 @@ export class WizardComponent implements OnInit {
         )
             return;
 
-        const ref = this.dialog.open(AuthDialogComponent, {
-            width: '420px',
-            panelClass: 'auth-dialog',
-        });
-
-        ref.afterClosed().subscribe((res) => {
-            console.log('auth dialog closed with:', res);
-
-            // GEÇİCİ: login başarılı / başarısız fark etmeksizin, sadece iptal değilse devam et
-            if (
-                res !== 'cancel' &&
-                res !== 'close' &&
-                res !== null &&
-                res !== undefined
-            ) {
+        // Session kontrolü - kullanıcı 1 saat içinde giriş yapmış mı?
+        this.authService.check().subscribe((isAuthenticated) => {
+            if (isAuthenticated) {
+                // Kullanıcı zaten giriş yapmış, direkt teklif oluştur
                 const payload = this.buildCreatePayload();
                 console.log('payload:', payload);
 
@@ -820,20 +811,33 @@ export class WizardComponent implements OnInit {
                         console.error('createSellRequest hata:', err);
                     },
                 });
+            } else {
+                // Kullanıcı giriş yapmamış, auth dialog aç
+                const ref = this.dialog.open(AuthDialogComponent, {
+                    width: '420px',
+                    panelClass: 'auth-dialog',
+                });
+
+                ref.afterClosed().subscribe((res) => {
+                    console.log('auth dialog closed with:', res);
+
+                    // Giriş başarılı ise teklif oluştur
+                    if (res === 'authenticated') {
+                        const payload = this.buildCreatePayload();
+                        console.log('payload:', payload);
+
+                        this.wiz.createSellRequest(payload).subscribe({
+                            next: ({ id }) => {
+                                console.log('talep oluşturuldu, id:', id);
+                                this.router.navigate(['/offers', id]);
+                            },
+                            error: (err) => {
+                                console.error('createSellRequest hata:', err);
+                            },
+                        });
+                    }
+                });
             }
         });
-
-        // ref.afterClosed().subscribe((res) => {
-        //     if (res === 'authenticated') {
-        //         const payload = this.buildCreatePayload();
-
-        //         this.wiz.createSellRequest(payload).subscribe(({ id }) => {
-        //             // offers sayfasına yönlendir
-        //             this.router.navigate(['offers', id], {
-        //                 relativeTo: this.route.parent ?? this.route,
-        //             });
-        //         });
-        //     }
-        // });
     }
 }
