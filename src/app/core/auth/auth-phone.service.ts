@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { API_BASE_URL } from 'app/const';
 import { Observable } from 'rxjs';
 
@@ -8,8 +8,12 @@ export class AuthPhoneService {
   constructor(private http: HttpClient) {}
 
   // login olmuş mu?
-  me(): Observable<any> {
-    return this.http.get(`${API_BASE_URL}/api/account/my-profile`);
+  me(token?: string): Observable<any> {
+    let headers = new HttpHeaders();
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    return this.http.get(`${API_BASE_URL}/api/account/my-profile`, { headers });
   }
 
   // TELEFONLA KAYIT

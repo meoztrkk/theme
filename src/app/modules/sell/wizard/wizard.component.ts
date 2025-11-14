@@ -424,16 +424,38 @@ export class WizardComponent implements OnInit {
         const input = (event.target as HTMLInputElement).value;
         let cleaned = input.replace(/\s+/g, '').toUpperCase();
         const pattern = /^([0-9]{2})([A-Z]{1,4})([0-9]{1,4})$/;
-        if (cleaned && !pattern.test(cleaned)) {
+
+        // Plaka boşsa hata yok
+        if (!cleaned || cleaned.length === 0) {
+            this.plateError = null;
+        } else if (cleaned.length > 9) {
+            // Maksimum 9 karakter kontrolü
+            this.plateError = 'Plaka en fazla 9 karakter olabilir';
+        } else if (!pattern.test(cleaned)) {
+            // Format kontrolü (sadece doluysa)
             this.plateError = 'Geçersiz plaka formatı (örn: 34ABC123)';
         } else {
             this.plateError = null;
         }
+
         const st = this.s();
         this.s.set({
             ...st,
             plate: cleaned,
         });
+    }
+
+    onPlateEnter(event: KeyboardEvent) {
+        event.preventDefault();
+        const st = this.s();
+        const plate = st.plate || '';
+        const pattern = /^([0-9]{2})([A-Z]{1,4})([0-9]{1,4})$/;
+
+        // Plaka geçerliyse (format doğru ve hata yoksa) ilerle
+        // Minimum 4 karakter (örn: 34A1), maksimum 9 karakter
+        if (plate && plate.length >= 4 && plate.length <= 9 && pattern.test(plate) && !this.plateError) {
+            this.next();
+        }
     }
 
     kmError: string | null = null;
@@ -456,6 +478,17 @@ export class WizardComponent implements OnInit {
             ...st,
             kilometer: val,
         });
+    }
+
+    onKmEnter(event: KeyboardEvent) {
+        event.preventDefault();
+        const st = this.s();
+        const km = st.kilometer;
+
+        // Kilometre geçerliyse (6000-200000 arası) ve hata yoksa ilerle
+        if (km && km >= 6000 && km <= 200000 && !this.kmError) {
+            this.next();
+        }
     }
 
     selectCity(c: IdNameDto) {

@@ -225,7 +225,7 @@
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label>Plaka</mat-label>
                         <input matInput maxlength="9" placeholder="Örnek: 34ABC123" [value]="s().plate || ''" [formControl]="plateCtrl" [errorStateMatcher]="plateMatcher"
-                            (input)="onPlateInput($event)"/>
+                            (input)="onPlateInput($event)" (keydown.enter)="onPlateEnter($event)"/>
                         <mat-hint align="end">{{ s().plate?.length || 0 }}/9</mat-hint>
                          <mat-error *ngIf="plateError">{{ plateError }}</mat-error>
                     </mat-form-field>
@@ -237,7 +237,7 @@
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label>Kilometre</mat-label>
                         <input matInput type="number" min="0" placeholder="Örnek: 45000" [value]="s().kilometer || ''"
-                            (input)="onKmInput($event)"  [formControl]="kmCtrl" [errorStateMatcher]="kmMatcher"/>
+                            (input)="onKmInput($event)" (keydown.enter)="onKmEnter($event)" [formControl]="kmCtrl" [errorStateMatcher]="kmMatcher"/>
                         <mat-error *ngIf="kmError">{{ kmError }}</mat-error>
                     </mat-form-field>
                 </div>

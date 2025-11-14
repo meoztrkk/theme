@@ -130,6 +130,8 @@ export class AuthDialogComponent {
         const password = (raw.password || '').trim();
         const normalizedPhone = this.normalizePhone(phone);
 
+        this.isSending = true;
+
         this.authPhone
             .loginByPhone({
                 phoneNumber: normalizedPhone,
@@ -137,32 +139,44 @@ export class AuthDialogComponent {
             })
             .subscribe({
                 next: (res: any) => {
+                    this.isSending = false;
                     const token = res?.accessToken || res?.access_token;
-                    if (!token) return;
+
+                    if (!token) {
+                        console.error('Login failed - no token received');
+                        return;
+                    }
 
                     const isJwt = token && token.split('.').length === 3;
 
+                    // Token'ı önce kaydet
+                    this.appAuth.accessToken = token;
+
                     if (isJwt) {
-                        this.authPhone.me().subscribe({
+                        // JWT token ise kullanıcı bilgisini almayı dene (token'ı parametre olarak gönder)
+                        this.authPhone.me(token).subscribe({
                             next: (profile) => {
-                                this.appAuth.signInWithExternalToken(
-                                    token,
-                                    profile
-                                );
+                                this.appAuth.signInWithExternalToken(token, profile);
                                 this.dialogRef.close('authenticated');
                             },
-                            error: () => {
-                                this.dialogRef.close('login_failed');
+                            error: (err) => {
+                                // me() başarısız olsa bile token kaydedildi, giriş başarılı sayılabilir
+                                console.warn('Could not fetch user profile, but login successful', err);
+                                this.appAuth.signInWithExternalToken(token, null);
+                                this.dialogRef.close('authenticated');
                             },
                         });
                     } else {
-                        // JWT değilse me çağırmayalım, direkt kapatalım
+                        // JWT değilse direkt token ile giriş yap
+                        this.appAuth.signInWithExternalToken(token, null);
                         this.dialogRef.close('authenticated');
-                        console.error('Login failed - invalid token');
                     }
                 },
                 error: (err) => {
+                    this.isSending = false;
                     console.error('Login failed', err);
+                    // Hata mesajını kullanıcıya göster (isteğe bağlı)
+                    // Şimdilik sadece console'da logluyoruz
                 },
             });
     }
