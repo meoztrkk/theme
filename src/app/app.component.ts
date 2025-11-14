@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { AuthService } from './core/auth/auth.service';
 
 @Component({
     selector: 'app-root',
@@ -11,7 +12,7 @@ export class AppComponent {
     /**
      * Constructor
      */
-    constructor() {
-        console.log('test');
+    constructor(private authService: AuthService) {
+       // this.authService.check().subscribe();
     }
 }

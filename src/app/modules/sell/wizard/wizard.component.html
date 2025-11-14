@@ -224,10 +224,10 @@
                 <div *ngIf="step === 9" class="max-w-xs">
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label>Plaka</mat-label>
-                        <input matInput maxlength="9" placeholder="Örnek: 34ABC123" [value]="s().plate || ''"
-                            (input)="onPlateInput($event)" />
+                        <input matInput maxlength="9" placeholder="Örnek: 34ABC123" [value]="s().plate || ''" [formControl]="plateCtrl" [errorStateMatcher]="plateMatcher"
+                            (input)="onPlateInput($event)"/>
                         <mat-hint align="end">{{ s().plate?.length || 0 }}/9</mat-hint>
-                        <mat-error *ngIf="plateError">{{ plateError }}</mat-error>
+                         <mat-error *ngIf="plateError">{{ plateError }}</mat-error>
                     </mat-form-field>
                 </div>
 
@@ -237,7 +237,7 @@
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label>Kilometre</mat-label>
                         <input matInput type="number" min="0" placeholder="Örnek: 45000" [value]="s().kilometer || ''"
-                            (input)="onKmInput($event)"/>
+                            (input)="onKmInput($event)"  [formControl]="kmCtrl" [errorStateMatcher]="kmMatcher"/>
                         <mat-error *ngIf="kmError">{{ kmError }}</mat-error>
                     </mat-form-field>
                 </div>
@@ -268,10 +268,10 @@
                     <!-- üst bar -->
                     <div class="tramer-top">
                         <div class="text">
-                            Aracınızın tüm parçaları orijinal ve tramer kaydı yoksa, bu adımı atlayabilirsiniz.
+                            Tüm parçalar orijinal ise atlayabilirsiniz.
                         </div>
                         <button mat-flat-button color="primary" (click)="setNoAccidentAllOriginal()">
-                            Orijinal ve Tramer Yok →
+                            Tramer Yok →
                         </button>
                     </div>
 
@@ -464,16 +464,15 @@
                     <div class="flex justify-end">
                         <!-- <h3 class="text-sm font-semibold mb-2">Seçim özeti</h3>
                         <pre class="bg-gray-50 rounded-lg p-3 text-xs max-h-60 overflow-auto">{{ s() | json }}</pre> -->
-                        <!-- TEKLİF AL butonunu buraya aldık -->
-                        <button mat-flat-button color="primary" (click)="onGetOfferClick()">
+                        <button mat-flat-button color="primary" (click)="onGetOfferClick()" type="button">
                             Firmalardan Teklif Al
                         </button>
                     </div>
                 </div>
 
                 <!-- 16. ADIM: Teklifler -->
-                <div *ngIf="step === 16" class="offer-step">
-                    <h3 class="text-sm font-semibold mb-3">Size uygun teklifler</h3>
+                <!-- <div *ngIf="step === 16" class="offer-step">
+                     <h3 class="text-sm font-semibold mb-3">Size uygun teklifler</h3>
 
                     <div class="offer-list">
                         <div class="offer-item" *ngFor="let o of offers">
@@ -501,7 +500,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
 
             </div>

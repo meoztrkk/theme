@@ -7,7 +7,7 @@ import {
 import { inject } from '@angular/core';
 import { AuthService } from 'app/core/auth/auth.service';
 import { AuthUtils } from 'app/core/auth/auth.utils';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, of, throwError } from 'rxjs';
 
 /**
  * Intercept
@@ -49,13 +49,11 @@ export const authInterceptor = (
         catchError((error) => {
             // Catch "401 Unauthorized" responses
             if (error instanceof HttpErrorResponse && error.status === 401) {
-                // Sign out
-                authService.signOut();
 
-                // Reload the app
-                location.reload();
+                    authService.signOut();
+                    location.reload();
+
             }
-
             return throwError(error);
         })
     );

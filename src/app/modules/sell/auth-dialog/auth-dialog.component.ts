@@ -131,31 +131,28 @@ export class AuthDialogComponent {
             })
             .subscribe({
                 next: (res: any) => {
-                    // backend senin örneğinde accessToken ya da access_token dönebilir
                     const token = res?.accessToken || res?.access_token;
-                    if (token) {
-                        this.appAuth.signInWithExternalToken(token);
-                    }
+                    if (!token) return;
 
                     const isJwt = token && token.split('.').length === 3;
 
                     if (isJwt) {
-                        // token JWT ise profili de çekelim
                         this.authPhone.me().subscribe({
                             next: (profile) => {
-                                localStorage.setItem(
-                                    'user_profile',
-                                    JSON.stringify(profile)
+                                this.appAuth.signInWithExternalToken(
+                                    token,
+                                    profile
                                 );
                                 this.dialogRef.close('authenticated');
                             },
                             error: () => {
-                                this.dialogRef.close('authenticated');
+                                this.dialogRef.close('login_failed');
                             },
                         });
                     } else {
                         // JWT değilse me çağırmayalım, direkt kapatalım
                         this.dialogRef.close('authenticated');
+                        console.error('Login failed - invalid token');
                     }
                 },
                 error: (err) => {
@@ -250,6 +247,7 @@ export class AuthDialogComponent {
     }
 
     close() {
+        console.log('auth dialog closing');
         this.dialogRef.close();
     }
 }

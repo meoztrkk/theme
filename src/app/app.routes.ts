@@ -4,6 +4,7 @@ import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
 import { WizardComponent } from './modules/sell/wizard/wizard.component';
+import { OffersComponent } from './modules/sell/offers/offers.component';
 
 // @formatter:off
 /* eslint-disable max-len */
@@ -66,26 +67,9 @@ export const appRoutes: Route[] = [
     },
 
     // Admin routes
-    {
-        path: '',
-        canActivate: [AuthGuard],
-        canActivateChild: [AuthGuard],
-        component: LayoutComponent,
-        data: {
-            layout: 'modern'
-        },
-        resolve: {
-            initialData: initialDataResolver
-        },
-        children: [
-            {path: 'example', loadChildren: () => import('app/modules/admin/example/example.routes')},
-        ]
-    },
 
     {
         path: '',
-        canActivate: [AuthGuard],
-        canActivateChild: [AuthGuard],
         component: LayoutComponent,
         data: {
             layout: 'modern'
@@ -95,10 +79,12 @@ export const appRoutes: Route[] = [
         },
         children: [
             {path: 'wizard', component: WizardComponent},
+            {path: 'example', loadChildren: () => import('app/modules/admin/example/example.routes')},
             {path: 'blog', loadChildren: () => import('app/modules/blog/list/blog-list.routes')},
             {path: 'blog/new', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
             {path: 'blog/:id', loadChildren: () => import('app/modules/blog/detail/blog-detail.routes')},
             {path: 'blog/edit/:id', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
+            {path: 'offers/:id', component: OffersComponent},
         ]
     }
 ];

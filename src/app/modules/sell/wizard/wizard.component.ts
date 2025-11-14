@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ErrorStateMatcher } from '@angular/material/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
     IdNameDto,
     SellWizardService,
@@ -69,6 +70,7 @@ interface WizardState {
         MatMenuModule,
         MatRadioModule,
         MatDialogModule,
+        ReactiveFormsModule,
     ],
 })
 export class WizardComponent implements OnInit {
@@ -88,7 +90,6 @@ export class WizardComponent implements OnInit {
         'Ek Bilgi',
         'Satış Zamanı',
         'Ek Özellikler',
-        'Teklifler',
     ];
 
     stepIcons = [
@@ -107,7 +108,6 @@ export class WizardComponent implements OnInit {
         'build', //13 - bakım
         'schedule', //14 - satış zamanı
         'done_all', //15 - özet
-        'payments',
     ];
 
     // teklif listesi için basit mock
@@ -207,11 +207,45 @@ export class WizardComponent implements OnInit {
     maintenanceStatuses: IdNameDto[] = [];
     spareKeyStatuses: IdNameDto[] = [];
 
+    plateCtrl = new FormControl<string>('');
+    kmCtrl = new FormControl<number | null>(null);
+    plateMatcher: ErrorStateMatcher = { isErrorState: () => !!this.plateError };
+    kmMatcher: ErrorStateMatcher = { isErrorState: () => !!this.kmError };
+
     constructor(
         private wiz: SellWizardService,
         private dialog: MatDialog,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private router: Router
     ) {}
+
+    private buildCreatePayload() {
+        const st = this.s();
+        const tramerVarMi = st.accident === 'Var' ? true : false;
+        const tramerHamMetin = st.accidentNote || null;
+        return {
+            durumId : 13, // yeni
+            year: st.year ?? null,
+            markaId: st.brandId ?? null,
+            modelId: st.modelId ?? null,
+            varyantId: st.trimId ?? null,
+            govdeTipiId: st.bodyTypeId ?? null,
+            sanzimanTipiId: st.transmissionTypeId ?? null,
+            yakitTuruId: st.fuelTypeId ?? null,
+            renkId: st.colorId ?? null,
+            ilId: st.cityId ?? null,
+            ilceId: null,
+            lastikDurum: Number(st.tire),
+            bakimDurum: Number(st.maintenance),
+            satisZaman: Number(st.saleTime),
+            yedekAnahtarDurum: Number(st.spareKey),
+            plaka: st.plate || null,
+            kilometre: st.kilometer ?? null,
+            tramerVarMi: tramerVarMi,
+            tramerHamMetin: tramerHamMetin,
+            ozellikIdList: [],
+        };
+    }
 
     ngOnInit(): void {
         this.wiz.getYears().subscribe((y) => (this.years = y));
@@ -226,13 +260,15 @@ export class WizardComponent implements OnInit {
             this.saleTimes = look.saleTimes ?? [];
         });
 
-        this.route.queryParams.subscribe(params => {
+        this.route.queryParams.subscribe((params) => {
             const initialYear = Number(params['year']);
             const initialBrandId = Number(params['brandId']);
 
             if (initialYear && initialBrandId) {
                 setTimeout(() => {
-                    const brand = this.brands.find(b => Number(b.id) === initialBrandId);
+                    const brand = this.brands.find(
+                        (b) => Number(b.id) === initialBrandId
+                    );
 
                     if (brand) {
                         this.resetFromStep(1);
@@ -244,14 +280,15 @@ export class WizardComponent implements OnInit {
                             brandId: initialBrandId,
                             brandName: brand.name,
                             step: 3, // Otomatik olarak bir sonraki adım olan Model'e geçiyoruz
-                            furthest: 3
+                            furthest: 3,
                         };
 
                         this.s.set(newState);
-                        this.wiz.getModels(initialBrandId).subscribe((m) => (this.models = m));
+                        this.wiz
+                            .getModels(initialBrandId)
+                            .subscribe((m) => (this.models = m));
                     }
                 }, 500);
-
             }
         });
     }
@@ -750,20 +787,53 @@ export class WizardComponent implements OnInit {
     }
 
     onGetOfferClick() {
+        if (
+            !this.isStepFilled(14, this.s()) ||
+            !this.isStepFilled(15, this.s())
+        )
+            return;
+
         const ref = this.dialog.open(AuthDialogComponent, {
             width: '420px',
             panelClass: 'auth-dialog',
         });
 
         ref.afterClosed().subscribe((res) => {
-            if (res === 'authenticated') {
-                const st = this.s();
-                this.s.set({
-                    ...st,
-                    step: 16,
-                    furthest: Math.max(st.furthest, 16),
+            console.log('auth dialog closed with:', res);
+
+            // GEÇİCİ: login başarılı / başarısız fark etmeksizin, sadece iptal değilse devam et
+            if (
+                res !== 'cancel' &&
+                res !== 'close' &&
+                res !== null &&
+                res !== undefined
+            ) {
+                const payload = this.buildCreatePayload();
+                console.log('payload:', payload);
+
+                this.wiz.createSellRequest(payload).subscribe({
+                    next: ({ id }) => {
+                        console.log('talep oluşturuldu, id:', id);
+                        this.router.navigate(['/offers', id]);
+                    },
+                    error: (err) => {
+                        console.error('createSellRequest hata:', err);
+                    },
                 });
             }
         });
+
+        // ref.afterClosed().subscribe((res) => {
+        //     if (res === 'authenticated') {
+        //         const payload = this.buildCreatePayload();
+
+        //         this.wiz.createSellRequest(payload).subscribe(({ id }) => {
+        //             // offers sayfasına yönlendir
+        //             this.router.navigate(['offers', id], {
+        //                 relativeTo: this.route.parent ?? this.route,
+        //             });
+        //         });
+        //     }
+        // });
     }
 }

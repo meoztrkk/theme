@@ -1,0 +1,39 @@
+<div class="offers-full-bleed">
+    <div class="p-4 sm:p-6">
+        <!-- Özet kartı -->
+        <div class="bg-white rounded-xl shadow p-4 mb-4">
+            <h2 class="text-base font-semibold mb-3">Araç Özeti</h2>
+            <div class="text-sm text-gray-700 grid grid-cols-2 md:grid-cols-3 gap-2">
+                <div><b>Yıl:</b> {{summary?.year}}</div>
+                <div><b>Marka:</b> {{summary?.brandName}}</div>
+                <div><b>Model:</b> {{summary?.modelName}}</div>
+                <div><b>Donanım:</b> {{summary?.trimName}}</div>
+                <div><b>Renk:</b> {{summary?.colorName}}</div>
+                <div><b>KM:</b> {{summary?.kilometer | number}}</div>
+                <div><b>Şehir:</b> {{summary?.cityName}}</div>
+                <div><b>Plaka:</b> {{summary?.plate}}</div>
+            </div>
+        </div>
+
+        <!-- Teklif listesi -->
+        <h3 class="text-sm font-semibold mb-3">Gelen Teklifler</h3>
+        <div class="offer-list">
+            <div class="offer-item" *ngFor="let o of offers">
+                <div class="offer-left">
+                    <div class="offer-logo" *ngIf="o.logo; else noLogo">
+                        <img [src]="o.logo" alt="{{o.name}}">
+                    </div>
+                    <ng-template #noLogo>
+                        <div class="offer-logo placeholder">{{o.name[0]}}</div>
+                    </ng-template>
+                    <div class="offer-name-price">
+                        <div class="offer-name">{{o.name}}</div>
+                        <div class="offer-price">₺{{o.price | number:'1.0-0'}}</div>
+                    </div>
+                </div>
+                <div class="offer-middle">Randevu: {{o.appointment}} · {{o.location}}</div>
+                <div class="offer-right"><button class="offer-btn">Randevu Al</button></div>
+            </div>
+        </div>
+    </div>
+</div>

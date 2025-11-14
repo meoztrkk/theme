@@ -1,0 +1,118 @@
+
+
+.offers-full-bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+.offer-step {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.offer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.offer-item {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 14px 18px;
+    gap: 14px;
+    border: 1px solid rgb(0, 0, 0);
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.39);
+}
+
+.offer-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 420px;
+}
+
+.offer-logo {
+    width: 90px;
+    height: 90px;
+    background: #d69b9b;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.offer-logo img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.offer-logo.placeholder {
+    background: #e2e8f0;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.offer-name-price {
+    padding-left: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.offer-name {
+    font-weight: 800;
+    font-size: 18px;
+    color: #0f172a;
+}
+
+.offer-price {
+    font-weight: 700;
+    font-size: 20px;
+    color: #0f172a;
+}
+
+.offer-middle {
+    flex: 1;
+    text-align: right;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.offer-right {
+    margin-left: 16px;
+}
+
+.offer-btn {
+    background: #22c55e;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 9999px;
+    padding: 7px 20px;
+    cursor: pointer;
+    transition: 0.15s ease-in-out;
+}
+
+.offer-btn:hover {
+    filter: brightness(0.96);
+    background: #22c55ec2;
+}
+
+@media (max-width: 768px) {
+    .offer-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .offer-middle {
+        text-align: left;
+    }
+    .offer-right {
+        margin-left: 0;
+    }
+}
