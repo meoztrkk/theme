@@ -74,9 +74,13 @@ export class AuthDialogComponent {
         private appAuth: AuthService,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) {
+        console.log('[AuthDialog.constructor] Dialog initialized with data:', data);
         // Initial view'ı data'dan al, yoksa default 'register'
         if (data?.initialView) {
             this.view = data.initialView;
+            console.log('[AuthDialog.constructor] Initial view set to:', this.view);
+        } else {
+            console.log('[AuthDialog.constructor] No initial view provided, using default:', this.view);
         }
 
         this.registerForm = this.fb.group({
@@ -163,8 +167,15 @@ export class AuthDialogComponent {
     }
 
     /* --------------------- GİRİŞ --------------------- */
-    submitLogin() {
+    submitLogin(event?: Event) {
+        if (event) {
+            event.preventDefault();
+        }
+        console.log('[AuthDialog.submitLogin] Login form submitted');
+        console.log('[AuthDialog.submitLogin] Form value:', this.loginForm.value);
+        console.log('[AuthDialog.submitLogin] Form valid:', this.loginForm.valid);
         if (this.loginForm.invalid) {
+            console.log('[AuthDialog.submitLogin] Form is invalid, errors:', this.loginForm.errors);
             this.loginForm.markAllAsTouched();
             return;
         }
@@ -174,6 +185,7 @@ export class AuthDialogComponent {
         const password = (raw.password || '').trim();
         const normalizedPhone = this.normalizePhone(phone);
 
+        console.log('[AuthDialog.submitLogin] Calling loginByPhone with phone:', normalizedPhone);
         this.isSending = true;
 
         this.errorMessage = null;
@@ -193,33 +205,35 @@ export class AuthDialogComponent {
                         return;
                     }
 
+                    console.log('[AuthDialog] Login successful, token received:', token.substring(0, 20) + '...');
                     const isJwt = token && token.split('.').length === 3;
 
                     // Token'ı önce kaydet
                     this.appAuth.accessToken = token;
+                    console.log('[AuthDialog] Token saved to localStorage');
 
                     if (isJwt) {
                         // JWT token ise kullanıcı bilgisini almayı dene
                         // Token kaydedildi, interceptor otomatik header'a ekleyecek
-                        // Ancak token henüz localStorage'a yazılmamış olabilir, bu yüzden
-                        // me() çağrısı yapılırken token'ı manuel olarak header'a ekliyoruz
+                        console.log('[AuthDialog] JWT token detected, fetching user profile...');
                         this.authPhone.me().subscribe({
                             next: (profile) => {
+                                console.log('[AuthDialog] User profile fetched successfully:', profile);
                                 this.appAuth.signInWithExternalToken(token, profile);
                                 this.dialogRef.close('authenticated');
                             },
                             error: (err) => {
                                 // me() başarısız olsa bile token kaydedildi, giriş başarılı sayılabilir
-                                // 401 hatası gelirse bile token geçerli olabilir (yeni endpoint sorun çıkarabilir)
-                                // Interceptor 401 hatasını yakalayıp sayfayı yenileyebilir, bu yüzden
-                                // hata durumunda da token'ı kaydedip dialog'u kapatıyoruz
-                                console.warn('Could not fetch user profile, but login successful', err);
+                                // 403 hatası gelirse bile token geçerli olabilir (endpoint yetkilendirme sorunu olabilir)
+                                console.warn('[AuthDialog] Could not fetch user profile, but login successful. Error:', err);
+                                console.log('[AuthDialog] Proceeding with login without user profile');
                                 this.appAuth.signInWithExternalToken(token, null);
                                 this.dialogRef.close('authenticated');
                             },
                         });
                     } else {
                         // JWT değilse direkt token ile giriş yap
+                        console.log('[AuthDialog] Non-JWT token, proceeding with login');
                         this.appAuth.signInWithExternalToken(token, null);
                         this.dialogRef.close('authenticated');
                     }

@@ -86,12 +86,16 @@ export class UserComponent implements OnInit, OnDestroy {
      * Check authentication status
      */
     private _checkAuthentication(): void {
+        console.log('[UserComponent._checkAuthentication] Checking authentication status...');
         this._authService.check().subscribe((isAuthenticated) => {
+            console.log('[UserComponent._checkAuthentication] Auth check result:', isAuthenticated);
             this.isAuthenticated = isAuthenticated;
             if (isAuthenticated) {
+                console.log('[UserComponent._checkAuthentication] User is authenticated, fetching user info...');
                 // Try to get user info
                 this._authPhoneService.me().subscribe({
                     next: (userData: any) => {
+                        console.log('[UserComponent._checkAuthentication] User info fetched:', userData);
                         // Map user data to User type
                         const user: User = {
                             id: userData.id || '',
@@ -108,11 +112,13 @@ export class UserComponent implements OnInit, OnDestroy {
                     error: (err) => {
                         // If me() fails, user might still be authenticated
                         // Just mark as authenticated without user data
-                        console.warn('Could not fetch user info', err);
+                        console.warn('[UserComponent._checkAuthentication] Could not fetch user info, but user is authenticated. Error:', err);
+                        // User authenticated ama bilgisi alınamadı, yine de authenticated olarak işaretle
                         this._changeDetectorRef.markForCheck();
                     },
                 });
             } else {
+                console.log('[UserComponent._checkAuthentication] User is not authenticated');
                 this.user = null;
             }
             this._changeDetectorRef.markForCheck();
@@ -163,15 +169,12 @@ export class UserComponent implements OnInit, OnDestroy {
         });
 
         dialogRef.afterClosed().subscribe((result) => {
+            console.log('[UserComponent.signIn] Dialog closed with result:', result);
             if (result === 'authenticated') {
+                console.log('[UserComponent.signIn] Authentication successful, checking auth status...');
                 // Authentication successful, refresh status
+                // Token zaten kaydedildi, direkt check yap
                 this._checkAuthentication();
-                // Try to get user info from auth phone service
-                // Note: This might need to be adjusted based on your API structure
-                setTimeout(() => {
-                    // Give time for token to be saved
-                    this._checkAuthentication();
-                }, 100);
             }
         });
     }

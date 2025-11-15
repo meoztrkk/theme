@@ -6,7 +6,7 @@
   </div>
   <div class="auth-divider"></div>
 
-  <form class="auth-content" [formGroup]="loginForm">
+  <form class="auth-content" [formGroup]="loginForm" (ngSubmit)="submitLogin()">
     <div *ngIf="errorMessage" class="auth-error">
       {{ errorMessage }}
     </div>
@@ -42,7 +42,7 @@
       Şifrenizi mi unuttunuz?
     </button>
 
-    <button type="button" class="auth-btn primary" (click)="submitLogin()" [disabled]="isSending">
+    <button type="submit" class="auth-btn primary" [disabled]="isSending">
       <span *ngIf="!isSending">Giriş Yap</span>
       <span *ngIf="isSending">Giriş yapılıyor...</span>
     </button>

@@ -157,14 +157,20 @@ export class AuthService {
      * Check the authentication status
      */
     check(): Observable<boolean> {
+        console.log('[AuthService.check] Starting authentication check');
+        console.log('[AuthService.check] _authenticated flag:', this._authenticated);
+        console.log('[AuthService.check] accessToken from localStorage:', !!this.accessToken, this.accessToken ? this.accessToken.substring(0, 20) + '...' : 'null');
+        
         // Check if the user is logged in
         if (this._authenticated) {
+            console.log('[AuthService.check] Already authenticated, returning true');
             return of(true);
         }
 
         // Check the access token availability
         if (!this.accessToken) {
-            console.log('[AuthService.check] No access token found');
+            // Token yoksa bu normal bir durum (henüz login yapılmamış), uyarı vermeye gerek yok
+            console.log('[AuthService.check] No access token found, returning false');
             return of(false);
         }
 
@@ -201,15 +207,21 @@ export class AuthService {
      * Harici (telefonla vb.) alınan token ile oturum aç
      */
     signInWithExternalToken(token: string, user?: any): void {
+        console.log('[AuthService.signInWithExternalToken] Setting token and marking as authenticated');
         // tokeni kaydet
         this.accessToken = token;
+        console.log('[AuthService.signInWithExternalToken] Token saved, checking localStorage:', !!localStorage.getItem('accessToken'));
 
         // authenticated bayrağını kaldır
         this._authenticated = true;
+        console.log('[AuthService.signInWithExternalToken] _authenticated flag set to true');
 
         // kullanıcı bilgisi geldiyse kaydet
         if (user) {
+            console.log('[AuthService.signInWithExternalToken] User data received, saving to user service');
             this._userService.user = user;
+        } else {
+            console.log('[AuthService.signInWithExternalToken] No user data, will be fetched later');
         }
     }
 }
