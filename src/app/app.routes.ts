@@ -59,10 +59,15 @@ export const appRoutes: Route[] = [
         path: '',
         component: LayoutComponent,
         data: {
-            layout: 'empty'
+            layout: 'modern'
+        },
+        resolve: {
+            initialData: initialDataResolver
         },
         children: [
             {path: 'home', loadChildren: () => import('app/modules/landing/home/home.routes')},
+            {path: 'clarification-text-pdp', loadChildren: () => import('app/modules/landing/clarification-text-pdp/clarification-text-pdp.routes')},
+            {path: 'kvkk-clarification-text', loadChildren: () => import('app/modules/landing/kvkk-clarification-text/kvkk-clarification-text.routes')},
         ]
     },
 

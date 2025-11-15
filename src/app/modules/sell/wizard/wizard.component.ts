@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, signal, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -74,7 +74,7 @@ interface WizardState {
         ReactiveFormsModule,
     ],
 })
-export class WizardComponent implements OnInit {
+export class WizardComponent implements OnInit, AfterViewChecked {
     stepTitles = [
         'Model Yılı',
         'Marka',
@@ -190,8 +190,17 @@ export class WizardComponent implements OnInit {
         step: 1,
         furthest: 1,
         extras: [],
-        panels: {},
+        panels: this.initializePanels(),
     });
+
+    // Tüm panelleri orijinal (0) olarak başlat
+    private initializePanels(): Record<string, number> {
+        const panels: Record<string, number> = {};
+        this.panelDefs.forEach((p) => {
+            panels[p.key] = 0; // 0 = Orijinal
+        });
+        return panels;
+    }
 
     years: number[] = [];
     brands: IdNameDto[] = [];
@@ -212,6 +221,9 @@ export class WizardComponent implements OnInit {
     kmCtrl = new FormControl<number | null>(null);
     plateMatcher: ErrorStateMatcher = { isErrorState: () => !!this.plateError };
     kmMatcher: ErrorStateMatcher = { isErrorState: () => !!this.kmError };
+
+    @ViewChild('plateInput', { read: ElementRef }) plateInput?: ElementRef<HTMLInputElement>;
+    @ViewChild('kmInput', { read: ElementRef }) kmInput?: ElementRef<HTMLInputElement>;
 
     constructor(
         private wiz: SellWizardService,
@@ -293,6 +305,31 @@ export class WizardComponent implements OnInit {
                 }, 500);
             }
         });
+
+    }
+
+    ngAfterViewChecked(): void {
+        // View güncellendiğinde plaka ve km input'larına focus yap
+        const currentStep = this.s().step;
+        if (currentStep === 9 && this.plateInput && document.activeElement !== this.plateInput.nativeElement) {
+            setTimeout(() => {
+                this.plateInput?.nativeElement.focus();
+            }, 100);
+        } else if (currentStep === 10 && this.kmInput && document.activeElement !== this.kmInput.nativeElement) {
+            setTimeout(() => {
+                this.kmInput?.nativeElement.focus();
+            }, 100);
+        }
+    }
+
+    private focusInputIfNeeded(step: number): void {
+        setTimeout(() => {
+            if (step === 9 && this.plateInput) {
+                this.plateInput.nativeElement.focus();
+            } else if (step === 10 && this.kmInput) {
+                this.kmInput.nativeElement.focus();
+            }
+        }, 150);
     }
 
     get step() {
@@ -304,11 +341,29 @@ export class WizardComponent implements OnInit {
         const max = this.getMaxReachableStep(st);
         if (n <= max) {
             this.s.set({ ...st, step: n });
+            this.focusInputIfNeeded(n);
         }
     }
 
     next() {
-        const st = this.s();
+        let st = this.s();
+
+        // Step 12'deyken: Eğer araç parçalarından tramer seçilmişse ve dropdown boşsa, otomatik olarak "Var" seç
+        if (st.step === 12) {
+            const hasPanelSelection = st.panels && Object.values(st.panels).some(val => val !== undefined && val !== 0);
+            const hasAccidentSelection = !!st.accident && st.accident.trim().length > 0;
+
+            if (hasPanelSelection && !hasAccidentSelection) {
+                // Otomatik olarak "Tramer kaydı var" seç
+                this.s.set({
+                    ...st,
+                    accident: 'Var',
+                });
+                // State güncellendi, tekrar al
+                st = this.s();
+            }
+        }
+
         if (!this.isStepFilled(st.step, st)) {
             return;
         }
@@ -325,13 +380,16 @@ export class WizardComponent implements OnInit {
                 step: nextStep,
                 furthest: Math.max(st.furthest, nextStep),
             });
+            this.focusInputIfNeeded(nextStep);
         }
     }
 
     back() {
         const st = this.s();
         if (st.step > 1) {
-            this.s.set({ ...st, step: st.step - 1 });
+            const prevStep = st.step - 1;
+            this.s.set({ ...st, step: prevStep });
+            this.focusInputIfNeeded(prevStep);
         }
     }
 
@@ -639,7 +697,10 @@ export class WizardComponent implements OnInit {
             case 11: // şehir
                 return !!st.cityId;
             case 12: // tramer
-                return !!st.accident && st.accident.trim().length > 0;
+                // Dropdown'dan seçim yapılmışsa veya parçalardan en az birinde tramer bilgisi varsa (0'dan farklı)
+                const hasAccidentSelection = !!st.accident && st.accident.trim().length > 0;
+                const hasPanelSelection = st.panels && Object.values(st.panels).some(val => val !== undefined && val !== 0);
+                return hasAccidentSelection || hasPanelSelection;
             case 13: // lastik/bakım/yedek anahtar
                 return !!st.tire && !!st.maintenance && !!st.spareKey;
             case 14: // satış zamanı
@@ -740,7 +801,7 @@ export class WizardComponent implements OnInit {
             ...st,
             panels,
         });
-        this.tryAutoNextTramer();
+        // Otomatik geçiş yapma, sadece ileri butonu aktif olacak
     }
 
     onAccidentChange(val: string) {
@@ -749,7 +810,7 @@ export class WizardComponent implements OnInit {
             ...st,
             accident: val,
         });
-        this.tryAutoNextTramer();
+        // Otomatik geçiş yapma, sadece ileri butonu aktif olacak
     }
 
     onAccidentNoteChange(val: string) {
@@ -779,13 +840,7 @@ export class WizardComponent implements OnInit {
         }
     }
 
-    // 12. adım seçimi tamamlandı mı kontrolü
-    tryAutoNextTramer() {
-        const st = this.s();
-        if (this.isStepFilled(12, st) && this.step === 12) {
-            this.next();
-        }
-    }
+    // Artık kullanılmıyor - sadece "Tramer Yok" butonunda otomatik geçiş yapılıyor
 
     // svg'de göstermek için class üret
     getPanelStatusClass(panelKey: string): string {
@@ -805,6 +860,12 @@ export class WizardComponent implements OnInit {
         }
     }
 
+    // Panel key'den label al
+    getPanelLabel(panelKey: string): string {
+        const panel = this.panelDefs.find(p => p.key === panelKey);
+        return panel?.label || panelKey;
+    }
+
     onSvgPanelClick(panelKey: string) {
         const st = this.s();
         const current = st.panels?.[panelKey] ?? 0;
@@ -818,7 +879,7 @@ export class WizardComponent implements OnInit {
         };
 
         this.s.set(newState);
-        this.tryAutoNextTramer();
+        // Otomatik geçiş yapma, sadece ileri butonu aktif olacak
     }
 
     onGetOfferClick() {

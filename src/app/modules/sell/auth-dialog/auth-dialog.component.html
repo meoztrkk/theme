@@ -7,27 +7,44 @@
   <div class="auth-divider"></div>
 
   <form class="auth-content" [formGroup]="loginForm">
+    <div *ngIf="errorMessage" class="auth-error">
+      {{ errorMessage }}
+    </div>
+
     <label class="auth-label">Telefon numarası</label>
     <div class="auth-phone">
       <div class="auth-flag">🇹🇷</div>
       <input
         class="auth-input phone"
-        placeholder="0 (5xx) xxx xx xx"
+        [class.auth-input-error]="loginForm.get('phone')?.invalid && loginForm.get('phone')?.touched"
+        placeholder="0 (___) ___ ____"
         formControlName="phone"
         type="tel"
       />
     </div>
+    @if (loginForm.get('phone')?.hasError('required') && loginForm.get('phone')?.touched) {
+      <div class="auth-field-error">Telefon numarası zorunludur</div>
+    }
 
     <label class="auth-label">Şifre</label>
     <input
       class="auth-input"
+      [class.auth-input-error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
       type="password"
       formControlName="password"
       placeholder="Şifre"
     />
+    @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
+      <div class="auth-field-error">Şifre zorunludur</div>
+    }
 
-    <button type="button" class="auth-btn primary" (click)="submitLogin()">
-      Giriş Yap
+    <button type="button" class="auth-forgot-password" (click)="switchTo('forgot-password')">
+      Şifrenizi mi unuttunuz?
+    </button>
+
+    <button type="button" class="auth-btn primary" (click)="submitLogin()" [disabled]="isSending">
+      <span *ngIf="!isSending">Giriş Yap</span>
+      <span *ngIf="isSending">Giriş yapılıyor...</span>
     </button>
 
     <div class="auth-footer">
@@ -48,48 +65,126 @@
   <div class="auth-divider"></div>
 
   <form class="auth-content" [formGroup]="registerForm">
+    <div *ngIf="errorMessage" class="auth-error">
+      {{ errorMessage }}
+    </div>
+
     <label class="auth-label">Telefon numarası</label>
     <div class="auth-phone">
       <div class="auth-flag">🇹🇷</div>
       <input
         class="auth-input phone"
-        placeholder="0 (5xx) xxx xx xx"
+        [class.auth-input-error]="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched"
+        placeholder="0 (___) ___ ____"
         formControlName="phone"
         type="tel"
       />
     </div>
+    @if (registerForm.get('phone')?.hasError('required') && registerForm.get('phone')?.touched) {
+      <div class="auth-field-error">Telefon numarası zorunludur</div>
+    }
 
     <label class="auth-label">Ad</label>
     <input
       class="auth-input"
+      [class.auth-input-error]="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched"
       formControlName="firstName"
       placeholder="Adınız"
       type="text"
     />
+    @if (registerForm.get('firstName')?.hasError('required') && registerForm.get('firstName')?.touched) {
+      <div class="auth-field-error">Ad zorunludur</div>
+    }
 
     <label class="auth-label">Soyad</label>
     <input
       class="auth-input"
+      [class.auth-input-error]="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched"
       formControlName="lastName"
       placeholder="Soyadınız"
       type="text"
     />
+    @if (registerForm.get('lastName')?.hasError('required') && registerForm.get('lastName')?.touched) {
+      <div class="auth-field-error">Soyad zorunludur</div>
+    }
 
     <label class="auth-label">Email</label>
     <input
       class="auth-input"
+      [class.auth-input-error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
       formControlName="email"
       placeholder="email@example.com"
       type="email"
     />
+    @if (registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched) {
+      <div class="auth-field-error">Email zorunludur</div>
+    }
+    @if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched && !registerForm.get('email')?.hasError('required')) {
+      <div class="auth-field-error">Geçerli bir email adresi giriniz</div>
+    }
 
     <label class="auth-label">Şifre</label>
     <input
       class="auth-input"
+      [class.auth-input-error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
       formControlName="password"
       type="password"
       placeholder="En az 6 karakter"
     />
+    @if (registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched) {
+      <div class="auth-field-error">Şifre zorunludur</div>
+    }
+    @if (registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.touched && !registerForm.get('password')?.hasError('required')) {
+      <div class="auth-field-error">Şifre en az 6 karakter olmalıdır</div>
+    }
+
+    <div class="auth-checkboxes">
+      <mat-checkbox formControlName="consentCommercial" class="auth-checkbox">
+        <span class="auth-checkbox-text">
+          <a
+            routerLink="/clarification-text-pdp"
+            target="_blank"
+            class="auth-checkbox-link"
+            (click)="$event.stopPropagation()"
+          >
+            Müşteri Aydınlatma Metni
+          </a>
+          kapsamında Direkt Satış'ın ticari e-ileti göndermesine veya aramasına ve kişisel verilerimin yurtdışına aktarılmasına açık rıza veriyorum.
+        </span>
+      </mat-checkbox>
+      @if (registerForm.get('consentCommercial')?.hasError('requiredTrue') && registerForm.get('consentCommercial')?.touched) {
+        <div class="auth-checkbox-error">Bu alan zorunludur</div>
+      }
+
+      <mat-checkbox formControlName="consentTerms" class="auth-checkbox">
+        <span class="auth-checkbox-text">
+          <a
+            routerLink="/kvkk-clarification-text"
+            target="_blank"
+            class="auth-checkbox-link"
+            (click)="$event.stopPropagation()"
+          >
+            Hüküm ve Koşulları
+          </a>
+          kabul ediyorum.
+        </span>
+      </mat-checkbox>
+      @if (registerForm.get('consentTerms')?.hasError('requiredTrue') && registerForm.get('consentTerms')?.touched) {
+        <div class="auth-checkbox-error">Bu alan zorunludur</div>
+      }
+    </div>
+
+    <p class="auth-info-text">
+      Kaydolarak
+      <a
+        routerLink="/clarification-text-pdp"
+        target="_blank"
+        class="auth-info-link"
+      >
+        Aydınlatma Metni
+      </a>
+      'ni okuduğunuzu kabul etmektesiniz.
+    </p>
 
     <button
       type="button"
@@ -97,7 +192,8 @@
       (click)="submitRegister()"
       [disabled]="isSending"
     >
-      Kayıt ol
+      <span *ngIf="!isSending">Kayıt ol</span>
+      <span *ngIf="isSending">Kayıt yapılıyor...</span>
     </button>
 
     <div class="auth-footer">
@@ -119,6 +215,10 @@
   <div class="auth-divider"></div>
 
   <div class="auth-content verify" [formGroup]="verifyForm">
+    <div *ngIf="errorMessage" class="auth-error">
+      {{ errorMessage }}
+    </div>
+
     <p class="verify-text">Telefonunuza bir doğrulama kodu gönderdik:</p>
     <p class="verify-phone">{{ phoneForVerify }}</p>
 
@@ -128,29 +228,34 @@
         maxlength="1"
         formControlName="code1"
         (input)="onCodeInput(0, $event)"
+        [disabled]="isSending"
       />
       <input
         #codeInput
         maxlength="1"
         formControlName="code2"
         (input)="onCodeInput(1, $event)"
+        [disabled]="isSending"
       />
       <input
         #codeInput
         maxlength="1"
         formControlName="code3"
         (input)="onCodeInput(2, $event)"
+        [disabled]="isSending"
       />
       <input
         #codeInput
         maxlength="1"
         formControlName="code4"
         (input)="onCodeInput(3, $event)"
+        [disabled]="isSending"
       />
     </div>
 
-    <button type="button" class="auth-btn primary" (click)="submitVerify()">
-      Doğrula
+    <button type="button" class="auth-btn primary" (click)="submitVerify()" [disabled]="isSending">
+      <span *ngIf="!isSending">Doğrula</span>
+      <span *ngIf="isSending">Doğrulanıyor...</span>
     </button>
 
     <p class="verify-resend">
@@ -163,4 +268,49 @@
       </button>
     </p>
   </div>
+</div>
+
+<!-- ŞİFREMİ UNUTTUM -->
+<div *ngIf="view === 'forgot-password'" class="auth-shell">
+  <div class="auth-header">
+    <button class="auth-back" (click)="switchTo('login')">←</button>
+    <span class="auth-title">Şifrenizi mi unuttunuz?</span>
+    <button class="auth-close" (click)="close()">×</button>
+  </div>
+  <div class="auth-divider"></div>
+
+  <form class="auth-content" [formGroup]="forgotPasswordForm">
+    <div *ngIf="errorMessage" class="auth-error">
+      {{ errorMessage }}
+    </div>
+
+    <p class="forgot-password-text">
+      Şifrenizi yenilemek için lütfen aşağıya telefon numaranızı girin
+    </p>
+
+    <label class="auth-label">Telefon numarası</label>
+    <div class="auth-phone">
+      <div class="auth-flag">🇹🇷</div>
+      <input
+        class="auth-input phone"
+        [class.auth-input-error]="forgotPasswordForm.get('phone')?.invalid && forgotPasswordForm.get('phone')?.touched"
+        placeholder="0 (___) ___ ____"
+        formControlName="phone"
+        type="tel"
+      />
+    </div>
+    @if (forgotPasswordForm.get('phone')?.hasError('required') && forgotPasswordForm.get('phone')?.touched) {
+      <div class="auth-field-error">Telefon numarası zorunludur</div>
+    }
+
+    <button
+      type="button"
+      class="auth-btn primary"
+      (click)="submitForgotPassword()"
+      [disabled]="isSending"
+    >
+      <span *ngIf="!isSending">Devam</span>
+      <span *ngIf="isSending">Gönderiliyor...</span>
+    </button>
+  </form>
 </div>

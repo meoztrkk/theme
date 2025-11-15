@@ -13,18 +13,28 @@ import {
     Validators,
 } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { RouterModule } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { AuthPhoneService } from 'app/core/auth/auth-phone.service';
 import { AuthService } from 'app/core/auth/auth.service';
 
-type AuthView = 'login' | 'register' | 'verify';
+type AuthView = 'login' | 'register' | 'verify' | 'forgot-password';
 
 @Component({
     selector: 'app-auth-dialog',
     templateUrl: './auth-dialog.component.html',
     styleUrls: ['./auth-dialog.component.css'],
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, MatInputModule],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatCheckboxModule,
+        MatButtonModule,
+        RouterModule,
+    ],
 })
 export class AuthDialogComponent {
     view: AuthView = 'register';
@@ -39,6 +49,9 @@ export class AuthDialogComponent {
         phone: ['', [Validators.required]],
         password: ['', [Validators.required]],
     });
+    forgotPasswordForm = this.fb.group({
+        phone: ['', [Validators.required]],
+    });
     verifyForm = this.fb.group({
         code1: ['', [Validators.required]],
         code2: ['', [Validators.required]],
@@ -48,6 +61,8 @@ export class AuthDialogComponent {
 
     countdown = 120;
     isSending = false;
+    errorMessage: string | null = null;
+    private countdownTimer: any = null;
 
     // örnek test kodları (backend hazır değilken)
     private testCodes = ['1234', '0000'];
@@ -59,12 +74,19 @@ export class AuthDialogComponent {
         private appAuth: AuthService,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) {
+        // Initial view'ı data'dan al, yoksa default 'register'
+        if (data?.initialView) {
+            this.view = data.initialView;
+        }
+
         this.registerForm = this.fb.group({
             phone: ['', [Validators.required]],
             firstName: ['', [Validators.required]],
             lastName: ['', [Validators.required]],
             email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required, Validators.minLength(6)]],
+            consentCommercial: [false, [Validators.requiredTrue]],
+            consentTerms: [false, [Validators.requiredTrue]],
         });
     }
 
@@ -97,6 +119,7 @@ export class AuthDialogComponent {
 
         this.isSending = true;
 
+        this.errorMessage = null;
         this.authPhone
             .registerByPhone({
                 phoneNumber: normalizedPhone,
@@ -109,11 +132,32 @@ export class AuthDialogComponent {
                 next: () => {
                     this.isSending = false;
                     this.phoneForVerify = normalizedPhone;
+                    // SMS gönder
+                    this.authPhone.sendSms(normalizedPhone).subscribe({
+                        next: () => {
+                            this.countdown = 120;
+                            this.startCountdown();
+                        },
+                        error: (err) => {
+                            console.error('SMS send failed', err);
+                            // SMS gönderilemese bile verify ekranına geç
+                        },
+                    });
                     this.switchTo('verify');
                 },
                 error: (err) => {
                     this.isSending = false;
                     console.error('Register failed', err);
+                    // Hata mesajını kullanıcıya göster
+                    if (err?.error?.error?.message) {
+                        this.errorMessage = err.error.error.message;
+                    } else if (err?.error?.message) {
+                        this.errorMessage = err.error.message;
+                    } else if (err?.message) {
+                        this.errorMessage = err.message;
+                    } else {
+                        this.errorMessage = 'Kayıt işlemi başarısız oldu. Lütfen tekrar deneyin.';
+                    }
                 },
             });
     }
@@ -132,6 +176,7 @@ export class AuthDialogComponent {
 
         this.isSending = true;
 
+        this.errorMessage = null;
         this.authPhone
             .loginByPhone({
                 phoneNumber: normalizedPhone,
@@ -143,6 +188,7 @@ export class AuthDialogComponent {
                     const token = res?.accessToken || res?.access_token;
 
                     if (!token) {
+                        this.errorMessage = 'Giriş başarısız oldu. Token alınamadı.';
                         console.error('Login failed - no token received');
                         return;
                     }
@@ -181,8 +227,16 @@ export class AuthDialogComponent {
                 error: (err) => {
                     this.isSending = false;
                     console.error('Login failed', err);
-                    // Hata mesajını kullanıcıya göster (isteğe bağlı)
-                    // Şimdilik sadece console'da logluyoruz
+                    // Hata mesajını kullanıcıya göster
+                    if (err?.error?.error?.message) {
+                        this.errorMessage = err.error.error.message;
+                    } else if (err?.error?.message) {
+                        this.errorMessage = err.error.message;
+                    } else if (err?.message) {
+                        this.errorMessage = err.message;
+                    } else {
+                        this.errorMessage = 'Giriş başarısız oldu. Telefon numarası veya şifre hatalı.';
+                    }
                 },
             });
     }
@@ -205,12 +259,26 @@ export class AuthDialogComponent {
         }
 
         // 2) gerçek endpoint
+        this.isSending = true;
+        this.errorMessage = null;
         this.authPhone.verifySms(this.phoneForVerify, code).subscribe({
             next: () => {
+                this.isSending = false;
                 this.dialogRef.close('authenticated');
             },
             error: (err) => {
+                this.isSending = false;
                 console.error('Verify failed', err);
+                // Hata mesajını kullanıcıya göster
+                if (err?.error?.error?.message) {
+                    this.errorMessage = err.error.error.message;
+                } else if (err?.error?.message) {
+                    this.errorMessage = err.error.message;
+                } else if (err?.message) {
+                    this.errorMessage = err.message;
+                } else {
+                    this.errorMessage = 'Doğrulama kodu hatalı. Lütfen tekrar deneyin.';
+                }
             },
         });
     }
@@ -249,19 +317,29 @@ export class AuthDialogComponent {
     }
 
     startCountdown() {
-        const timer = setInterval(() => {
+        // Önceki timer'ı temizle
+        if (this.countdownTimer) {
+            clearInterval(this.countdownTimer);
+        }
+        this.countdownTimer = setInterval(() => {
             this.countdown--;
             if (this.countdown <= 0) {
-                clearInterval(timer);
+                clearInterval(this.countdownTimer);
+                this.countdownTimer = null;
             }
         }, 1000);
     }
 
     switchTo(view: AuthView) {
         this.view = view;
+        this.errorMessage = null; // View değiştiğinde hata mesajını temizle
 
         // verify'e geçtiysek ilk kutuya odaklan
         if (view === 'verify') {
+            // Countdown başlamadıysa başlat
+            if (this.countdown === 120 && !this.countdownTimer) {
+                this.startCountdown();
+            }
             setTimeout(() => {
                 const arr = this.codeInputs?.toArray() ?? [];
                 if (arr.length > 0) {
@@ -272,7 +350,51 @@ export class AuthDialogComponent {
         }
     }
 
+    /* --------------------- ŞİFREMİ UNUTTUM --------------------- */
+    submitForgotPassword() {
+        if (this.forgotPasswordForm.invalid) {
+            this.forgotPasswordForm.markAllAsTouched();
+            return;
+        }
+
+        const raw = this.forgotPasswordForm.getRawValue();
+        const phone = (raw.phone || '').trim();
+        const normalizedPhone = this.normalizePhone(phone);
+
+        this.isSending = true;
+        this.errorMessage = null;
+
+        // SMS gönder ve verify ekranına yönlendir
+        this.authPhone.sendSms(normalizedPhone).subscribe({
+            next: () => {
+                this.isSending = false;
+                this.phoneForVerify = normalizedPhone;
+                this.countdown = 120;
+                this.startCountdown();
+                this.switchTo('verify');
+            },
+            error: (err) => {
+                this.isSending = false;
+                console.error('Forgot password failed', err);
+                if (err?.error?.error?.message) {
+                    this.errorMessage = err.error.error.message;
+                } else if (err?.error?.message) {
+                    this.errorMessage = err.error.message;
+                } else if (err?.message) {
+                    this.errorMessage = err.message;
+                } else {
+                    this.errorMessage = 'İşlem başarısız oldu. Lütfen tekrar deneyin.';
+                }
+            },
+        });
+    }
+
     close() {
+        // Timer'ı temizle
+        if (this.countdownTimer) {
+            clearInterval(this.countdownTimer);
+            this.countdownTimer = null;
+        }
         console.log('auth dialog closing');
         this.dialogRef.close();
     }

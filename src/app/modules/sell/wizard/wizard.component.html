@@ -224,7 +224,7 @@
                 <div *ngIf="step === 9" class="max-w-xs">
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label>Plaka</mat-label>
-                        <input matInput maxlength="9" placeholder="Örnek: 34ABC123" [value]="s().plate || ''" [formControl]="plateCtrl" [errorStateMatcher]="plateMatcher"
+                        <input #plateInput matInput maxlength="9" placeholder="Örnek: 34ABC123" [value]="s().plate || ''" [formControl]="plateCtrl" [errorStateMatcher]="plateMatcher"
                             (input)="onPlateInput($event)" (keydown.enter)="onPlateEnter($event)"/>
                         <mat-hint align="end">{{ s().plate?.length || 0 }}/9</mat-hint>
                          <mat-error *ngIf="plateError">{{ plateError }}</mat-error>
@@ -236,7 +236,7 @@
                 <div *ngIf="step === 10" class="max-w-xs">
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-label>Kilometre</mat-label>
-                        <input matInput type="number" min="0" placeholder="Örnek: 45000" [value]="s().kilometer || ''"
+                        <input #kmInput matInput type="number" min="0" placeholder="Örnek: 45000" [value]="s().kilometer || ''"
                             (input)="onKmInput($event)" (keydown.enter)="onKmEnter($event)" [formControl]="kmCtrl" [errorStateMatcher]="kmMatcher"/>
                         <mat-error *ngIf="kmError">{{ kmError }}</mat-error>
                     </mat-form-field>
@@ -320,61 +320,87 @@
                                     <!-- ön tampon -->
                                     <path id="FrontBumper" [ngClass]="getPanelStatusClass('FrontBumper')"
                                         (click)="onSvgPanelClick('FrontBumper')"
-                                        d="M120 40 Q120 30 150 30 L 240 30 Q250 30 250 40 L 250 65 L 120 65 Z" />
+                                        d="M120 40 Q120 30 150 30 L 240 30 Q250 30 250 40 L 250 65 L 120 65 Z">
+                                        <title>Ön tampon</title>
+                                    </path>
 
                                     <!-- motor kaputu -->
                                     <path id="Hood" [ngClass]="getPanelStatusClass('Hood')"
                                         (click)="onSvgPanelClick('Hood')"
-                                        d="M130 120 L 245 120 L 245 210 L 130 210 Z" />
+                                        d="M130 120 L 245 120 L 245 210 L 130 210 Z">
+                                        <title>Motor kaputu</title>
+                                    </path>
 
                                     <!-- tavan -->
                                     <path id="Roof" [ngClass]="getPanelStatusClass('Roof')"
                                         (click)="onSvgPanelClick('Roof')"
-                                        d="M135 280 L 240 280 L 240 390 L 135 390 Z" />
+                                        d="M135 280 L 240 280 L 240 390 L 135 390 Z">
+                                        <title>Tavan</title>
+                                    </path>
 
                                     <!-- arka kaput -->
                                     <path id="TrunkLid" [ngClass]="getPanelStatusClass('TrunkLid')"
                                         (click)="onSvgPanelClick('TrunkLid')"
-                                        d="M125 470 L 125 477 Q125 500 142 500 L 238 500 Q255 500 255 477 L 255 470 Z" />
+                                        d="M125 470 L 125 477 Q125 500 142 500 L 238 500 Q255 500 255 477 L 255 470 Z">
+                                        <title>Arka kaput</title>
+                                    </path>
 
                                     <!-- arka tampon -->
                                     <path id="RearBumper" [ngClass]="getPanelStatusClass('RearBumper')"
                                         (click)="onSvgPanelClick('RearBumper')"
-                                        d="M120 585 L 260 585 L 260 545 Q260 550 250 550 L 150 550 Q120 550 120 545 Z" />
+                                        d="M120 585 L 260 585 L 260 545 Q260 550 250 550 L 150 550 Q120 550 120 545 Z">
+                                        <title>Arka tampon</title>
+                                    </path>
 
                                     <!-- sol taraf -->
                                     <path id="LeftFrontFender" [ngClass]="getPanelStatusClass('LeftFrontFender')"
                                         (click)="onSvgPanelClick('LeftFrontFender')"
-                                        d="M35 185 L 95 185 L 90 133 Q90 115 75 115 L 55 115 Q35 115 35 140 Z" />
+                                        d="M35 185 L 95 185 L 90 133 Q90 115 75 115 L 55 115 Q35 115 35 140 Z">
+                                        <title>Sol ön çamurluk</title>
+                                    </path>
 
                                     <path id="LeftFrontDoor" [ngClass]="getPanelStatusClass('LeftFrontDoor')"
                                         (click)="onSvgPanelClick('LeftFrontDoor')"
-                                        d="M15 225 L 75 225 L 75 325 L 15 325 Z" />
+                                        d="M15 225 L 75 225 L 75 325 L 15 325 Z">
+                                        <title>Sol ön kapı</title>
+                                    </path>
 
                                     <path id="LeftRearDoor" [ngClass]="getPanelStatusClass('LeftRearDoor')"
                                         (click)="onSvgPanelClick('LeftRearDoor')"
-                                        d="M15 325 L 75 325 L 75 420 L 15 385 Z" />
+                                        d="M15 325 L 75 325 L 75 420 L 15 385 Z">
+                                        <title>Sol arka kapı</title>
+                                    </path>
 
                                     <path id="LeftRearFender" [ngClass]="getPanelStatusClass('LeftRearFender')"
                                         (click)="onSvgPanelClick('LeftRearFender')"
-                                        d="M35 415 L 95 415 L 90 467 Q90 485 75 485 L 55 485 Q35 485 35 460 Z" />
+                                        d="M35 415 L 95 415 L 90 467 Q90 485 75 485 L 55 485 Q35 485 35 460 Z">
+                                        <title>Sol arka çamurluk</title>
+                                    </path>
 
                                     <!-- sağ taraf -->
                                     <path id="RightFrontFender" [ngClass]="getPanelStatusClass('RightFrontFender')"
                                         (click)="onSvgPanelClick('RightFrontFender')"
-                                        d="M365 185 L 305 185 L 310 133 Q310 115 325 115 L 345 115 Q365 115 365 140 Z" />
+                                        d="M365 185 L 305 185 L 310 133 Q310 115 325 115 L 345 115 Q365 115 365 140 Z">
+                                        <title>Sağ ön çamurluk</title>
+                                    </path>
 
                                     <path id="RightFrontDoor" [ngClass]="getPanelStatusClass('RightFrontDoor')"
                                         (click)="onSvgPanelClick('RightFrontDoor')"
-                                        d="M365 225 L 305 225 L 305 325 L 365 325 Z" />
+                                        d="M365 225 L 305 225 L 305 325 L 365 325 Z">
+                                        <title>Sağ ön kapı</title>
+                                    </path>
 
                                     <path id="RightRearDoor" [ngClass]="getPanelStatusClass('RightRearDoor')"
                                         (click)="onSvgPanelClick('RightRearDoor')"
-                                        d="M365 325 L 305 325 L 305 410 L 365 385 Z" />
+                                        d="M365 325 L 305 325 L 305 410 L 365 385 Z">
+                                        <title>Sağ arka kapı</title>
+                                    </path>
 
                                     <path id="RightRearFender" [ngClass]="getPanelStatusClass('RightRearFender')"
                                         (click)="onSvgPanelClick('RightRearFender')"
-                                        d="M365 425 L 305 425 L 310 477 Q310 495 325 495 L 345 495 Q365 495 365 470 Z" />
+                                        d="M365 425 L 305 425 L 310 477 Q310 495 325 495 L 345 495 Q365 495 365 470 Z">
+                                        <title>Sağ arka çamurluk</title>
+                                    </path>
                                 </svg>
                             </div>
                         </div>
