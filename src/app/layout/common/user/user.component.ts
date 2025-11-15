@@ -14,7 +14,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthPhoneService } from 'app/core/auth/auth-phone.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { UserService } from 'app/core/user/user.service';
@@ -35,6 +35,7 @@ import { Subject, takeUntil } from 'rxjs';
         NgClass,
         MatDividerModule,
         MatDialogModule,
+        RouterModule,
     ],
 })
 export class UserComponent implements OnInit, OnDestroy {
@@ -187,8 +188,8 @@ export class UserComponent implements OnInit, OnDestroy {
             this.isAuthenticated = false;
             this.user = null;
             this._changeDetectorRef.markForCheck();
-            // Optionally navigate to home or wizard
-            // this._router.navigate(['/wizard']);
+            // Navigate to home page after sign out
+            this._router.navigate(['/example']);
         });
     }
 }

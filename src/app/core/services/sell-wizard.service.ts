@@ -171,4 +171,16 @@ export class SellWizardService {
             /* özet için mock dönüş */
         });
     }
+
+    getUserValuations(userId: string): Observable<any> {
+        return this.http.get<any>(`${this.base}/api/app/app-teklif-talepleri`, {
+            params: new HttpParams()
+                .set('UserId', userId)
+                .set('MaxResultCount', 1000),
+        });
+    }
+
+    deleteValuation(id: number): Observable<any> {
+        return this.http.delete(`${this.base}/api/app/app-teklif-talepleri/${id}`);
+    }
 }

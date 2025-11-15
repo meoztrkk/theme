@@ -84,6 +84,7 @@ export const appRoutes: Route[] = [
         },
         children: [
             {path: 'wizard', component: WizardComponent},
+            {path: 'degerlemelerim', loadChildren: () => import('app/modules/user/degerlemelerim/degerlemelerim.routes')},
             {path: 'example', loadChildren: () => import('app/modules/admin/example/example.routes')},
             {path: 'blog', loadChildren: () => import('app/modules/blog/list/blog-list.routes')},
             {path: 'blog/new', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},

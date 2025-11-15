@@ -1,0 +1,105 @@
+<div class="degerlemelerim-container">
+    <div class="page-header">
+        <h1 class="page-title">Değerlemelerim</h1>
+        <p class="page-subtitle">Araçlarınızın değerleme geçmişi ve durumları</p>
+    </div>
+
+    <div class="info-banner">
+        <div class="info-content">
+            <mat-icon class="info-icon">info_outline</mat-icon>
+            <div class="info-text-wrapper">
+                <span class="info-title">Bilgilendirme</span>
+                <span class="info-text">
+                    Bu değer Direkt Satış'ın satın alma teklifi değildir. Aracınızın son değeri profesyonel ekspertiz sonrası değişiklik gösterebilir.
+                </span>
+            </div>
+        </div>
+    </div>
+
+    @if (loading) {
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <p class="loading-text">Değerlemeleriniz yükleniyor...</p>
+        </div>
+    } @else if (valuations.length === 0) {
+        <div class="empty-container">
+            <div class="empty-icon-wrapper">
+                <mat-icon class="empty-icon">assessment</mat-icon>
+            </div>
+            <h3 class="empty-title">Henüz değerleme kaydınız bulunmamaktadır</h3>
+            <p class="empty-description">Araç değerlemesi yapmak için satış sihirbazını kullanabilirsiniz</p>
+            <button class="empty-cta-btn" (click)="router.navigate(['/wizard'])">
+                <mat-icon>add_circle</mat-icon>
+                <span>Yeni Değerleme Yap</span>
+            </button>
+        </div>
+    } @else {
+        <div class="valuations-list">
+            @for (valuation of valuations; track valuation.id) {
+                <div class="valuation-card" [class.valid-card]="valuation.isValid" [class.invalid-card]="!valuation.isValid">
+                    <div class="card-left">
+                        <div class="car-image-placeholder">
+                            <mat-icon class="car-icon">directions_car</mat-icon>
+                        </div>
+                        <div class="car-info">
+                            <div class="car-name-row">
+                                <h3 class="car-name">{{ getCarDisplayName(valuation) }}</h3>
+                                @if (valuation.isValid) {
+                                    <span class="status-badge valid">
+                                        <mat-icon class="badge-icon">check_circle</mat-icon>
+                                        <span>{{ formatDate(valuation.validUntil) }} tarihine kadar geçerli</span>
+                                    </span>
+                                } @else {
+                                    <span class="status-badge invalid">
+                                        <mat-icon class="badge-icon">cancel</mat-icon>
+                                        <span>Geçersiz</span>
+                                    </span>
+                                }
+                            </div>
+                            <div class="car-specs-wrapper">
+                                <p class="car-specs">{{ getCarSpecs(valuation) }}</p>
+                            </div>
+                        </div>
+                        @if (!valuation.isValid) {
+                            <button class="remove-link" (click)="removeValuation(valuation)" type="button">
+                                <mat-icon>delete_outline</mat-icon>
+                                <span>Aracı kaldır</span>
+                            </button>
+                        }
+                    </div>
+                    @if (valuation.isValid && valuation.priceRange) {
+                        <div class="card-right valid">
+                            <div class="valuation-info">
+                                <div class="valuation-label-wrapper">
+                                    <span class="valuation-label">
+                                        Dijital ekspertiz sonrası değerleme
+                                    </span>
+                                    <mat-icon class="info-icon-small" matTooltip="Bu değerleme profesyonel ekspertiz sonrası değişebilir">info</mat-icon>
+                                </div>
+                                <p class="price-range">{{ formatPriceRange(valuation.priceRange) }}</p>
+                            </div>
+                            <button class="appointment-btn" (click)="openAppointmentDialog(valuation)" type="button">
+                                <mat-icon>event</mat-icon>
+                                <span>Ekspertiz Randevusu Al</span>
+                            </button>
+                        </div>
+                    } @else {
+                        <div class="card-right invalid">
+                            <div class="expired-content">
+                                <mat-icon class="expired-icon">schedule</mat-icon>
+                                <p class="expired-message">
+                                    Malesef aracınıza özel teklifinizin geçerlilik süresini aştı, tekrar değerleyin
+                                </p>
+                            </div>
+                            <button class="re-evaluate-btn" (click)="reEvaluate(valuation)" type="button">
+                                <mat-icon>refresh</mat-icon>
+                                <span>Tekrar Değerle</span>
+                            </button>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
