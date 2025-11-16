@@ -71,6 +71,28 @@ export const appRoutes: Route[] = [
         ]
     },
 
+    // Protected user routes (require authentication)
+    {
+        path: '',
+        component: LayoutComponent,
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard],
+        data: {
+            layout: 'modern'
+        },
+        resolve: {
+            initialData: initialDataResolver
+        },
+        children: [
+            {path: 'user/profile', loadChildren: () => import('app/modules/user/profile/profile.routes')},
+            {path: 'degerlemelerim', loadChildren: () => import('app/modules/user/degerlemelerim/degerlemelerim.routes')},
+            {path: 'randevularim', loadChildren: () => import('app/modules/user/randevularim/randevularim.routes')},
+            {path: 'blog/new', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
+            {path: 'blog/edit/:id', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
+            {path: 'offers/:id', component: OffersComponent},
+        ]
+    },
+
     // Admin routes
 
     {
@@ -84,14 +106,9 @@ export const appRoutes: Route[] = [
         },
         children: [
             {path: 'wizard', component: WizardComponent},
-            {path: 'user/profile', loadChildren: () => import('app/modules/user/profile/profile.routes')},
-            {path: 'degerlemelerim', loadChildren: () => import('app/modules/user/degerlemelerim/degerlemelerim.routes')},
             {path: 'example', loadChildren: () => import('app/modules/admin/example/example.routes')},
             {path: 'blog', loadChildren: () => import('app/modules/blog/list/blog-list.routes')},
-            {path: 'blog/new', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
             {path: 'blog/:id', loadChildren: () => import('app/modules/blog/detail/blog-detail.routes')},
-            {path: 'blog/edit/:id', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
-            {path: 'offers/:id', component: OffersComponent},
         ]
     }
 ];

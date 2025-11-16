@@ -428,6 +428,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+            width: 100%;
 
             mat-icon {
                 font-size: 1.125rem;
@@ -435,13 +436,38 @@
                 height: 1.125rem;
             }
 
-            &:hover {
+            &:hover:not(:disabled) {
                 transform: translateY(-2px);
                 box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
             }
 
-            &:active {
+            &:active:not(:disabled) {
                 transform: translateY(0);
+            }
+
+            &.has-appointment {
+                background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+                color: white;
+                cursor: not-allowed;
+                opacity: 0.7;
+                box-shadow: 0 2px 8px rgba(107, 114, 128, 0.2);
+
+                &:hover {
+                    transform: none;
+                    box-shadow: 0 2px 8px rgba(107, 114, 128, 0.2);
+                }
+            }
+
+            &.view-appointment {
+                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                color: white;
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                margin-top: 0.75rem;
+
+                &:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+                }
             }
         }
 

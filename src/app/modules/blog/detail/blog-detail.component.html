@@ -5,7 +5,7 @@
         <div class="relative h-96 lg:h-112 w-full bg-cover bg-center"
              [style.background-image]="'url(' + post.imageUrl + ')'">
 
-            <div class="absolute top-0 right-0 p-6 z-10 space-x-4">
+            <div class="absolute top-0 right-0 p-6 z-10 space-x-4" *ngIf="isAuthenticated$ | async">
                 <a mat-flat-button color="accent" [routerLink]="['/blog/edit', post.id]">
                     <mat-icon [svgIcon]="'heroicons_outline:pencil-square'"></mat-icon>
                     <span class="ml-2">Düzenle</span>

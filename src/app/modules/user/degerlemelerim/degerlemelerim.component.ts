@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { AuthService } from 'app/core/auth/auth.service';
+import { AuthUtils } from 'app/core/auth/auth.utils';
 import { AuthPhoneService } from 'app/core/auth/auth-phone.service';
 import { SellWizardService, IdNameDto } from 'app/core/services/sell-wizard.service';
 import { AppointmentDialogComponent, AppointmentDialogData } from 'app/modules/sell/appointment-dialog/appointment-dialog.component';
@@ -35,6 +36,8 @@ interface Valuation {
     isValid: boolean;
     validUntil: Date;
     priceRange?: { min: number; max: number };
+    hasAppointment?: boolean;
+    appointmentId?: number;
 }
 
 @Component({
@@ -157,6 +160,8 @@ export class DegerlemelerimComponent implements OnInit {
             })
         ).subscribe({
             next: (valuations) => {
+                // Randevu kontrolü yap
+                this.checkAppointmentsForValuations(valuations);
                 this.valuations = valuations;
                 this.loading = false;
             },
@@ -222,7 +227,7 @@ export class DegerlemelerimComponent implements OnInit {
 
     removeValuation(valuation: Valuation): void {
         const carName = this.getCarDisplayName(valuation);
-        
+
         const confirmation = this._fuseConfirmationService.open({
             title: 'Değerlemeyi Kaldır',
             message: `"${carName}" aracına ait değerlemeyi kalıcı olarak kaldırmak istediğinizden emin misiniz? Bu işlem geri alınamaz.`,
@@ -236,17 +241,17 @@ export class DegerlemelerimComponent implements OnInit {
             if (result === 'confirmed') {
                 this.wizardService.deleteValuation(valuation.id).subscribe({
                     next: () => {
-                        this._snackBar.open('Değerleme başarıyla kaldırıldı.', 'Kapat', { 
-                            duration: 3000, 
-                            panelClass: ['bg-green-600'] 
+                        this._snackBar.open('Değerleme başarıyla kaldırıldı.', 'Kapat', {
+                            duration: 3000,
+                            panelClass: ['bg-green-600']
                         });
                         this.loadValuations();
                     },
                     error: (err) => {
                         console.error('Error deleting valuation:', err);
                         this._snackBar.open(
-                            'Değerleme kaldırılırken bir hata oluştu: ' + (err.error?.message || 'Bilinmeyen hata.'), 
-                            'Kapat', 
+                            'Değerleme kaldırılırken bir hata oluştu: ' + (err.error?.message || 'Bilinmeyen hata.'),
+                            'Kapat',
                             { duration: 5000 }
                         );
                     },
@@ -257,6 +262,22 @@ export class DegerlemelerimComponent implements OnInit {
 
     openAppointmentDialog(valuation: Valuation): void {
         if (!valuation.priceRange) {
+            return;
+        }
+
+        // Eğer bu değerleme için zaten randevu varsa uyarı göster
+        if (valuation.hasAppointment) {
+            this._snackBar.open(
+                'Bu değerleme için zaten bir randevunuz bulunmaktadır. Randevularım sayfasından görüntüleyebilir veya güncelleyebilirsiniz.',
+                'Randevularım\'a Git',
+                {
+                    duration: 5000,
+                    horizontalPosition: 'end',
+                    verticalPosition: 'top',
+                }
+            ).onAction().subscribe(() => {
+                this.router.navigate(['/randevularim']);
+            });
             return;
         }
 
@@ -280,8 +301,13 @@ export class DegerlemelerimComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result?.success) {
-                console.log('Randevu alındı:', result.data);
-                // TODO: Show success message
+                // Randevu başarıyla alındı, değerlemeleri yeniden yükle
+                this._snackBar.open('Randevu başarıyla alındı', 'Kapat', {
+                    duration: 3000,
+                    horizontalPosition: 'end',
+                    verticalPosition: 'top',
+                });
+                this.loadValuations(); // Randevu durumunu güncellemek için yeniden yükle
             }
         });
     }
@@ -295,6 +321,46 @@ export class DegerlemelerimComponent implements OnInit {
 
     formatPriceRange(priceRange: { min: number; max: number }): string {
         return `${priceRange.min.toLocaleString('tr-TR')} - ${priceRange.max.toLocaleString('tr-TR')}₺`;
+    }
+
+    private getAppointmentsStorageKey(): string {
+        const token = this.authService.accessToken;
+        if (!token) {
+            return 'appointments_anonymous';
+        }
+        const userId = AuthUtils.getUserIdFromToken(token);
+        return userId ? `appointments_${userId}` : 'appointments_anonymous';
+    }
+
+    private checkAppointmentsForValuations(valuations: Valuation[]): void {
+        // localStorage'dan randevuları oku (kullanıcı bazlı)
+        const storageKey = this.getAppointmentsStorageKey();
+        const savedAppointments = localStorage.getItem(storageKey);
+        if (!savedAppointments) {
+            return;
+        }
+
+        try {
+            const appointments = JSON.parse(savedAppointments);
+
+            // Her değerleme için randevu kontrolü yap
+            valuations.forEach((valuation) => {
+                const appointment = appointments.find((apt: any) => apt.offerId === valuation.id);
+                if (appointment) {
+                    valuation.hasAppointment = true;
+                    valuation.appointmentId = appointment.id;
+                } else {
+                    valuation.hasAppointment = false;
+                    valuation.appointmentId = undefined;
+                }
+            });
+        } catch (e) {
+            console.error('Error checking appointments:', e);
+        }
+    }
+
+    hasAppointment(valuation: Valuation): boolean {
+        return valuation.hasAppointment === true;
     }
 }
 

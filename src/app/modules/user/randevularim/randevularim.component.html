@@ -1,0 +1,102 @@
+<div class="randevularim-container">
+    <div class="page-header">
+        <h1 class="page-title">Aracınızı satmak için randevu alın</h1>
+        <p class="page-subtitle">Randevularınızı görüntüleyin, güncelleyin veya iptal edin</p>
+    </div>
+
+    @if (loading) {
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <p class="loading-text">Randevularınız yükleniyor...</p>
+        </div>
+    } @else if (appointments.length === 0) {
+        <div class="empty-appointment-card">
+            <div class="card-content">
+                <div class="card-left">
+                    <div class="calendar-icon-wrapper">
+                        <mat-icon class="calendar-icon">event</mat-icon>
+                    </div>
+                    <div class="card-text">
+                        <p class="card-title">Henüz bir randevu oluşturmadınız.</p>
+                        <p class="card-description">
+                            Randevu oluşturmak için aracınızı değerleyin ve bir hesap oluşturun.
+                        </p>
+                    </div>
+                </div>
+                <button class="card-button" (click)="navigateToWizard()">
+                    <mat-icon>add_circle</mat-icon>
+                    <span>Aracınızı ücretsiz değerleyin</span>
+                </button>
+            </div>
+        </div>
+    } @else {
+        <div class="appointments-header">
+            <div class="appointments-count">
+                <span class="count-number">{{ appointments.length }}</span>
+                <span class="count-text">randevu bulundu</span>
+            </div>
+        </div>
+        <div class="appointments-list">
+            @for (appointment of appointments; track appointment.id) {
+                <div class="appointment-card" [class.past-appointment]="isPastAppointment(appointment.date)">
+                    <div class="appointment-main">
+                        <div class="appointment-left">
+                            <div class="appointment-icon-wrapper" [class.past-icon]="isPastAppointment(appointment.date)">
+                                <mat-icon class="appointment-icon">{{ getStatusIcon(appointment.status) }}</mat-icon>
+                            </div>
+                            <div class="appointment-info">
+                                <div class="appointment-header-row">
+                                    <h3 class="appointment-firm">{{ appointment.offerName }}</h3>
+                                    @if (appointment.status) {
+                                        <span class="appointment-status-badge" 
+                                            [class.status-pending]="appointment.status === 'pending'"
+                                            [class.status-confirmed]="appointment.status === 'confirmed'"
+                                            [class.status-cancelled]="appointment.status === 'cancelled'">
+                                            <mat-icon class="status-icon">{{ getStatusIcon(appointment.status) }}</mat-icon>
+                                            <span>{{ getStatusText(appointment.status) }}</span>
+                                        </span>
+                                    }
+                                </div>
+                                <div class="appointment-details">
+                                    <div class="detail-item">
+                                        <mat-icon class="detail-icon">location_on</mat-icon>
+                                        <span>{{ appointment.location }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <mat-icon class="detail-icon">calendar_today</mat-icon>
+                                        <span>{{ formatDate(appointment.date) }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <mat-icon class="detail-icon">schedule</mat-icon>
+                                        <span>{{ formatTime(appointment.time) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="appointment-right">
+                            <div class="appointment-price-wrapper">
+                                <span class="price-label">Teklif</span>
+                                <span class="appointment-price">₺{{ appointment.price | number:'1.0-0' }}</span>
+                            </div>
+                            @if (isPastAppointment(appointment.date)) {
+                                <span class="past-badge">Geçmiş</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="appointment-actions">
+                        <button class="action-button edit-button" (click)="editAppointment(appointment)" 
+                            [disabled]="isPastAppointment(appointment.date)">
+                            <mat-icon>edit</mat-icon>
+                            <span>Düzenle</span>
+                        </button>
+                        <button class="action-button delete-button" (click)="deleteAppointment(appointment)">
+                            <mat-icon>delete_outline</mat-icon>
+                            <span>Sil</span>
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+

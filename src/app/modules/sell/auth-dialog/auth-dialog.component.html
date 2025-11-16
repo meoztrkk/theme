@@ -25,6 +25,9 @@
     @if (loginForm.get('phone')?.hasError('required') && loginForm.get('phone')?.touched) {
       <div class="auth-field-error">Telefon numarası zorunludur</div>
     }
+    @if (loginForm.get('phone')?.hasError('pattern') && loginForm.get('phone')?.touched && !loginForm.get('phone')?.hasError('required')) {
+      <div class="auth-field-error">Telefon numarası 10-11 haneli olmalıdır</div>
+    }
 
     <label class="auth-label">Şifre</label>
     <input
@@ -64,7 +67,7 @@
   </div>
   <div class="auth-divider"></div>
 
-  <form class="auth-content" [formGroup]="registerForm">
+  <form class="auth-content" [formGroup]="registerForm" (ngSubmit)="submitRegister()">
     <div *ngIf="errorMessage" class="auth-error">
       {{ errorMessage }}
     </div>
@@ -82,6 +85,9 @@
     </div>
     @if (registerForm.get('phone')?.hasError('required') && registerForm.get('phone')?.touched) {
       <div class="auth-field-error">Telefon numarası zorunludur</div>
+    }
+    @if (registerForm.get('phone')?.hasError('pattern') && registerForm.get('phone')?.touched && !registerForm.get('phone')?.hasError('required')) {
+      <div class="auth-field-error">Telefon numarası 10-11 haneli olmalıdır</div>
     }
 
     <label class="auth-label">Ad</label>
@@ -301,6 +307,9 @@
     </div>
     @if (forgotPasswordForm.get('phone')?.hasError('required') && forgotPasswordForm.get('phone')?.touched) {
       <div class="auth-field-error">Telefon numarası zorunludur</div>
+    }
+    @if (forgotPasswordForm.get('phone')?.hasError('pattern') && forgotPasswordForm.get('phone')?.touched && !forgotPasswordForm.get('phone')?.hasError('required')) {
+      <div class="auth-field-error">Telefon numarası 10-11 haneli olmalıdır</div>
     }
 
     <button

@@ -8,12 +8,13 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar } from '@angular/material/snack-bar'; // Snackbar eklendi
-import { Observable, switchMap, map } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observable, switchMap, map, BehaviorSubject } from 'rxjs';
 import { BlogService, BlogPostDetail } from 'app/core/services/blog.service';
 import { FuseAlertComponent } from '@fuse/components/alert';
-import { FuseConfirmationService } from '@fuse/services/confirmation'; // Onay servisi eklendi
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { TranslocoModule } from '@jsverse/transloco';
+import { AuthService } from 'app/core/auth/auth.service';
 
 @Component({
     selector: 'app-blog-detail',
@@ -33,14 +34,29 @@ import { TranslocoModule } from '@jsverse/transloco';
 })
 export class BlogDetailComponent implements OnInit {
     blogPost$!: Observable<BlogPostDetail | undefined>;
+    isAuthenticated$: Observable<boolean>;
 
     constructor(
         private route: ActivatedRoute,
         private blogService: BlogService,
         private _router: Router,
         private _fuseConfirmationService: FuseConfirmationService,
-        private _snackBar: MatSnackBar
-    ) {}
+        private _snackBar: MatSnackBar,
+        private _authService: AuthService
+    ) {
+        // Check authentication once and create observable
+        const authSubject = new BehaviorSubject<boolean>(false);
+        this.isAuthenticated$ = authSubject.asObservable();
+
+        this._authService.check().subscribe((isAuth) => {
+            authSubject.next(isAuth);
+        });
+
+        // Listen to authentication state changes
+        this._authService.authenticationStateChanged$.subscribe((isAuth) => {
+            authSubject.next(isAuth);
+        });
+    }
 
     ngOnInit(): void {
         this.blogPost$ = this.route.paramMap.pipe(

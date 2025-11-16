@@ -3,6 +3,7 @@ import {
     Component,
     ElementRef,
     Inject,
+    OnDestroy,
     QueryList,
     ViewChildren,
 } from '@angular/core';
@@ -19,6 +20,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { AuthPhoneService } from 'app/core/auth/auth-phone.service';
 import { AuthService } from 'app/core/auth/auth.service';
+import { Subject, takeUntil } from 'rxjs';
 
 type AuthView = 'login' | 'register' | 'verify' | 'forgot-password';
 
@@ -36,7 +38,7 @@ type AuthView = 'login' | 'register' | 'verify' | 'forgot-password';
         RouterModule,
     ],
 })
-export class AuthDialogComponent {
+export class AuthDialogComponent implements OnDestroy {
     view: AuthView = 'register';
     phoneForVerify = '';
 
@@ -46,11 +48,23 @@ export class AuthDialogComponent {
 
     registerForm: FormGroup;
     loginForm = this.fb.group({
-        phone: ['', [Validators.required]],
+        phone: [
+            '',
+            [
+                Validators.required,
+                Validators.pattern(/^[0-9]{10,11}$/), // 10-11 haneli telefon numarası
+            ],
+        ],
         password: ['', [Validators.required]],
     });
     forgotPasswordForm = this.fb.group({
-        phone: ['', [Validators.required]],
+        phone: [
+            '',
+            [
+                Validators.required,
+                Validators.pattern(/^[0-9]{10,11}$/), // 10-11 haneli telefon numarası
+            ],
+        ],
     });
     verifyForm = this.fb.group({
         code1: ['', [Validators.required]],
@@ -71,6 +85,9 @@ export class AuthDialogComponent {
     // örnek test kodları (backend hazır değilken)
     private testCodes = ['1234', '0000'];
 
+    // Subscription yönetimi için
+    private destroy$ = new Subject<void>();
+
     constructor(
         private dialogRef: MatDialogRef<AuthDialogComponent>,
         private fb: FormBuilder,
@@ -88,7 +105,13 @@ export class AuthDialogComponent {
         }
 
         this.registerForm = this.fb.group({
-            phone: ['', [Validators.required]],
+            phone: [
+                '',
+                [
+                    Validators.required,
+                    Validators.pattern(/^[0-9]{10,11}$/), // 10-11 haneli telefon numarası
+                ],
+            ],
             firstName: ['', [Validators.required]],
             lastName: ['', [Validators.required]],
             email: ['', [Validators.required, Validators.email]],
@@ -96,6 +119,22 @@ export class AuthDialogComponent {
             consentCommercial: [false, [Validators.requiredTrue]],
             consentTerms: [false, [Validators.requiredTrue]],
         });
+    }
+
+    ngOnDestroy(): void {
+        // Timer'ı temizle
+        if (this.countdownTimer) {
+            clearInterval(this.countdownTimer);
+            this.countdownTimer = null;
+        }
+
+        // Subscription'ları temizle
+        this.destroy$.next();
+        this.destroy$.complete();
+
+        // Güvenlik: Kayıtlı şifre bilgilerini temizle
+        this.savedPhoneForLogin = '';
+        this.savedPasswordForLogin = '';
     }
 
     // +905xx ... formatına sokmak istersen
@@ -136,6 +175,7 @@ export class AuthDialogComponent {
                 lastName: lastName,
                 emailAddress: email,
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: () => {
                     this.isSending = false;
@@ -144,17 +184,24 @@ export class AuthDialogComponent {
                     this.savedPhoneForLogin = normalizedPhone;
                     this.savedPasswordForLogin = password!;
                     // SMS gönder
-                    this.authPhone.sendSms(normalizedPhone).subscribe({
-                        next: () => {
-                            this.countdown = 120;
-                            this.startCountdown();
-                        },
-                        error: (err) => {
-                            console.error('SMS send failed', err);
-                            // SMS gönderilemese bile verify ekranına geç
-                        },
-                    });
-                    this.switchTo('verify');
+                    this.authPhone
+                        .sendSms(normalizedPhone)
+                        .pipe(takeUntil(this.destroy$))
+                        .subscribe({
+                            next: () => {
+                                this.countdown = 120;
+                                this.startCountdown();
+                                this.switchTo('verify');
+                            },
+                            error: (err) => {
+                                console.error('SMS send failed', err);
+                                // SMS gönderme başarısız oldu, kullanıcıyı bilgilendir
+                                this.errorMessage =
+                                    'SMS gönderilemedi. Lütfen tekrar deneyin veya test kodunu kullanın (1234).';
+                                // Yine de verify ekranına geç (test kodu ile doğrulama yapılabilir)
+                                this.switchTo('verify');
+                            },
+                        });
                 },
                 error: (err) => {
                     this.isSending = false;
@@ -167,7 +214,8 @@ export class AuthDialogComponent {
                     } else if (err?.message) {
                         this.errorMessage = err.message;
                     } else {
-                        this.errorMessage = 'Kayıt işlemi başarısız oldu. Lütfen tekrar deneyin.';
+                        this.errorMessage =
+                            'Kayıt işlemi başarısız oldu. Lütfen tekrar deneyin.';
                     }
                 },
             });
@@ -201,6 +249,7 @@ export class AuthDialogComponent {
                 phoneNumber: normalizedPhone,
                 password: password,
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (res: any) => {
                     this.isSending = false;
@@ -223,7 +272,10 @@ export class AuthDialogComponent {
                         // JWT token ise kullanıcı bilgisini almayı dene
                         // Token kaydedildi, interceptor otomatik header'a ekleyecek
                         console.log('[AuthDialog] JWT token detected, fetching user profile...');
-                        this.authPhone.me().subscribe({
+                        this.authPhone
+                            .me()
+                            .pipe(takeUntil(this.destroy$))
+                            .subscribe({
                             next: (profile) => {
                                 console.log('[AuthDialog] User profile fetched successfully:', profile);
                                 this.appAuth.signInWithExternalToken(token, profile);
@@ -287,7 +339,10 @@ export class AuthDialogComponent {
         // 2) gerçek endpoint
         this.isSending = true;
         this.errorMessage = null;
-        this.authPhone.verifySms(this.phoneForVerify, code).subscribe({
+        this.authPhone
+            .verifySms(this.phoneForVerify, code)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
             next: () => {
                 this.isSending = false;
                 // Doğrulama başarılı, kayıt sonrası otomatik giriş yap
@@ -327,6 +382,7 @@ export class AuthDialogComponent {
                 phoneNumber: this.savedPhoneForLogin,
                 password: this.savedPasswordForLogin,
             })
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (res: any) => {
                     this.isSending = false;
@@ -349,7 +405,10 @@ export class AuthDialogComponent {
                     if (isJwt) {
                         // JWT token ise kullanıcı bilgisini almayı dene
                         console.log('[AuthDialog.autoLoginAfterVerify] JWT token detected, fetching user profile...');
-                        this.authPhone.me().subscribe({
+                        this.authPhone
+                            .me()
+                            .pipe(takeUntil(this.destroy$))
+                            .subscribe({
                             next: (profile) => {
                                 console.log('[AuthDialog.autoLoginAfterVerify] User profile fetched successfully:', profile);
                                 this.appAuth.signInWithExternalToken(token, profile);
@@ -413,10 +472,20 @@ export class AuthDialogComponent {
 
     resendCode() {
         if (!this.phoneForVerify) return;
-        this.authPhone.sendSms(this.phoneForVerify).subscribe(() => {
-            this.countdown = 120;
-            this.startCountdown();
-        });
+        this.authPhone
+            .sendSms(this.phoneForVerify)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: () => {
+                    this.countdown = 120;
+                    this.startCountdown();
+                },
+                error: (err) => {
+                    console.error('Resend SMS failed', err);
+                    this.errorMessage =
+                        'SMS tekrar gönderilemedi. Lütfen tekrar deneyin.';
+                },
+            });
     }
 
     startCountdown() {
@@ -468,7 +537,10 @@ export class AuthDialogComponent {
         this.errorMessage = null;
 
         // SMS gönder ve verify ekranına yönlendir
-        this.authPhone.sendSms(normalizedPhone).subscribe({
+        this.authPhone
+            .sendSms(normalizedPhone)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
             next: () => {
                 this.isSending = false;
                 this.phoneForVerify = normalizedPhone;

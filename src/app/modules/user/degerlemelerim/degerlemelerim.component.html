@@ -78,10 +78,21 @@
                                 </div>
                                 <p class="price-range">{{ formatPriceRange(valuation.priceRange) }}</p>
                             </div>
-                            <button class="appointment-btn" (click)="openAppointmentDialog(valuation)" type="button">
-                                <mat-icon>event</mat-icon>
-                                <span>Ekspertiz Randevusu Al</span>
-                            </button>
+                            @if (hasAppointment(valuation)) {
+                                <button class="appointment-btn has-appointment" type="button" disabled>
+                                    <mat-icon>check_circle</mat-icon>
+                                    <span>Randevu Alındı</span>
+                                </button>
+                                <button class="appointment-btn view-appointment" (click)="router.navigate(['/randevularim'])" type="button">
+                                    <mat-icon>visibility</mat-icon>
+                                    <span>Randevuyu Görüntüle</span>
+                                </button>
+                            } @else {
+                                <button class="appointment-btn" (click)="openAppointmentDialog(valuation)" type="button">
+                                    <mat-icon>event</mat-icon>
+                                    <span>Ekspertiz Randevusu Al</span>
+                                </button>
+                            }
                         </div>
                     } @else {
                         <div class="card-right invalid">

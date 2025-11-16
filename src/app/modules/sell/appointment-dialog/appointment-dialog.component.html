@@ -1,6 +1,6 @@
 <div class="appointment-shell">
     <div class="appointment-header">
-        <span class="appointment-title">Randevu Al</span>
+        <span class="appointment-title">{{ data.isEditMode ? 'Randevu Güncelle' : 'Randevu Al' }}</span>
         <button class="appointment-close" (click)="close()">×</button>
     </div>
     <div class="appointment-divider"></div>
@@ -74,7 +74,7 @@
                     (click)="submitAppointment()"
                     [disabled]="isSubmitting || appointmentForm.invalid"
                 >
-                    <span *ngIf="!isSubmitting">Randevu Al</span>
+                    <span *ngIf="!isSubmitting">{{ data.isEditMode ? 'Güncelle' : 'Randevu Al' }}</span>
                     <span *ngIf="isSubmitting">Kaydediliyor...</span>
                 </button>
             </div>

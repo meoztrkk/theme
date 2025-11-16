@@ -179,4 +179,19 @@ export class AuthUtils {
 
         return date;
     }
+
+    /**
+     * Get user ID from token
+     *
+     * @param token
+     */
+    static getUserIdFromToken(token: string): string | null {
+        try {
+            const decodedToken = this._decodeToken(token);
+            // Try different claim names that might contain user ID
+            return decodedToken.sub || decodedToken.userId || decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || null;
+        } catch (error) {
+            return null;
+        }
+    }
 }
