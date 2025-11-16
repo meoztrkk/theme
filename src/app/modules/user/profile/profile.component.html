@@ -1,0 +1,188 @@
+<div class="profile-container">
+    <div class="page-header">
+        <div class="header-content">
+            <div class="header-icon-wrapper">
+                <mat-icon class="header-icon">account_circle</mat-icon>
+            </div>
+            <div class="header-text">
+                <h1 class="page-title">Profil Bilgilerim</h1>
+                <p class="page-subtitle">Hesap bilgilerinizi görüntüleyin ve güncelleyin</p>
+            </div>
+        </div>
+    </div>
+
+    @if (loading) {
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <p class="loading-text">Profil bilgileri yükleniyor...</p>
+        </div>
+    } @else {
+        <div class="profile-content">
+            <mat-tab-group class="profile-tabs" animationDuration="300ms">
+                <!-- Profil Bilgileri Sekmesi -->
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <div class="tab-label-content">
+                            <mat-icon class="tab-icon">person</mat-icon>
+                            <span class="tab-label-text">Profil Bilgileri</span>
+                        </div>
+                    </ng-template>
+                    <div class="tab-content">
+                        <div class="profile-section">
+                            <div class="section-header">
+                                <div class="section-icon-wrapper">
+                                    <mat-icon class="section-icon">person</mat-icon>
+                                </div>
+                                <div class="section-title-wrapper">
+                                    <h2 class="section-title">Profil Bilgileri</h2>
+                                    <p class="section-description">Kişisel bilgilerinizi güncelleyebilirsiniz</p>
+                                </div>
+                            </div>
+
+                            <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="profile-form">
+                                <div class="form-group">
+                                    <label class="form-group-label">Kişisel Bilgiler</label>
+                                    <div class="form-row">
+                                        <mat-form-field appearance="outline" class="form-field">
+                                            <mat-label>Ad</mat-label>
+                                            <input matInput formControlName="name" placeholder="Adınızı girin">
+                                            <mat-icon matPrefix>person</mat-icon>
+                                            @if (profileForm.get('name')?.invalid && profileForm.get('name')?.touched) {
+                                                <mat-error>{{ getErrorMessage('name') }}</mat-error>
+                                            }
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="form-field">
+                                            <mat-label>Soyad</mat-label>
+                                            <input matInput formControlName="surname" placeholder="Soyadınızı girin">
+                                            <mat-icon matPrefix>person</mat-icon>
+                                            @if (profileForm.get('surname')?.invalid && profileForm.get('surname')?.touched) {
+                                                <mat-error>{{ getErrorMessage('surname') }}</mat-error>
+                                            }
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-group-label">İletişim Bilgileri</label>
+                                    <div class="form-row">
+                                        <mat-form-field appearance="outline" class="form-field readonly-field">
+                                            <mat-label>E-posta</mat-label>
+                                            <input matInput formControlName="email" readonly>
+                                            <mat-icon matPrefix>email</mat-icon>
+                                            <mat-icon matSuffix class="readonly-icon" matTooltip="Bu alan değiştirilemez">info</mat-icon>
+                                            <mat-hint>E-posta adresi değiştirilemez</mat-hint>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="form-field readonly-field">
+                                            <mat-label>Telefon</mat-label>
+                                            <input matInput formControlName="phoneNumber" readonly>
+                                            <mat-icon matPrefix>phone</mat-icon>
+                                            <mat-icon matSuffix class="readonly-icon" matTooltip="Bu alan değiştirilemez">info</mat-icon>
+                                            <mat-hint>Telefon numarası değiştirilemez</mat-hint>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button 
+                                        mat-flat-button 
+                                        color="primary" 
+                                        type="submit"
+                                        [disabled]="savingProfile || profileForm.invalid || !profileForm.dirty"
+                                        class="save-btn">
+                                        @if (savingProfile) {
+                                            <mat-icon class="spinning">refresh</mat-icon>
+                                            <span>Kaydediliyor...</span>
+                                        } @else {
+                                            <mat-icon>save</mat-icon>
+                                            <span>Değişiklikleri Kaydet</span>
+                                        }
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </mat-tab>
+
+                <!-- Güvenlik Sekmesi -->
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <div class="tab-label-content">
+                            <mat-icon class="tab-icon">lock</mat-icon>
+                            <span class="tab-label-text">Güvenlik</span>
+                        </div>
+                    </ng-template>
+                    <div class="tab-content">
+                        <div class="profile-section password-section">
+                            <div class="section-header">
+                                <div class="section-icon-wrapper security">
+                                    <mat-icon class="section-icon">lock</mat-icon>
+                                </div>
+                                <div class="section-title-wrapper">
+                                    <h2 class="section-title">Şifre Değiştir</h2>
+                                    <p class="section-description">Hesabınızın güvenliği için şifrenizi düzenli olarak güncelleyin</p>
+                                </div>
+                            </div>
+
+                            <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="password-form">
+                                <div class="form-group">
+                                    <label class="form-group-label">Şifre Değiştirme</label>
+                                    <div class="form-row">
+                                        <mat-form-field appearance="outline" class="form-field full-width">
+                                            <mat-label>Mevcut Şifre</mat-label>
+                                            <input matInput type="password" formControlName="currentPassword" placeholder="Mevcut şifrenizi girin">
+                                            <mat-icon matPrefix>lock</mat-icon>
+                                            @if (passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched) {
+                                                <mat-error>{{ getPasswordErrorMessage('currentPassword') }}</mat-error>
+                                            }
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <mat-form-field appearance="outline" class="form-field">
+                                            <mat-label>Yeni Şifre</mat-label>
+                                            <input matInput type="password" formControlName="newPassword" placeholder="Yeni şifrenizi girin">
+                                            <mat-icon matPrefix>lock_outline</mat-icon>
+                                            @if (passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched) {
+                                                <mat-error>{{ getPasswordErrorMessage('newPassword') }}</mat-error>
+                                            }
+                                            <mat-hint>Minimum 6 karakter</mat-hint>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="form-field">
+                                            <mat-label>Yeni Şifre (Tekrar)</mat-label>
+                                            <input matInput type="password" formControlName="confirmPassword" placeholder="Yeni şifrenizi tekrar girin">
+                                            <mat-icon matPrefix>lock_outline</mat-icon>
+                                            @if (passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched) {
+                                                <mat-error>{{ getPasswordErrorMessage('confirmPassword') }}</mat-error>
+                                            }
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button 
+                                        mat-flat-button 
+                                        color="primary" 
+                                        type="submit"
+                                        [disabled]="changingPassword || passwordForm.invalid"
+                                        class="save-btn password-btn">
+                                        @if (changingPassword) {
+                                            <mat-icon class="spinning">refresh</mat-icon>
+                                            <span>Değiştiriliyor...</span>
+                                        } @else {
+                                            <mat-icon>lock_reset</mat-icon>
+                                            <span>Şifreyi Değiştir</span>
+                                        }
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+    }
+</div>
+

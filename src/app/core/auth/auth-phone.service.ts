@@ -46,4 +46,20 @@ export class AuthPhoneService {
       code,
     });
   }
+
+  // ŞİFRE DEĞİŞTİRME
+  changePassword(currentPassword: string, newPassword: string): Observable<any> {
+    return this.http.post(`${API_BASE_URL}/api/app/app-account/change-password`, {
+      currentPassword,
+      newPassword,
+    });
+  }
+
+  // PROFİL GÜNCELLEME
+  updateProfile(name: string, surname: string): Observable<any> {
+    return this.http.post(`${API_BASE_URL}/api/app/app-account/update-profile`, {
+      name,
+      surname,
+    });
+  }
 }
