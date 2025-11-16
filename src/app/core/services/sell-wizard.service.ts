@@ -166,10 +166,7 @@ export class SellWizardService {
     }
 
     getSellRequest(id: number): Observable<any> {
-        // return this.http.get<any>(`/api/app/sell-requests/${id}`);
-        return of({
-            /* özet için mock dönüş */
-        });
+        return this.http.get<any>(`${this.base}/api/app/app-teklif-talepleri/${id}`);
     }
 
     getUserValuations(userId: string): Observable<any> {

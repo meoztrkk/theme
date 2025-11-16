@@ -81,6 +81,15 @@ export class UserComponent implements OnInit, OnDestroy {
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+
+        // Subscribe to authentication state changes
+        this._authService.authenticationStateChanged$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((isAuthenticated) => {
+                console.log('[UserComponent] Authentication state changed, isAuthenticated:', isAuthenticated);
+                // Authentication state değiştiğinde kontrol et
+                this._checkAuthentication();
+            });
     }
 
     /**

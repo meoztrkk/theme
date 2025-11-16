@@ -64,6 +64,10 @@ export class AuthDialogComponent {
     errorMessage: string | null = null;
     private countdownTimer: any = null;
 
+    // Kayıt sonrası otomatik giriş için saklanacak bilgiler
+    private savedPhoneForLogin: string = '';
+    private savedPasswordForLogin: string = '';
+
     // örnek test kodları (backend hazır değilken)
     private testCodes = ['1234', '0000'];
 
@@ -136,6 +140,9 @@ export class AuthDialogComponent {
                 next: () => {
                     this.isSending = false;
                     this.phoneForVerify = normalizedPhone;
+                    // Otomatik giriş için telefon ve şifre bilgilerini sakla
+                    this.savedPhoneForLogin = normalizedPhone;
+                    this.savedPasswordForLogin = password!;
                     // SMS gönder
                     this.authPhone.sendSms(normalizedPhone).subscribe({
                         next: () => {
@@ -268,7 +275,12 @@ export class AuthDialogComponent {
 
         // 1) önce test kodlarıyla deneriz
         if (this.testCodes.includes(code)) {
-            this.dialogRef.close('authenticated');
+            // Test kodu ile doğrulama başarılı, kayıt sonrası otomatik giriş yap
+            if (this.savedPhoneForLogin && this.savedPasswordForLogin) {
+                this.autoLoginAfterVerify();
+            } else {
+                this.dialogRef.close('authenticated');
+            }
             return;
         }
 
@@ -278,7 +290,12 @@ export class AuthDialogComponent {
         this.authPhone.verifySms(this.phoneForVerify, code).subscribe({
             next: () => {
                 this.isSending = false;
-                this.dialogRef.close('authenticated');
+                // Doğrulama başarılı, kayıt sonrası otomatik giriş yap
+                if (this.savedPhoneForLogin && this.savedPasswordForLogin) {
+                    this.autoLoginAfterVerify();
+                } else {
+                    this.dialogRef.close('authenticated');
+                }
             },
             error: (err) => {
                 this.isSending = false;
@@ -295,6 +312,78 @@ export class AuthDialogComponent {
                 }
             },
         });
+    }
+
+    /* --------------------- KAYIT SONRASI OTOMATIK GİRİŞ --------------------- */
+    private autoLoginAfterVerify() {
+        console.log('[AuthDialog.autoLoginAfterVerify] Starting auto login after registration');
+        console.log('[AuthDialog.autoLoginAfterVerify] Phone:', this.savedPhoneForLogin);
+
+        this.isSending = true;
+        this.errorMessage = null;
+
+        this.authPhone
+            .loginByPhone({
+                phoneNumber: this.savedPhoneForLogin,
+                password: this.savedPasswordForLogin,
+            })
+            .subscribe({
+                next: (res: any) => {
+                    this.isSending = false;
+                    const token = res?.accessToken || res?.access_token;
+
+                    if (!token) {
+                        console.error('[AuthDialog.autoLoginAfterVerify] Login failed - no token received');
+                        // Token alınamadı ama doğrulama başarılı, dialog'u kapat
+                        this.dialogRef.close('authenticated');
+                        return;
+                    }
+
+                    console.log('[AuthDialog.autoLoginAfterVerify] Auto login successful, token received:', token.substring(0, 20) + '...');
+                    const isJwt = token && token.split('.').length === 3;
+
+                    // Token'ı önce kaydet
+                    this.appAuth.accessToken = token;
+                    console.log('[AuthDialog.autoLoginAfterVerify] Token saved to localStorage');
+
+                    if (isJwt) {
+                        // JWT token ise kullanıcı bilgisini almayı dene
+                        console.log('[AuthDialog.autoLoginAfterVerify] JWT token detected, fetching user profile...');
+                        this.authPhone.me().subscribe({
+                            next: (profile) => {
+                                console.log('[AuthDialog.autoLoginAfterVerify] User profile fetched successfully:', profile);
+                                this.appAuth.signInWithExternalToken(token, profile);
+                                this.dialogRef.close('authenticated');
+                            },
+                            error: (err) => {
+                                console.warn('[AuthDialog.autoLoginAfterVerify] Could not fetch user profile, but login successful. Error:', err);
+                                console.log('[AuthDialog.autoLoginAfterVerify] Proceeding with login without user profile');
+                                this.appAuth.signInWithExternalToken(token, null);
+                                this.dialogRef.close('authenticated');
+                            },
+                        });
+                    } else {
+                        // JWT değilse direkt token ile giriş yap
+                        console.log('[AuthDialog.autoLoginAfterVerify] Non-JWT token, proceeding with login');
+                        this.appAuth.signInWithExternalToken(token, null);
+                        this.dialogRef.close('authenticated');
+                    }
+
+                    // Bilgileri temizle
+                    this.savedPhoneForLogin = '';
+                    this.savedPasswordForLogin = '';
+                },
+                error: (err) => {
+                    this.isSending = false;
+                    console.error('[AuthDialog.autoLoginAfterVerify] Auto login failed', err);
+                    // Otomatik giriş başarısız olsa bile doğrulama başarılı, dialog'u kapat
+                    // Kullanıcı manuel olarak giriş yapabilir
+                    this.dialogRef.close('authenticated');
+                    // Bilgileri temizle
+                    this.savedPhoneForLogin = '';
+                    this.savedPasswordForLogin = '';
+                },
+            });
     }
 
     // inputlara yazdıkça ilerlesin

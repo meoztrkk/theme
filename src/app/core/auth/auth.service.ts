@@ -2,13 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { AuthUtils } from 'app/core/auth/auth.utils';
 import { UserService } from 'app/core/user/user.service';
-import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
+import { catchError, Observable, of, Subject, switchMap, throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private _authenticated: boolean = false;
     private _httpClient = inject(HttpClient);
     private _userService = inject(UserService);
+
+    // Authentication state değişikliklerini dinlemek için Subject
+    private _authenticationStateChanged$ = new Subject<boolean>();
+    public authenticationStateChanged$ = this._authenticationStateChanged$.asObservable();
 
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
@@ -123,6 +127,9 @@ export class AuthService {
         // Set the authenticated flag to false
         this._authenticated = false;
 
+        // Authentication state değişikliğini bildir
+        this._authenticationStateChanged$.next(false);
+
         // Return the observable
         return of(true);
     }
@@ -160,7 +167,7 @@ export class AuthService {
         console.log('[AuthService.check] Starting authentication check');
         console.log('[AuthService.check] _authenticated flag:', this._authenticated);
         console.log('[AuthService.check] accessToken from localStorage:', !!this.accessToken, this.accessToken ? this.accessToken.substring(0, 20) + '...' : 'null');
-        
+
         // Check if the user is logged in
         if (this._authenticated) {
             console.log('[AuthService.check] Already authenticated, returning true');
@@ -223,5 +230,9 @@ export class AuthService {
         } else {
             console.log('[AuthService.signInWithExternalToken] No user data, will be fetched later');
         }
+
+        // Authentication state değişikliğini bildir
+        this._authenticationStateChanged$.next(true);
+        console.log('[AuthService.signInWithExternalToken] Authentication state change event emitted');
     }
 }

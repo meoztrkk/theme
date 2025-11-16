@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { AppointmentDialogComponent, AppointmentDialogData } from '../appointment-dialog/appointment-dialog.component';
+import { SellWizardService } from 'app/core/services/sell-wizard.service';
+import { forkJoin, map, of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-offers',
@@ -26,19 +28,66 @@ export class OffersComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private dialog: MatDialog
-    /*, private wiz: SellWizardService*/
+    private dialog: MatDialog,
+    private wiz: SellWizardService
   ) {}
 
   ngOnInit(): void {
     this.id = Number(this.route.snapshot.paramMap.get('id'));
-    // this.wiz.getSellRequest(this.id).subscribe(x => this.summary = x);
-    // Şimdilik mock özet:
-    this.summary = {
-      year: 2018, brandName: 'Fiat', modelName: 'Egea',
-      trimName: 'Urban', colorName: 'Beyaz', kilometer: 78000,
-      cityName: 'İstanbul', plate: '34ABC123'
-    };
+
+    // Get sell request and fetch names for IDs
+    this.wiz.getSellRequest(this.id).pipe(
+      switchMap((request: any) => {
+        // Fetch all lookup data in parallel
+        const lookups$ = forkJoin({
+          brands: this.wiz.getBrands(),
+          models: request.modelId && request.markaId ? this.wiz.getModels(request.markaId) : of([]),
+          trims: request.varyantId && request.modelId ? this.wiz.getTrims(request.modelId) : of([]),
+          colors: this.wiz.getColors(),
+          cities: this.wiz.getCities()
+        });
+
+        return lookups$.pipe(
+          map((lookups) => {
+            // Map the request data to summary format with names
+            const brand = lookups.brands.find((b: any) => Number(b.id) === request.markaId);
+            const model = lookups.models.find((m: any) => Number(m.id) === request.modelId);
+            const trim = lookups.trims.find((t: any) => Number(t.id) === request.varyantId);
+            const color = lookups.colors.find((c: any) => Number(c.id) === request.renkId);
+            const city = lookups.cities.find((c: any) => Number(c.id) === request.ilId);
+
+            return {
+              year: request.year,
+              brandName: brand?.name || '',
+              modelName: model?.name || '',
+              trimName: trim?.name || '',
+              colorName: color?.name || '',
+              kilometer: request.kilometre,
+              cityName: city?.name || '',
+              plate: request.plaka || ''
+            };
+          })
+        );
+      })
+    ).subscribe({
+      next: (summary) => {
+        this.summary = summary;
+      },
+      error: (err) => {
+        console.error('Error loading sell request:', err);
+        // Fallback to empty summary on error
+        this.summary = {
+          year: null,
+          brandName: '',
+          modelName: '',
+          trimName: '',
+          colorName: '',
+          kilometer: null,
+          cityName: '',
+          plate: ''
+        };
+      }
+    });
   }
 
   openAppointmentDialog(offer: any): void {
