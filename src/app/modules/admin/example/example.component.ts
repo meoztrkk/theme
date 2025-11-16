@@ -20,6 +20,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
     selector: 'example',
     templateUrl: './example.component.html',
+    styleUrls: ['./example.component.scss'],
     styles: ' .mat-mdc-form-field-subscript-wrapper {  display: none;}',
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,

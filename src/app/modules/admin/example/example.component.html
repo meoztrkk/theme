@@ -1,43 +1,10 @@
 <div class="relative flex min-w-0 flex-auto flex-col overflow-hidden">
 
-    <div class="relative w-full overflow-hidden bg-white pb-20 pt-8 sm:pt-16"
-        style="background-image: url('/images/apps/sell/arkaplan.png'); background-repeat: no-repeat; background-size: cover;">
+    <div class="relative w-full overflow-hidden bg-white pb-20 pt-8 sm:pt-16 hero-background">
 
         <div class="mx-auto w-full max-w-7xl px-6">
-            <div class="flex justify-center w-full">
-                <div class="flex w-full max-w-4xl flex-col items-center rounded-xl bg-white p-2 shadow-2xl md:flex-row">
-
-                    <mat-form-field appearance="outline"
-                        class="w-full md:w-1/4 mb-4 md:mb-0 md:border-r md:border-gray-200"
-                        style="--mdc-outlined-text-field-container-shape: 0; --mdc-shape-small: 0;">
-                        <mat-label>Model yılı</mat-label>
-                        <mat-select [(ngModel)]="selectedYear">
-                            <mat-option *ngFor="let year of years" [value]="year">{{ year }}</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline" class="w-full md:w-1/4 mb-4 md:mb-0"
-                        style="--mdc-outlined-text-field-container-shape: 0; --mdc-shape-small: 0;">
-                        <mat-label>Marka seçin</mat-label>
-                        <mat-select [(ngModel)]="selectedBrandId">
-                            <mat-option *ngFor="let brand of brands" [value]="brand.id">{{ brand.name }}</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-
-                    <button mat-flat-button class="w-full md:w-1/4 h-14 font-semibold shadow-none rounded-xl"
-                        style="background-color: #eaf5e6; color: #35993a; line-height: 1.2;">
-                        Randevunuzu yönetin
-                    </button>
-
-                    <button mat-flat-button class="w-full md:w-1/4 h-14 font-semibold shadow-lg  rounded-xl"
-                        style="background-color: #388E3C; color: white;" (click)="AracDegerle()">
-                        Aracımı değerle
-                    </button>
-                </div>
-            </div>
-
-            <div class="mt-16 flex flex-col items-center lg:mt-24 lg:flex-row lg:justify-between">
-                <div class="max-w-xl text-center lg:text-left">
+            <div class="flex flex-col items-center lg:flex-row lg:justify-between lg:items-start pt-8 lg:pt-16">
+                <div class="max-w-xl text-center lg:text-left mb-8 lg:mb-0 lg:flex-1">
                     <div class="text-3xl font-extrabold text-green-600 sm:text-4xl lg:text-5xl">
                         Araç ekspertizi <span class="rounded-lg bg-orange-500 px-2 py-1 text-base text-white">Türkiye'de
                             bir ilk</span>
@@ -51,7 +18,33 @@
                     </p>
                 </div>
 
-                <div class="mt-10 lg:mt-0 lg:w-1/2">
+                <div class="w-full lg:w-auto flex justify-center lg:justify-center order-first lg:order-none mb-8 lg:mb-0">
+                    <div class="valuation-form-container">
+                        <mat-form-field appearance="outline" class="valuation-field">
+                            <mat-label>Model yılı</mat-label>
+                            <mat-select [(ngModel)]="selectedYear">
+                                <mat-option *ngFor="let year of years" [value]="year">{{ year }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="valuation-field">
+                            <mat-label>Marka</mat-label>
+                            <mat-select [(ngModel)]="selectedBrandId">
+                                <mat-option *ngFor="let brand of brands" [value]="brand.id">{{ brand.name }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <button mat-flat-button class="valuation-button secondary" type="button">
+                            Randevunuzu yönetin
+                        </button>
+
+                        <button mat-flat-button class="valuation-button primary" type="button" (click)="AracDegerle()">
+                            Aracımı değerle
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-10 lg:mt-0 lg:w-1/2 lg:flex-1">
                     <div class="flex justify-center">
                         <img src="https://tr.vava.cars/assets/images/homepage/tr/home-banner/online-car-sell.webp"
                             alt="Dijital Ekspertiz Uygulaması" class="w-full max-w-md object-contain">
@@ -68,19 +61,14 @@
 
             <div
                 class="mt-8 flex flex-col items-center justify-center space-y-6 md:flex-row md:space-x-12 md:space-y-0">
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-2 p-4 rounded-xl bg-white shadow-md hover:shadow-lg transition-shadow">
                     <img src="https://tr.vava.cars/assets/images/homepage/scores/google-tr.webp" alt="Google Logo"
-                        class="h-600 w-60">
-                    <div class="text-left">
-
-                    </div>
+                        class="h-auto w-60">
                 </div>
 
-                <div class="flex items-center space-x-2 rounded-lg border p-3 bg-white">
+                <div class="flex items-center space-x-2 rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-shadow">
                     <img src="https://tr.vava.cars/assets/images/homepage/scores/sikayetvar-tr.webp"
-                        alt="Şikayetvar Logo" class="h-600 w-60">
-                    <div class="text-left">
-                    </div>
+                        alt="Şikayetvar Logo" class="h-auto w-60">
                 </div>
             </div>
         </div>
