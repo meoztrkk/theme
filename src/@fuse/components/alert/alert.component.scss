@@ -146,32 +146,33 @@ fuse-alert {
         &.fuse-alert-type-primary {
             .fuse-alert-container {
                 .fuse-alert-border {
-                    @apply bg-primary;
+                    background-color: var(--direkt-green) !important;
                 }
 
                 .fuse-alert-title,
                 .fuse-alert-icon {
-                    @apply text-primary;
+                    color: var(--direkt-green) !important;
                 }
 
                 .dark & {
-                    @apply bg-gray-700;
+                    background-color: var(--gray-1) !important;
 
                     .fuse-alert-border {
-                        @apply bg-primary-400;
+                        background-color: var(--direkt-green) !important;
                     }
 
                     .fuse-alert-title,
                     .fuse-alert-icon {
-                        @apply text-primary-400;
+                        color: var(--direkt-green) !important;
                     }
 
                     .fuse-alert-message {
-                        @apply text-gray-300;
+                        color: var(--gray-3) !important;
                     }
 
                     code {
-                        @apply bg-gray-400 text-gray-800;
+                        background-color: var(--gray-2) !important;
+                        color: var(--dark-black) !important;
                     }
                 }
             }
@@ -181,32 +182,33 @@ fuse-alert {
         &.fuse-alert-type-accent {
             .fuse-alert-container {
                 .fuse-alert-border {
-                    @apply bg-accent;
+                    background-color: var(--gray-3) !important;
                 }
 
                 .fuse-alert-title,
                 .fuse-alert-icon {
-                    @apply text-accent;
+                    color: var(--gray-3) !important;
                 }
 
                 .dark & {
-                    @apply bg-gray-700;
+                    background-color: var(--gray-1) !important;
 
                     .fuse-alert-border {
-                        @apply bg-accent-400;
+                        background-color: var(--gray-3) !important;
                     }
 
                     .fuse-alert-title,
                     .fuse-alert-icon {
-                        @apply text-accent-400;
+                        color: var(--gray-3) !important;
                     }
 
                     .fuse-alert-message {
-                        @apply text-gray-300;
+                        color: var(--gray-3) !important;
                     }
 
                     code {
-                        @apply bg-gray-400 text-gray-800;
+                        background-color: var(--gray-2) !important;
+                        color: var(--dark-black) !important;
                     }
                 }
             }
@@ -216,32 +218,33 @@ fuse-alert {
         &.fuse-alert-type-warn {
             .fuse-alert-container {
                 .fuse-alert-border {
-                    @apply bg-warn;
+                    background-color: var(--error-red) !important;
                 }
 
                 .fuse-alert-title,
                 .fuse-alert-icon {
-                    @apply text-warn;
+                    color: var(--error-red) !important;
                 }
 
                 .dark & {
-                    @apply bg-gray-700;
+                    background-color: var(--gray-1) !important;
 
                     .fuse-alert-border {
-                        @apply bg-warn-400;
+                        background-color: var(--error-red) !important;
                     }
 
                     .fuse-alert-title,
                     .fuse-alert-icon {
-                        @apply text-warn-400;
+                        color: var(--error-red) !important;
                     }
 
                     .fuse-alert-message {
-                        @apply text-gray-300;
+                        color: var(--gray-3) !important;
                     }
 
                     code {
-                        @apply bg-gray-400 text-gray-800;
+                        background-color: var(--gray-2) !important;
+                        color: var(--dark-black) !important;
                     }
                 }
             }
@@ -436,22 +439,23 @@ fuse-alert {
         /* Primary */
         &.fuse-alert-type-primary {
             .fuse-alert-container {
-                @apply bg-primary-600;
+                background-color: var(--direkt-green) !important;
 
                 .fuse-alert-icon {
-                    @apply text-white;
+                    color: var(--soft-white) !important;
                 }
 
                 .fuse-alert-title {
-                    @apply text-white;
+                    color: var(--soft-white) !important;
                 }
 
                 .fuse-alert-message {
-                    @apply text-primary-100;
+                    color: rgba(255, 255, 255, 0.9) !important;
                 }
 
                 code {
-                    @apply bg-primary-200 text-primary-800;
+                    background-color: rgba(255, 255, 255, 0.2) !important;
+                    color: var(--soft-white) !important;
                 }
             }
         }
@@ -459,22 +463,23 @@ fuse-alert {
         /* Accent */
         &.fuse-alert-type-accent {
             .fuse-alert-container {
-                @apply bg-accent-600;
+                background-color: var(--gray-3) !important;
 
                 .fuse-alert-icon {
-                    @apply text-white;
+                    color: var(--soft-white) !important;
                 }
 
                 .fuse-alert-title {
-                    @apply text-white;
+                    color: var(--soft-white) !important;
                 }
 
                 .fuse-alert-message {
-                    @apply text-accent-100;
+                    color: rgba(255, 255, 255, 0.9) !important;
                 }
 
                 code {
-                    @apply bg-accent-200 text-accent-800;
+                    background-color: rgba(255, 255, 255, 0.2) !important;
+                    color: var(--soft-white) !important;
                 }
             }
         }
@@ -482,22 +487,23 @@ fuse-alert {
         /* Warn */
         &.fuse-alert-type-warn {
             .fuse-alert-container {
-                @apply bg-warn-600;
+                background-color: var(--error-red) !important;
 
                 .fuse-alert-icon {
-                    @apply text-white;
+                    color: var(--soft-white) !important;
                 }
 
                 .fuse-alert-title {
-                    @apply text-white;
+                    color: var(--soft-white) !important;
                 }
 
                 .fuse-alert-message {
-                    @apply text-warn-100;
+                    color: rgba(255, 255, 255, 0.9) !important;
                 }
 
                 code {
-                    @apply bg-warn-200 text-warn-800;
+                    background-color: rgba(255, 255, 255, 0.2) !important;
+                    color: var(--soft-white) !important;
                 }
             }
         }
@@ -627,39 +633,41 @@ fuse-alert {
         /* Primary */
         &.fuse-alert-type-primary {
             .fuse-alert-container {
-                @apply bg-primary-50 ring-1 ring-inset ring-primary-400;
+                background-color: rgba(18, 200, 106, 0.1) !important;
+                border: 1px solid rgba(18, 200, 106, 0.3) !important;
 
                 .fuse-alert-icon {
-                    @apply text-primary-600;
+                    color: var(--direkt-green) !important;
                 }
 
                 .fuse-alert-title,
                 .fuse-alert-dismiss-button {
-                    @apply text-primary-900;
+                    color: var(--dark-black) !important;
                 }
 
                 .fuse-alert-message {
-                    @apply text-primary-700;
+                    color: var(--dark-black) !important;
                 }
 
                 code {
-                    @apply bg-primary-200 text-primary-800;
+                    background-color: rgba(18, 200, 106, 0.2) !important;
+                    color: var(--direkt-green) !important;
                 }
 
                 .dark & {
-                    @apply bg-primary-600;
+                    background-color: var(--direkt-green) !important;
 
                     .fuse-alert-icon {
-                        @apply text-white;
+                        color: var(--soft-white) !important;
                     }
 
                     .fuse-alert-title,
                     .fuse-alert-dismiss-button {
-                        @apply text-white;
+                        color: var(--soft-white) !important;
                     }
 
                     .fuse-alert-message {
-                        @apply text-primary-200;
+                        color: rgba(255, 255, 255, 0.9) !important;
                     }
                 }
             }
@@ -668,39 +676,41 @@ fuse-alert {
         /* Accent */
         &.fuse-alert-type-accent {
             .fuse-alert-container {
-                @apply bg-accent-100 ring-1 ring-inset ring-accent-400;
+                background-color: rgba(125, 138, 143, 0.1) !important;
+                border: 1px solid rgba(125, 138, 143, 0.3) !important;
 
                 .fuse-alert-icon {
-                    @apply text-accent-600;
+                    color: var(--gray-3) !important;
                 }
 
                 .fuse-alert-title,
                 .fuse-alert-dismiss-button {
-                    @apply text-accent-900;
+                    color: var(--dark-black) !important;
                 }
 
                 .fuse-alert-message {
-                    @apply text-accent-700;
+                    color: var(--dark-black) !important;
                 }
 
                 code {
-                    @apply bg-accent-200 text-accent-800;
+                    background-color: rgba(125, 138, 143, 0.2) !important;
+                    color: var(--gray-3) !important;
                 }
 
                 .dark & {
-                    @apply bg-accent-600;
+                    background-color: var(--gray-3) !important;
 
                     .fuse-alert-icon {
-                        @apply text-white;
+                        color: var(--soft-white) !important;
                     }
 
                     .fuse-alert-title,
                     .fuse-alert-dismiss-button {
-                        @apply text-white;
+                        color: var(--soft-white) !important;
                     }
 
                     .fuse-alert-message {
-                        @apply text-accent-200;
+                        color: rgba(255, 255, 255, 0.9) !important;
                     }
                 }
             }
@@ -709,39 +719,41 @@ fuse-alert {
         /* Warn */
         &.fuse-alert-type-warn {
             .fuse-alert-container {
-                @apply bg-warn-50 ring-1 ring-inset ring-warn-400;
+                background-color: rgba(233, 69, 69, 0.1) !important;
+                border: 1px solid rgba(233, 69, 69, 0.3) !important;
 
                 .fuse-alert-icon {
-                    @apply text-warn-600;
+                    color: var(--error-red) !important;
                 }
 
                 .fuse-alert-title,
                 .fuse-alert-dismiss-button {
-                    @apply text-warn-900;
+                    color: var(--dark-black) !important;
                 }
 
                 .fuse-alert-message {
-                    @apply text-warn-700;
+                    color: var(--dark-black) !important;
                 }
 
                 code {
-                    @apply bg-warn-200 text-warn-800;
+                    background-color: rgba(233, 69, 69, 0.2) !important;
+                    color: var(--error-red) !important;
                 }
 
                 .dark & {
-                    @apply bg-warn-600;
+                    background-color: var(--error-red) !important;
 
                     .fuse-alert-icon {
-                        @apply text-white;
+                        color: var(--soft-white) !important;
                     }
 
                     .fuse-alert-title,
                     .fuse-alert-dismiss-button {
-                        @apply text-white;
+                        color: var(--soft-white) !important;
                     }
 
                     .fuse-alert-message {
-                        @apply text-warn-200;
+                        color: rgba(255, 255, 255, 0.9) !important;
                     }
                 }
             }
@@ -962,39 +974,40 @@ fuse-alert {
         /* Primary */
         &.fuse-alert-type-primary {
             .fuse-alert-container {
-                @apply bg-primary-50;
+                background-color: rgba(18, 200, 106, 0.1) !important;
 
                 .fuse-alert-icon {
-                    @apply text-primary-600;
+                    color: var(--direkt-green) !important;
                 }
 
                 .fuse-alert-title,
                 .fuse-alert-dismiss-button {
-                    @apply text-primary-900;
+                    color: var(--dark-black) !important;
                 }
 
                 .fuse-alert-message {
-                    @apply text-primary-700;
+                    color: var(--dark-black) !important;
                 }
 
                 code {
-                    @apply bg-primary-200 text-primary-800;
+                    background-color: rgba(18, 200, 106, 0.2) !important;
+                    color: var(--direkt-green) !important;
                 }
 
                 .dark & {
-                    @apply bg-primary-600;
+                    background-color: var(--direkt-green) !important;
 
                     .fuse-alert-icon {
-                        @apply text-white;
+                        color: var(--soft-white) !important;
                     }
 
                     .fuse-alert-title,
                     .fuse-alert-dismiss-button {
-                        @apply text-white;
+                        color: var(--soft-white) !important;
                     }
 
                     .fuse-alert-message {
-                        @apply text-primary-200;
+                        color: rgba(255, 255, 255, 0.9) !important;
                     }
                 }
             }
@@ -1003,39 +1016,40 @@ fuse-alert {
         /* Accent */
         &.fuse-alert-type-accent {
             .fuse-alert-container {
-                @apply bg-accent-100;
+                background-color: rgba(125, 138, 143, 0.1) !important;
 
                 .fuse-alert-icon {
-                    @apply text-accent-600;
+                    color: var(--gray-3) !important;
                 }
 
                 .fuse-alert-title,
                 .fuse-alert-dismiss-button {
-                    @apply text-accent-900;
+                    color: var(--dark-black) !important;
                 }
 
                 .fuse-alert-message {
-                    @apply text-accent-700;
+                    color: var(--dark-black) !important;
                 }
 
                 code {
-                    @apply bg-accent-200 text-accent-800;
+                    background-color: rgba(125, 138, 143, 0.2) !important;
+                    color: var(--gray-3) !important;
                 }
 
                 .dark & {
-                    @apply bg-accent-600;
+                    background-color: var(--gray-3) !important;
 
                     .fuse-alert-icon {
-                        @apply text-white;
+                        color: var(--soft-white) !important;
                     }
 
                     .fuse-alert-title,
                     .fuse-alert-dismiss-button {
-                        @apply text-white;
+                        color: var(--soft-white) !important;
                     }
 
                     .fuse-alert-message {
-                        @apply text-accent-200;
+                        color: rgba(255, 255, 255, 0.9) !important;
                     }
                 }
             }
@@ -1044,39 +1058,40 @@ fuse-alert {
         /* Warn */
         &.fuse-alert-type-warn {
             .fuse-alert-container {
-                @apply bg-warn-50;
+                background-color: rgba(233, 69, 69, 0.1) !important;
 
                 .fuse-alert-icon {
-                    @apply text-warn-600;
+                    color: var(--error-red) !important;
                 }
 
                 .fuse-alert-title,
                 .fuse-alert-dismiss-button {
-                    @apply text-warn-900;
+                    color: var(--dark-black) !important;
                 }
 
                 .fuse-alert-message {
-                    @apply text-warn-700;
+                    color: var(--dark-black) !important;
                 }
 
                 code {
-                    @apply bg-warn-200 text-warn-800;
+                    background-color: rgba(233, 69, 69, 0.2) !important;
+                    color: var(--error-red) !important;
                 }
 
                 .dark & {
-                    @apply bg-warn-600;
+                    background-color: var(--error-red) !important;
 
                     .fuse-alert-icon {
-                        @apply text-white;
+                        color: var(--soft-white) !important;
                     }
 
                     .fuse-alert-title,
                     .fuse-alert-dismiss-button {
-                        @apply text-white;
+                        color: var(--soft-white) !important;
                     }
 
                     .fuse-alert-message {
-                        @apply text-warn-200;
+                        color: rgba(255, 255, 255, 0.9) !important;
                     }
                 }
             }

@@ -2,7 +2,7 @@
     <div class="p-4 sm:p-6">
         <!-- Özet kartı -->
         <div class="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-100">
-            <h2 class="text-xl font-bold mb-5 text-gray-900">Araç Özeti</h2>
+            <h2 class="mb-5">Araç Özeti</h2>
             <div class="vehicle-summary-grid">
                 <div class="summary-item">
                     <div class="summary-label">Yıl</div>
@@ -40,7 +40,7 @@
         </div>
 
         <!-- Teklif listesi -->
-        <h3 class="text-sm font-semibold mb-3">Gelen Teklifler</h3>
+        <h3 class="mb-3">Gelen Teklifler</h3>
         <div class="offer-list">
             <div class="offer-item" *ngFor="let o of offers">
                 <div class="offer-left">
@@ -56,7 +56,7 @@
                     </div>
                 </div>
                 <div class="offer-middle">Randevu : {{o.appointment}} · {{o.location}}</div>
-                <div class="offer-right"><button class="offer-btn" (click)="openAppointmentDialog(o)">Randevu Al</button></div>
+                <div class="offer-right"><button class="offer-btn btn-primary" (click)="openAppointmentDialog(o)">Randevu Al</button></div>
             </div>
         </div>
     </div>

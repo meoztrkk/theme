@@ -142,13 +142,15 @@
     }
 }
 
-/* Rounded design */
+/* Rounded design - Updated to match Direkt Satış design system */
 .mat-mdc-button,
 .mat-mdc-raised-button,
 .mat-mdc-outlined-button,
 .mat-mdc-unelevated-button {
     padding: 0 20px !important;
-    border-radius: 9999px !important;
+    border-radius: 10px !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
 /* Fix the alignment of icons when used within buttons */
@@ -180,7 +182,7 @@
     }
 }
 
-/* Adjust the focus, ripple and icon colors of colored background buttons */
+/* Adjust the focus, ripple and icon colors of colored background buttons - Updated for Direkt Satış design system */
 .mat-mdc-raised-button,
 .mat-mdc-unelevated-button,
 .mat-mdc-fab,
@@ -189,6 +191,14 @@
         'colors.gray[400]'
     ) !important;
     --mat-mdc-button-ripple-color: rgba(0, 0, 0, 0.1) !important;
+
+    /* Primary button hover effect */
+    &.mat-primary:not([disabled='true']) {
+        &:hover {
+            box-shadow: 0 4px 12px rgba(18, 200, 106, 0.15) !important;
+            transform: translateY(-1px);
+        }
+    }
 
     .dark & {
         --mat-mdc-button-persistent-ripple-color: theme(
@@ -234,16 +244,27 @@
     }
 }
 
-/* Adjust the border color of outlined buttons */
+/* Adjust the border color of outlined buttons - Updated for Direkt Satış design system */
 .mat-mdc-outlined-button {
     /* Not disabled */
     &:not([disabled='true']) {
-        @apply border-gray-300 dark:border-gray-500 #{'!important'};
+        border-color: #DDE1E4 !important; /* Gray 2 */
+        
+        &.mat-primary {
+            border-color: #12C86A !important; /* Direkt Green */
+            color: #12C86A !important;
+            
+            &:hover {
+                border-color: #0AA857 !important; /* Direkt Green Hover */
+                background-color: #F2F4F5 !important; /* Gray 1 */
+            }
+        }
     }
 
     /* Disabled */
     &[disabled='true'] {
-        @apply border-gray-300/70 dark:border-gray-600 #{'!important'};
+        border-color: #DDE1E4 !important; /* Gray 2 */
+        opacity: 0.6;
     }
 }
 
@@ -310,12 +331,23 @@
 }
 
 /* -------------------------------------------------------------------------- */
+/*  @ Card
+/* -------------------------------------------------------------------------- */
+.mat-mdc-card {
+    background-color: var(--soft-white) !important;
+    border-radius: var(--radius-card) !important;
+    box-shadow: var(--shadow-card) !important;
+    border: 1px solid var(--gray-2) !important;
+}
+
+/* -------------------------------------------------------------------------- */
 /*  @ Dialog
 /* -------------------------------------------------------------------------- */
 .mat-mdc-dialog-container {
     .mdc-dialog__surface {
-        border-radius: 16px !important;
+        border-radius: var(--radius-card) !important;
         padding: 24px;
+        background-color: var(--soft-white) !important;
     }
 }
 
@@ -341,14 +373,14 @@
     &.mat-form-field-invalid {
         /* Border color */
         .mat-mdc-text-field-wrapper {
-            @apply border-warn dark:border-warn #{'!important'};
+            border-color: var(--error-red) !important;
         }
 
         /* Select */
         .mat-mdc-select {
             /* Placeholder color */
             .mat-mdc-select-placeholder {
-                @apply text-warn #{'!important'};
+                color: var(--error-red) !important;
             }
         }
     }
@@ -371,7 +403,8 @@
     &.mat-focused:not(.mat-form-field-invalid) {
         /* Border color */
         .mat-mdc-text-field-wrapper {
-            @apply border-primary dark:border-primary #{'!important'};
+            border-color: var(--direkt-green) !important;
+            box-shadow: 0 0 0 3px rgba(18, 200, 106, 0.1) !important;
         }
     }
 
@@ -403,10 +436,12 @@
     /* Default style tweaks and enhancements */
     .mat-mdc-text-field-wrapper {
         padding: 0;
-        border-radius: 6px;
+        border-radius: var(--radius-input);
         border-width: 1px;
         border-style: solid;
-        @apply border-gray-300 bg-white shadow-sm dark:border-gray-500 dark:bg-black dark:bg-opacity-5 #{'!important'};
+        border-color: var(--gray-2) !important;
+        background-color: var(--soft-white) !important;
+        box-shadow: var(--shadow-sm) !important;
 
         /* Adjust the top spacing and overflow when mat-label present */
         &:not(.mdc-text-field--no-label) {
@@ -415,7 +450,7 @@
         }
 
         .mat-mdc-form-field-focus-overlay {
-            border-radius: 6px;
+            border-radius: var(--radius-input);
         }
 
         /* Form field */
@@ -423,7 +458,7 @@
             position: relative;
             display: flex;
             align-items: stretch;
-            border-radius: 6px;
+            border-radius: var(--radius-input);
             padding: 0 16px;
 
             .mat-mdc-form-field-icon-prefix,
@@ -505,14 +540,12 @@
                     &:focus {
                         .mat-mdc-select-trigger {
                             .mat-mdc-select-value {
-                                @apply text-primary #{'!important'};
+                                color: var(--direkt-green) !important;
                             }
 
                             .mat-mdc-select-arrow-wrapper {
                                 .mat-mdc-select-arrow {
-                                    border-top-color: var(
-                                        --fuse-primary
-                                    ) !important;
+                                    border-top-color: var(--direkt-green) !important;
                                 }
                             }
                         }
@@ -876,7 +909,7 @@
         .mdc-notched-outline__leading,
         .mdc-notched-outline__notch,
         .mdc-notched-outline__trailing {
-            border-color: var(--fuse-warn) !important;
+            border-color: var(--error-red) !important;
         }
     }
 
@@ -887,7 +920,7 @@
             .mdc-notched-outline__leading,
             .mdc-notched-outline__notch,
             .mdc-notched-outline__trailing {
-                border-color: var(--fuse-primary) !important;
+                border-color: var(--direkt-green) !important;
             }
         }
 
@@ -896,7 +929,7 @@
             .mdc-notched-outline__leading,
             .mdc-notched-outline__notch,
             .mdc-notched-outline__trailing {
-                border-color: var(--fuse-accent) !important;
+                border-color: var(--gray-3) !important;
             }
         }
     }
@@ -908,7 +941,7 @@
                     .mdc-notched-outline__leading,
                     .mdc-notched-outline__notch,
                     .mdc-notched-outline__trailing {
-                        @apply border-slate-300 dark:border-slate-500 #{'!important'};
+                        border-color: var(--gray-2) !important;
                     }
                 }
             }
@@ -1000,6 +1033,10 @@
 /* -------------------------------------------------------------------------- */
 .mat-mdc-menu-panel {
     min-width: 144px !important;
+    background-color: var(--soft-white) !important;
+    border-radius: var(--radius-card) !important;
+    box-shadow: var(--shadow-card) !important;
+    border: 1px solid var(--gray-2) !important;
 
     .mat-mdc-menu-content {
         .mat-mdc-menu-item {
@@ -1013,11 +1050,21 @@
                 --tw-text-opacity: 1;
                 color: rgba(var(--fuse-mat-icon-rgb), var(--tw-text-opacity));
             }
+
+            &:hover:not([disabled]) {
+                background-color: var(--gray-1) !important;
+            }
+
+            &.mat-mdc-menu-item-highlighted:not([disabled]) {
+                background-color: rgba(18, 200, 106, 0.1) !important;
+                color: var(--direkt-green) !important;
+            }
         }
 
         /* Divider within mat-menu */
         mat-divider {
             margin: 8px 0;
+            border-color: var(--gray-2) !important;
         }
     }
 }
@@ -1107,8 +1154,28 @@
 
         .mat-mdc-select-arrow {
             margin: 0 0 0 8px;
-            @apply text-secondary #{!important};
+            color: var(--gray-3) !important;
         }
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  @ Option (Select dropdown items)
+/* -------------------------------------------------------------------------- */
+.mat-mdc-option {
+    background-color: var(--soft-white) !important;
+
+    &:hover:not(.mdc-list-item--disabled) {
+        background-color: var(--gray-1) !important;
+    }
+
+    &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+        background-color: rgba(18, 200, 106, 0.1) !important;
+        color: var(--direkt-green) !important;
+    }
+
+    &.mdc-list-item--activated:not(.mdc-list-item--disabled) {
+        background-color: rgba(18, 200, 106, 0.1) !important;
     }
 }
 

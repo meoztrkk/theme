@@ -6,14 +6,14 @@
 /* mat dialog'un kendi yüzeyini yuvarla */
 ::ng-deep .appointment-dialog .mat-mdc-dialog-surface,
 ::ng-deep .mat-mdc-dialog-surface {
-    border-radius: 16px !important;
+    border-radius: calc(var(--radius-card) * 2) !important;
     padding: 0 !important;
 }
 
 /* bizim içerik */
 .appointment-shell {
-    background: #fff;
-    border-radius: 16px;
+    background: var(--soft-white);
+    border-radius: var(--radius-card);
     padding: 16px 16px 12px 16px;
     box-sizing: border-box;
     min-width: 400px;
@@ -31,7 +31,7 @@
 .appointment-title {
     font-weight: 600;
     font-size: 18px;
-    color: #1f2937;
+    color: var(--dark-black);
 }
 
 .appointment-close {
@@ -39,7 +39,7 @@
     border: none;
     font-size: 24px;
     cursor: pointer;
-    color: #4b5563;
+    color: var(--gray-3);
     line-height: 1;
     padding: 0;
     width: 32px;
@@ -47,17 +47,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: var(--radius-input);
     transition: background-color 0.2s;
 }
 
 .appointment-close:hover {
-    background-color: #f3f4f6;
+    background-color: var(--gray-1);
 }
 
 .appointment-divider {
     height: 1px;
-    background: #e5e7eb;
+    background: var(--gray-2);
     margin: 12px -16px 14px -16px;
 }
 
@@ -70,8 +70,8 @@
 
 /* Bilgi bölümü */
 .appointment-info-section {
-    background: #f9fafb;
-    border-radius: 12px;
+    background: var(--gray-1);
+    border-radius: var(--radius-card);
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -86,13 +86,13 @@
 
 .appointment-info-label {
     font-size: 13px;
-    color: #6b7280;
+    color: var(--gray-3);
     font-weight: 500;
 }
 
 .appointment-info-value {
     font-size: 14px;
-    color: #1f2937;
+    color: var(--dark-black);
     font-weight: 600;
 }
 
@@ -111,7 +111,7 @@
 
 .appointment-label {
     font-size: 13px;
-    color: #374151;
+    color: var(--dark-black);
     font-weight: 500;
 }
 
@@ -124,7 +124,7 @@
 }
 
 ::ng-deep .appointment-form-field .mat-mdc-text-field-wrapper {
-    border-radius: 10px;
+    border-radius: var(--radius-input);
 }
 
 /* Butonlar */
@@ -137,7 +137,7 @@
 .appointment-btn {
     flex: 1;
     height: 44px;
-    border-radius: 12px;
+    border-radius: var(--radius-button);
     font-weight: 600;
     font-size: 14px;
     cursor: pointer;
@@ -146,12 +146,13 @@
 }
 
 .appointment-btn.primary {
-    background: #22c55e;
-    color: #fff;
+    background: var(--direkt-green);
+    color: var(--soft-white);
 }
 
 .appointment-btn.primary:hover:not(:disabled) {
-    background: #16a34a;
+    background: var(--direkt-green-hover);
+    box-shadow: var(--shadow-button-hover);
     transform: translateY(-1px);
 }
 
@@ -165,12 +166,14 @@
 }
 
 .appointment-btn.secondary {
-    background: #f3f4f6;
-    color: #374151;
+    background: var(--gray-1);
+    color: var(--dark-black);
+    border: 2px solid var(--gray-2);
 }
 
 .appointment-btn.secondary:hover:not(:disabled) {
-    background: #e5e7eb;
+    background: var(--gray-2);
+    border-color: var(--gray-2);
 }
 
 .appointment-btn.secondary:disabled {

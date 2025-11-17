@@ -13,10 +13,10 @@
         display: flex;
         align-items: center;
         gap: 1.5rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--direkt-green) 0%, var(--direkt-green-hover) 100%);
         padding: 2rem;
-        border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);
+        border-radius: var(--radius-card);
+        box-shadow: var(--shadow-card);
 
         .header-icon-wrapper {
             width: 64px;
@@ -70,14 +70,14 @@
     .spinner {
         width: 48px;
         height: 48px;
-        border: 4px solid #e5e7eb;
-        border-top-color: #667eea;
+        border: 4px solid var(--gray-2);
+        border-top-color: var(--direkt-green);
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
     }
 
     .loading-text {
-        color: #6b7280;
+        color: var(--gray-3);
         font-size: 1rem;
         margin: 0;
     }
@@ -98,16 +98,16 @@
 
 // Tabs
 .profile-tabs {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e5e7eb;
+    background: var(--soft-white);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--gray-2);
     overflow: hidden;
 
     ::ng-deep {
         .mat-mdc-tab-header {
-            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-            border-bottom: 2px solid #e5e7eb;
+            background: var(--gray-1);
+            border-bottom: 2px solid var(--gray-2);
             padding: 0 1rem;
         }
 
@@ -118,7 +118,7 @@
         .mdc-tab {
             min-width: 200px;
             padding: 1rem 1.5rem;
-            border-radius: 10px 10px 0 0;
+            border-radius: var(--radius-button) var(--radius-button) 0 0;
             transition: all 0.3s ease;
 
             .mdc-tab__content {
@@ -158,23 +158,23 @@
             }
 
             &:hover {
-                background-color: rgba(102, 126, 234, 0.05);
+                background-color: rgba(18, 200, 106, 0.05);
             }
         }
 
         .mdc-tab--active {
-            background: white;
-            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+            background: var(--soft-white);
+            box-shadow: var(--shadow-sm);
 
             .mdc-tab__content {
                 .tab-label-content {
                     .tab-icon {
-                        color: #667eea;
+                        color: var(--direkt-green);
                     }
 
                     .tab-label-text,
                     .tab-label {
-                        color: #667eea;
+                        color: var(--direkt-green);
                     }
                 }
             }
@@ -227,23 +227,23 @@
         gap: 1.25rem;
         margin-bottom: 2rem;
         padding-bottom: 1.5rem;
-        border-bottom: 2px solid #f3f4f6;
+        border-bottom: 2px solid var(--gray-2);
 
         .section-icon-wrapper {
             width: 48px;
             height: 48px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: var(--radius-card);
+            background: linear-gradient(135deg, var(--direkt-green) 0%, var(--direkt-green-hover) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: var(--shadow-button-hover);
             margin-top: 0.125rem;
 
             &.security {
-                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+                background: linear-gradient(135deg, var(--error-red) 0%, rgba(233, 69, 69, 0.8) 100%);
+                box-shadow: var(--shadow-button-hover);
             }
 
             .section-icon {
@@ -265,14 +265,14 @@
                 font-size: 1.5rem;
                 font-weight: 700;
                 margin: 0 0 0.5rem 0;
-                color: #1a1a1a;
+                color: var(--dark-black);
                 letter-spacing: -0.01em;
                 line-height: 1.3;
             }
 
             .section-description {
                 font-size: 0.9rem;
-                color: #6b7280;
+                color: var(--gray-3);
                 margin: 0;
                 line-height: 1.5;
             }
@@ -295,7 +295,7 @@
         .form-group-label {
             font-size: 0.875rem;
             font-weight: 600;
-            color: #374151;
+            color: var(--dark-black);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-bottom: 1rem;
@@ -326,18 +326,18 @@
         &.readonly-field {
             ::ng-deep {
                 .mat-mdc-text-field-wrapper {
-                    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-                    border: 1px solid #e5e7eb;
+                    background: var(--gray-1);
+                    border: 1px solid var(--gray-2);
                 }
 
                 .mat-mdc-form-field-input-control input {
-                    color: #6b7280;
+                    color: var(--gray-3);
                     font-weight: 500;
                 }
             }
 
             .readonly-icon {
-                color: #9ca3af;
+                color: var(--gray-3);
                 font-size: 1.125rem;
                 width: 1.125rem;
                 height: 1.125rem;
@@ -351,8 +351,8 @@
             }
 
             .mat-mdc-text-field-wrapper {
-                background-color: #fafafa;
-                border-radius: 10px;
+                background-color: var(--soft-white);
+                border-radius: var(--radius-input);
                 transition: all 0.2s ease;
             }
 
@@ -361,12 +361,12 @@
             }
 
             .mat-mdc-text-field-wrapper:hover {
-                background-color: #f9fafb;
+                background-color: var(--gray-1);
             }
 
             .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
-                background-color: #ffffff;
-                box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+                background-color: var(--soft-white);
+                box-shadow: 0 0 0 3px rgba(18, 200, 106, 0.1);
             }
 
             .mat-mdc-form-field-subscript-wrapper {
@@ -375,16 +375,16 @@
 
             .mat-mdc-form-field-input-control input:disabled,
             .mat-mdc-form-field-input-control textarea:disabled {
-                color: #6b7280;
+                color: var(--gray-3);
                 cursor: not-allowed;
             }
 
             .mat-mdc-form-field-label {
-                color: #6b7280;
+                color: var(--gray-3);
             }
 
             .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
-                color: #667eea;
+                color: var(--direkt-green);
             }
 
             // Fix label position when prefix icon exists
@@ -405,11 +405,11 @@
             }
 
             .mat-mdc-input-element::placeholder {
-                color: #9ca3af;
+                color: var(--gray-3);
             }
 
         mat-icon[matPrefix] {
-            color: #9ca3af;
+            color: var(--gray-3);
             margin-right: 0.75rem;
             display: inline-flex;
             align-items: center;
@@ -417,16 +417,16 @@
         }
 
             .mat-mdc-form-field.mat-focused mat-icon[matPrefix] {
-                color: #667eea;
+                color: var(--direkt-green);
             }
 
             .mat-mdc-form-field-error {
-                color: #ef4444;
+                color: var(--error-red);
                 font-size: 0.75rem;
             }
 
             .mat-mdc-form-field-hint {
-                color: #9ca3af;
+                color: var(--gray-3);
                 font-size: 0.75rem;
             }
         }
@@ -437,7 +437,7 @@
         justify-content: flex-end;
         margin-top: 1rem;
         padding-top: 1.5rem;
-        border-top: 1px solid #e5e7eb;
+        border-top: 1px solid var(--gray-2);
 
         .save-btn {
             display: flex;
@@ -445,14 +445,14 @@
             gap: 0.5rem;
             padding: 0.875rem 2rem;
             font-weight: 600;
-            border-radius: 10px;
+            border-radius: var(--radius-button);
             transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: var(--shadow-button-hover);
             min-width: 180px;
             justify-content: center;
 
             &.password-btn {
-                box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+                box-shadow: var(--shadow-button-hover);
             }
 
             mat-icon {
@@ -467,10 +467,10 @@
 
             &:hover:not(:disabled) {
                 transform: translateY(-2px);
-                box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+                box-shadow: 0 6px 16px rgba(18, 200, 106, 0.25);
 
                 &.password-btn {
-                    box-shadow: 0 6px 16px rgba(245, 87, 108, 0.4);
+                    box-shadow: 0 6px 16px rgba(233, 69, 69, 0.25);
                 }
             }
 
@@ -564,7 +564,7 @@
     }
 
     .profile-tabs {
-        border-radius: 12px;
+        border-radius: var(--radius-card);
 
         ::ng-deep {
             .mat-mdc-tab-header {

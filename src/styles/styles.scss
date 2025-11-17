@@ -2,3 +2,260 @@
 /*  @ Import/write your custom styles here.
 /*  @ Styles from this file will override 'vendors.scss' and Fuse's base styles.
 /* ----------------------------------------------------------------------------------------------------- */
+
+/* ============================================================================
+   DESIGN TOKENS - Single Source of Truth
+   ============================================================================ */
+
+:root {
+  /* ========================================================================
+     COLOR PALETTE - Primary & Main Colors
+     ======================================================================== */
+  --direkt-green: #12C86A;
+  --direkt-green-hover: #0AA857;
+  --dark-black: #111111;
+  --soft-white: #FFFFFF;
+
+  /* ========================================================================
+     COLOR PALETTE - Secondary / Neutral Grays
+     ======================================================================== */
+  --gray-1: #F2F4F5;
+  --gray-2: #DDE1E4;
+  --gray-3: #7D8A8F;
+
+  /* ========================================================================
+     COLOR PALETTE - Status Colors
+     ======================================================================== */
+  --success-green: #0EBB60;
+  --warning-yellow: #FFBF3A;
+  --error-red: #E94545;
+
+  /* ========================================================================
+     BORDER RADIUS
+     ======================================================================== */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-card: 8px;
+  --radius-input: 8px;
+  --radius-button: 10px;
+
+  /* ========================================================================
+     SHADOWS - Very Subtle (2% opacity)
+     ======================================================================== */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.02);
+  --shadow-card: 0 8px 16px rgba(0, 0, 0, 0.02);
+  --shadow-button-hover: 0 4px 12px rgba(18, 200, 106, 0.15);
+
+  /* ========================================================================
+     SPACING SCALE
+     ======================================================================== */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+}
+
+/* ============================================================================
+   TYPOGRAPHY
+   ============================================================================ */
+
+/* Headings */
+h1, h2 {
+  font-weight: 700;
+  color: var(--dark-black);
+}
+
+h3, h4 {
+  font-weight: 600;
+  color: var(--dark-black);
+}
+
+/* Numeric text (prices, km, etc.) */
+.numeric,
+[class*="price"],
+[class*="km"],
+[class*="numeric"] {
+  font-weight: 600;
+}
+
+/* ============================================================================
+   BUTTON SYSTEM
+   ============================================================================ */
+
+.btn-primary {
+  background-color: var(--direkt-green);
+  color: var(--soft-white);
+  border: none;
+  border-radius: var(--radius-button);
+  font-weight: 600;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+
+  &:hover:not(:disabled) {
+    background-color: var(--direkt-green-hover);
+    box-shadow: var(--shadow-button-hover);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--direkt-green);
+  border: 2px solid var(--direkt-green);
+  border-radius: var(--radius-button);
+  font-weight: 600;
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover:not(:disabled) {
+    background-color: var(--gray-1);
+    border-color: var(--direkt-green-hover);
+    color: var(--direkt-green-hover);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--gray-2);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    border-color: var(--gray-3);
+    color: var(--gray-3);
+  }
+}
+
+/* Alternative secondary button with light gray background */
+.btn-secondary-light {
+  background-color: var(--gray-1);
+  color: var(--direkt-green);
+  border: 2px solid var(--direkt-green);
+  border-radius: var(--radius-button);
+  font-weight: 600;
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover:not(:disabled) {
+    background-color: var(--gray-2);
+    border-color: var(--direkt-green-hover);
+    color: var(--direkt-green-hover);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+/* ============================================================================
+   CARDS
+   ============================================================================ */
+
+.card {
+  background-color: var(--soft-white);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--spacing-md);
+}
+
+.card-gray {
+  background-color: var(--gray-1);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md);
+}
+
+/* ============================================================================
+   INPUTS
+   ============================================================================ */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="search"],
+textarea,
+select {
+  border-radius: var(--radius-input);
+  border: 1px solid var(--gray-2);
+  padding: 10px 12px;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--direkt-green);
+    box-shadow: 0 0 0 3px rgba(18, 200, 106, 0.1);
+  }
+
+  &::placeholder {
+    color: var(--gray-3);
+  }
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+/* Text colors */
+.text-direkt-green {
+  color: var(--direkt-green);
+}
+
+.text-dark-black {
+  color: var(--dark-black);
+}
+
+.text-gray-3 {
+  color: var(--gray-3);
+}
+
+/* Background colors */
+.bg-direkt-green {
+  background-color: var(--direkt-green);
+}
+
+.bg-gray-1 {
+  background-color: var(--gray-1);
+}
+
+.bg-gray-2 {
+  background-color: var(--gray-2);
+}
+
+/* Border colors */
+.border-gray-2 {
+  border-color: var(--gray-2);
+}
+
+/* Status colors */
+.text-success {
+  color: var(--success-green);
+}
+
+.text-warning {
+  color: var(--warning-yellow);
+}
+
+.text-error {
+  color: var(--error-red);
+}

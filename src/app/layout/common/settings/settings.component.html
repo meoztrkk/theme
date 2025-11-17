@@ -25,7 +25,7 @@
 >
     <div class="bg-card flex w-full flex-col overflow-auto">
         <div
-            class="flex h-20 min-h-20 flex-row items-center bg-primary px-6 text-white"
+            class="flex h-20 min-h-20 flex-row items-center bg-direkt-green px-6 text-white"
         >
             <mat-icon
                 class="text-current icon-size-7"
@@ -58,7 +58,7 @@
                         (click)="setTheme(theme.id)"
                     >
                         <div
-                            class="h-3 w-3 flex-0 rounded-full bg-primary"
+                            class="h-3 w-3 flex-0 rounded-full bg-direkt-green"
                         ></div>
                         <div
                             class="ml-2.5 truncate font-medium leading-5"
@@ -155,7 +155,7 @@
                     </div>
                     <div
                         class="text-secondary mt-2 text-center text-md font-medium"
-                        [class.text-primary]="config.layout === 'empty'"
+                        [class.text-direkt-green]="config.layout === 'empty'"
                     >
                         Empty
                     </div>

@@ -45,7 +45,7 @@
       Şifrenizi mi unuttunuz?
     </button>
 
-    <button type="submit" class="auth-btn primary" [disabled]="isSending">
+    <button type="submit" class="auth-btn primary btn-primary" [disabled]="isSending">
       <span *ngIf="!isSending">Giriş Yap</span>
       <span *ngIf="isSending">Giriş yapılıyor...</span>
     </button>
@@ -194,7 +194,7 @@
 
     <button
       type="button"
-      class="auth-btn primary"
+      class="auth-btn primary btn-primary"
       (click)="submitRegister()"
       [disabled]="isSending"
     >
@@ -259,7 +259,7 @@
       />
     </div>
 
-    <button type="button" class="auth-btn primary" (click)="submitVerify()" [disabled]="isSending">
+    <button type="button" class="auth-btn primary btn-primary" (click)="submitVerify()" [disabled]="isSending">
       <span *ngIf="!isSending">Doğrula</span>
       <span *ngIf="isSending">Doğrulanıyor...</span>
     </button>
@@ -314,7 +314,7 @@
 
     <button
       type="button"
-      class="auth-btn primary"
+      class="auth-btn primary btn-primary"
       (click)="submitForgotPassword()"
       [disabled]="isSending"
     >

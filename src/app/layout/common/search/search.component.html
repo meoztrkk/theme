@@ -182,14 +182,14 @@
 <ng-template #contactResult let-result>
     <div class="flex items-center">
         <div
-            class="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-100 dark:bg-primary-800"
+            class="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-direkt-green/10 dark:bg-direkt-green"
         >
             @if (result.avatar) {
                 <img [src]="result.avatar" />
             }
             @if (!result.avatar) {
                 <mat-icon
-                    class="m-0 text-primary icon-size-5 dark:text-primary-400"
+                    class="m-0 text-direkt-green icon-size-5 dark:text-direkt-green"
                     [svgIcon]="'heroicons_outline:user-circle'"
                 ></mat-icon>
             }
@@ -215,7 +215,7 @@
     <div class="flex items-center">
         @if (result.completed) {
             <mat-icon
-                class="mr-0 text-primary dark:text-primary-400"
+                class="mr-0 text-direkt-green dark:text-direkt-green"
                 [svgIcon]="'heroicons_outline:check-circle'"
             ></mat-icon>
         }

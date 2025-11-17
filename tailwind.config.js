@@ -13,6 +13,7 @@ const generatePalette = require(
  */
 const customPalettes = {
     brand: generatePalette('#2196F3'),
+    direktGreen: generatePalette('#12C86A'),
 };
 
 /**
@@ -99,12 +100,25 @@ const config = {
             },
             colors: {
                 gray: colors.slate,
+                // Direkt Satış Design System Colors
+                direkt: {
+                    green: '#12C86A',
+                    'green-hover': '#0AA857',
+                    'dark-black': '#111111',
+                    'soft-white': '#FFFFFF',
+                    'gray-1': '#F2F4F5',
+                    'gray-2': '#DDE1E4',
+                    'gray-3': '#7D8A8F',
+                    success: '#0EBB60',
+                    warning: '#FFBF3A',
+                    error: '#E94545',
+                },
             },
             flex: {
                 0: '0 0 auto',
             },
             fontFamily: {
-                sans: `"Inter var", ${defaultTheme.fontFamily.sans.join(',')}`,
+                sans: `"Poppins", ${defaultTheme.fontFamily.sans.join(',')}`,
                 mono: `"IBM Plex Mono", ${defaultTheme.fontFamily.mono.join(',')}`,
             },
             opacity: {

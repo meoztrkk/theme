@@ -551,7 +551,8 @@ fuse-vertical-navigation-group-item {
         .fuse-vertical-navigation-item {
             .fuse-vertical-navigation-item-title-wrapper {
                 .fuse-vertical-navigation-item-title {
-                    @apply text-primary-600 opacity-100 dark:text-primary-400;
+                    color: var(--direkt-green) !important;
+                    opacity: 1 !important;
                 }
             }
         }

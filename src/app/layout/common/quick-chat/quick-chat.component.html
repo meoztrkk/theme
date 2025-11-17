@@ -85,7 +85,7 @@
                                 'dark:hover:bg-hover hover:bg-gray-100':
                                     !selectedChat ||
                                     selectedChat.id !== chat.id,
-                                'bg-primary-50 dark:bg-hover':
+                                'bg-direkt-green/10 dark:bg-hover':
                                     selectedChat && selectedChat.id === chat.id,
                             }"
                             (click)="selectChat(chat.id)"
@@ -95,7 +95,7 @@
                             >
                                 @if (chat.unreadCount > 0) {
                                     <div
-                                        class="ring-bg-card absolute bottom-0 right-0 -ml-0.5 h-2 w-2 flex-0 rounded-full bg-primary text-on-primary ring-2 dark:bg-primary-500 dark:ring-gray-900"
+                                        class="ring-bg-card absolute bottom-0 right-0 -ml-0.5 h-2 w-2 flex-0 rounded-full bg-direkt-green text-white ring-2 dark:bg-direkt-green dark:ring-gray-900"
                                         [class.ring-primary-50]="
                                             selectedChat &&
                                             selectedChat.id === chat.id

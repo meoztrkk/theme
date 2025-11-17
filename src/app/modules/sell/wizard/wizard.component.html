@@ -56,10 +56,10 @@
             <!-- içerik -->
             <div class="bg-card p-4 min-h-[500px] flex flex-col gap-4">
                 <div class="flex items-center justify-between gap-2">
-                    <h2 class="text-base font-semibold leading-none">
+                    <h2 class="leading-none">
                         {{ stepTitles[step - 1] }}
                     </h2>
-                    <span class="text-xs text-gray-400">Adım {{ step }} / {{ stepTitles.length }}</span>
+                    <span class="text-xs text-gray-3">Adım {{ step }} / {{ stepTitles.length }}</span>
                 </div>
 
                 <!-- 1. YIL -->
@@ -186,7 +186,7 @@
                         class="wiz-card flex items-center gap-2" [class.selected]="s().colorId === c.id"
                         (click)="selectColor(c)">
                         <span class="w-6 h-6 rounded-md ring-1 ring-gray-200"
-                            [style.background]="c.hex || '#ddd'"></span>
+                            [style.background]="c.hex || 'var(--gray-2)'"></span>
                         <span>{{ c.name }}</span>
                     </button>
                     <button *ngIf="hasMore(colors)" type="button" class="wiz-card wiz-card-more"
