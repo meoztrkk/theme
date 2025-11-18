@@ -84,20 +84,20 @@ export class QuickChatComponent implements OnInit, AfterViewInit, OnDestroy {
      *
      * @private
      */
-    @HostListener('input')
-    @HostListener('ngModelChange')
-    private _resizeMessageInput(): void {
-        // This doesn't need to trigger Angular's change detection by itself
-        this._ngZone.runOutsideAngular(() => {
-            setTimeout(() => {
-                // Set the height to 'auto' so we can correctly read the scrollHeight
-                this.messageInput.nativeElement.style.height = 'auto';
+    // @HostListener('input')
+    // @HostListener('ngModelChange')
+    // private _resizeMessageInput(): void {
+    //     // This doesn't need to trigger Angular's change detection by itself
+    //     this._ngZone.runOutsideAngular(() => {
+    //         setTimeout(() => {
+    //             // Set the height to 'auto' so we can correctly read the scrollHeight
+    //             this.messageInput.nativeElement.style.height = 'auto';
 
-                // Get the scrollHeight and subtract the vertical padding
-                this.messageInput.nativeElement.style.height = `${this.messageInput.nativeElement.scrollHeight}px`;
-            });
-        });
-    }
+    //             // Get the scrollHeight and subtract the vertical padding
+    //             this.messageInput.nativeElement.style.height = `${this.messageInput.nativeElement.scrollHeight}px`;
+    //         });
+    //     });
+    // }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
