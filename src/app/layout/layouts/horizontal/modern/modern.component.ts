@@ -13,6 +13,7 @@ import { NavigationService } from 'app/core/navigation/navigation.service';
 import { Navigation } from 'app/core/navigation/navigation.types';
 import { LanguagesComponent } from 'app/layout/common/languages/languages.component';
 import { UserComponent } from 'app/layout/common/user/user.component';
+import { FooterComponent } from 'app/layout/common/footer/footer.component';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -27,6 +28,7 @@ import { Subject, takeUntil } from 'rxjs';
         MatIconModule,
         LanguagesComponent,
         UserComponent,
+        FooterComponent,
         RouterOutlet,
     ],
 })
@@ -50,12 +52,6 @@ export class ModernLayoutComponent implements OnInit, OnDestroy {
     // @ Accessors
     // -----------------------------------------------------------------------------------------------------
 
-    /**
-     * Getter for current year
-     */
-    get currentYear(): number {
-        return new Date().getFullYear();
-    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks

@@ -32,7 +32,6 @@
     <mat-menu [xPosition]="'before'" #userActions="matMenu">
         <button mat-menu-item>
             <span class="flex flex-col leading-none">
-                <span>Giriş yapıldı</span>
                 @if (user?.name) {
                     <span class="mt-1.5 text-md font-medium">{{ user.name }}</span>
                 }

@@ -2,12 +2,11 @@ import { DOCUMENT } from '@angular/common';
 import { inject, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { environment } from 'environments/environment';
 import { SeoConfig } from './seo-config.model';
 
 /**
  * SEO Service
- * 
+ *
  * Manages SEO metadata including:
  * - Document title and meta tags
  * - Canonical URLs
@@ -36,7 +35,8 @@ export class SeoService {
      */
     applySeo(config: SeoConfig): void {
         this.updateSeo(config);
-        this.updateCanonical(config.canonicalUrl);
+        const canonicalUrl = this.buildCanonicalUrl(config.canonicalUrl);
+        this.updateCanonical(canonicalUrl);
         this.updateOpenGraph(config);
         this.updateTwitterCard(config);
 
@@ -81,29 +81,74 @@ export class SeoService {
     }
 
     /**
-     * Updates or creates the canonical link tag
-     * If url is not provided, builds it from the current router URL + base URL
+     * Builds the canonical URL from config or generates it from current location
+     *
+     * @param configCanonical - Canonical URL from SeoPage config (optional)
+     * @returns Canonical URL string or undefined if unable to generate
      */
-    updateCanonical(url?: string): void {
-        // Remove existing canonical link if present
-        if (this._canonicalLink) {
-            this._renderer.removeChild(this._document.head, this._canonicalLink);
-            this._canonicalLink = null;
+    private buildCanonicalUrl(configCanonical?: string): string | undefined {
+        // If config provides a canonical URL, use it as-is (trimmed)
+        if (configCanonical) {
+            const trimmed = configCanonical.trim();
+            if (trimmed.length > 0) {
+                return trimmed;
+            }
         }
 
-        // Build canonical URL
-        let canonicalUrl = url;
+        // Otherwise, generate from current location
+        try {
+            const origin = window.location.origin;
+            const fullPath = this._router?.url || '/';
+
+            // Remove query string and hash fragment
+            const [pathWithoutQuery] = fullPath.split('?');
+            const path = (pathWithoutQuery || '/').split('#')[0] || '/';
+
+            return origin + path;
+        } catch {
+            return undefined;
+        }
+    }
+
+    /**
+     * Updates or creates the canonical link tag
+     * Ensures only one canonical link exists in the document head
+     * If url is not provided, removes the canonical link
+     */
+    private updateCanonical(canonicalUrl?: string): void {
+        const head = this._document.head || this._document.getElementsByTagName('head')[0];
+
+        // Find existing canonical link (check both our tracked one and any in DOM)
+        let link: HTMLLinkElement | null = this._canonicalLink;
+
+        // If we don't have a tracked link, search the DOM
+        if (!link) {
+            link = head.querySelector('link[rel="canonical"]');
+        }
+
+        // If no canonical URL is provided, remove existing tag if any
         if (!canonicalUrl) {
-            const baseUrl = environment.application.baseUrl.replace(/\/$/, '');
-            const currentPath = this._router.url.split('?')[0]; // Remove query params
-            canonicalUrl = `${baseUrl}${currentPath}`;
+            if (link && link.parentNode) {
+                this._renderer.removeChild(head, link);
+            }
+            this._canonicalLink = null;
+            return;
         }
 
-        // Create and append new canonical link
-        this._canonicalLink = this._renderer.createElement('link');
-        this._renderer.setAttribute(this._canonicalLink, 'rel', 'canonical');
-        this._renderer.setAttribute(this._canonicalLink, 'href', canonicalUrl);
-        this._renderer.appendChild(this._document.head, this._canonicalLink);
+        // Update or create canonical link
+        if (!link) {
+            link = this._renderer.createElement('link');
+            this._renderer.setAttribute(link, 'rel', 'canonical');
+            this._renderer.appendChild(head, link);
+            this._canonicalLink = link;
+        } else {
+            // Update our tracked reference if we found it in DOM
+            if (!this._canonicalLink) {
+                this._canonicalLink = link;
+            }
+        }
+
+        this._renderer.setAttribute(link, 'href', canonicalUrl);
     }
 
     /**
@@ -113,7 +158,17 @@ export class SeoService {
     updateOpenGraph(config: SeoConfig): void {
         const ogTitle = config.ogTitle || config.title;
         const ogDescription = config.ogDescription || config.description;
-        const ogUrl = config.ogUrl || (this._canonicalLink ? this._canonicalLink.getAttribute('href') || '' : '');
+
+        // Get canonical URL from tracked link or query DOM as fallback
+        let canonicalUrl = '';
+        if (this._canonicalLink) {
+            canonicalUrl = this._canonicalLink.getAttribute('href') || '';
+        } else {
+            const link = this._document.head?.querySelector('link[rel="canonical"]');
+            canonicalUrl = link?.getAttribute('href') || '';
+        }
+
+        const ogUrl = config.ogUrl || canonicalUrl;
 
         // Update or add og:title
         if (ogTitle) {

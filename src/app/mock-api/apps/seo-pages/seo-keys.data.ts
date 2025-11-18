@@ -1,10 +1,10 @@
 /* eslint-disable */
 /**
  * SEO Keys (Route Names) Data
- * 
+ *
  * Centralized list of SEO keys used across the application.
  * These values are used in route data.seoKey and must match SeoPage.RouteName in the backend.
- * 
+ *
  * IMPORTANT: Both route definitions and admin form use this same source to ensure consistency.
  */
 
