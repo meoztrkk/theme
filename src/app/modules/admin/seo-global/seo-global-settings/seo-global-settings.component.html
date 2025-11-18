@@ -1,0 +1,52 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Header -->
+    <div class="relative pt-8 pb-8 bg-default">
+        <div class="w-full max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center gap-4 mb-2">
+                <div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-none">
+                        Global Head Code (Gelişmiş SEO Ayarları)
+                    </h1>
+                    <div class="mt-4 font-medium text-secondary">
+                        Google Analytics, Google Tag Manager, Search Console doğrulama meta etiketleri gibi site geneline uygulanacak kodları buraya ekleyebilirsiniz.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="flex flex-col flex-auto w-full max-w-7xl mx-auto">
+        <mat-card>
+            <mat-card-content class="p-6">
+                <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-6">
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label>Head Code</mat-label>
+                        <textarea
+                            matInput
+                            rows="12"
+                            formControlName="headCode"
+                            style="font-family: monospace;"
+                            placeholder='Örnek: &lt;script&gt;...gtag...&lt;/script&gt;'>
+                        </textarea>
+                        <mat-hint>
+                            Bu alan yalnızca yönetici tarafından kullanılmalıdır. Girilen kod doğrudan &lt;head&gt; içerisine eklenir.
+                        </mat-hint>
+                    </mat-form-field>
+
+                    <div class="flex items-center gap-4">
+                        <button
+                            mat-raised-button
+                            color="primary"
+                            type="submit"
+                            [disabled]="loading || form.invalid">
+                            <span *ngIf="!loading">Kaydet</span>
+                            <span *ngIf="loading">Kaydediliyor...</span>
+                        </button>
+                    </div>
+                </form>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>
+

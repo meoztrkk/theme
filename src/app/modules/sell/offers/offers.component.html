@@ -3,6 +3,11 @@
         <!-- Özet kartı -->
         <div class="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-100">
             <h2 class="mb-5">Araç Özeti</h2>
+            @if (!summary) {
+                <div class="text-center py-8">
+                    <p>Yükleniyor...</p>
+                </div>
+            } @else {
             <div class="vehicle-summary-grid">
                 <div class="summary-item">
                     <div class="summary-label">Yıl</div>
@@ -37,6 +42,7 @@
                     <div class="summary-value summary-value-plate">{{summary?.plate}}</div>
                 </div>
             </div>
+            }
         </div>
 
         <!-- Teklif listesi -->

@@ -50,6 +50,14 @@
             <mat-icon [svgIcon]="'heroicons_outline:calendar'"></mat-icon>
             <span>Randevularım</span>
         </button>
+        <button mat-menu-item routerLink="/admin/seo-pages">
+            <mat-icon [svgIcon]="'heroicons_outline:magnifying-glass'"></mat-icon>
+            <span>SEO Yönetimi</span>
+        </button>
+        <button mat-menu-item routerLink="/admin/seo-global">
+            <mat-icon [svgIcon]="'heroicons_outline:code-bracket'"></mat-icon>
+            <span>SEO Global</span>
+        </button>
         <mat-divider class="my-2"></mat-divider>
         <button mat-menu-item (click)="signOut()">
             <mat-icon

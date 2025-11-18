@@ -78,7 +78,13 @@ export class RandevularimComponent implements OnInit {
         if (savedAppointments) {
             try {
                 const parsed = JSON.parse(savedAppointments);
-                this.appointments = parsed.map((apt: any) => {
+                let nextId = Date.now();
+                this.appointments = parsed.map((apt: any, index: number) => {
+                    // ID yoksa veya boşsa, benzersiz bir ID oluştur
+                    if (!apt.id || apt.id === '' || apt.id === null || apt.id === undefined) {
+                        apt.id = nextId + index;
+                    }
+
                     let date: Date;
                     if (apt.datetime) {
                         date = new Date(apt.datetime);
@@ -89,12 +95,20 @@ export class RandevularimComponent implements OnInit {
                     }
                     return {
                         ...apt,
+                        id: Number(apt.id), // ID'yi number'a çevir
                         date: date,
                     };
                 }).sort((a: Appointment, b: Appointment) => {
                     // Tarihe göre sırala (en yeni önce)
                     return b.date.getTime() - a.date.getTime();
                 });
+
+                // ID'leri düzeltilmiş randevuları localStorage'a geri kaydet
+                const appointmentsToSave = this.appointments.map(apt => ({
+                    ...apt,
+                    date: apt.date instanceof Date ? apt.date.toISOString() : apt.date,
+                }));
+                localStorage.setItem(storageKey, JSON.stringify(appointmentsToSave));
             } catch (e) {
                 console.error('Error parsing appointments:', e);
                 this.appointments = [];
@@ -164,7 +178,8 @@ export class RandevularimComponent implements OnInit {
         if (savedAppointments) {
             try {
                 const appointments = JSON.parse(savedAppointments);
-                const index = appointments.findIndex((apt: any) => apt.id === updatedAppointment.id);
+                const appointmentId = Number(updatedAppointment.id);
+                const index = appointments.findIndex((apt: any) => Number(apt.id) === appointmentId);
                 if (index !== -1) {
                     appointments[index] = {
                         ...updatedAppointment,
@@ -221,7 +236,8 @@ export class RandevularimComponent implements OnInit {
                 if (savedAppointments) {
                     try {
                         const appointments = JSON.parse(savedAppointments);
-                        const filtered = appointments.filter((apt: any) => apt.id !== appointment.id);
+                        const appointmentId = Number(appointment.id);
+                        const filtered = appointments.filter((apt: any) => Number(apt.id) !== appointmentId);
                         localStorage.setItem(storageKey, JSON.stringify(filtered));
                         this.loadAppointments();
                         this._snackBar.open('Randevu başarıyla silindi', 'Kapat', {

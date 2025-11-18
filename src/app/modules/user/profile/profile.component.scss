@@ -186,6 +186,10 @@
         .mat-mdc-tab-body-content {
             overflow: visible;
         }
+
+        mat-label {
+            margin-left: 35px !important;
+        }
     }
 }
 

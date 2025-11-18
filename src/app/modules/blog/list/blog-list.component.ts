@@ -9,7 +9,9 @@ import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { BlogService, BlogPostList } from 'app/core/services/blog.service';
+import { FileUploadService } from 'app/core/services/file-upload.service';
 import { FuseCardComponent } from '@fuse/components/card';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -33,10 +35,18 @@ import { TranslocoModule } from '@jsverse/transloco';
 export class BlogListComponent implements OnInit {
     blogPosts$!: Observable<BlogPostList[]>;
 
-    constructor(private blogService: BlogService) {}
+    constructor(
+        private blogService: BlogService,
+        private fileUploadService: FileUploadService
+    ) {}
 
     ngOnInit(): void {
-        // Service metodu çağrılıyor
-        this.blogPosts$ = this.blogService.getBlogPosts();
+        // Service metodu çağrılıyor ve imageUrl'leri dönüştürüyoruz
+        this.blogPosts$ = this.blogService.getBlogPosts().pipe(
+            map(posts => posts.map(post => ({
+                ...post,
+                imageUrl: this.fileUploadService.getImageUrl(post.imageUrl, 'blogs')
+            })))
+        );
     }
 }

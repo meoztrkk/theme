@@ -16,10 +16,11 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { SeoPageService } from 'app/core/services/seo-page.service';
+import { FileUploadService } from 'app/core/services/file-upload.service';
 import { SeoPage, CreateUpdateSeoPage } from 'app/core/seo/seo-page.model';
 import { jsonLdTemplates } from 'app/mock-api/apps/seo-pages/data';
 import { seoKeys, SeoKeyOption } from 'app/mock-api/apps/seo-pages/seo-keys.data';
-import { Observable } from 'rxjs';
+import { Observable, switchMap, of, forkJoin } from 'rxjs';
 
 @Component({
     selector: 'app-seo-page-edit',
@@ -53,9 +54,16 @@ export class SeoPageEditComponent implements OnInit {
     isLoading: boolean = false;
     seoKeyOptions: SeoKeyOption[] = seoKeys;
 
+    // File upload properties
+    selectedOgImageFile: File | null = null;
+    ogImagePreview: string | null = null;
+    selectedTwitterImageFile: File | null = null;
+    twitterImagePreview: string | null = null;
+
     constructor(
         private _formBuilder: FormBuilder,
         private _seoPageService: SeoPageService,
+        private _fileUploadService: FileUploadService,
         private _router: Router,
         private _route: ActivatedRoute,
         private _fuseConfirmationService: FuseConfirmationService,
@@ -118,6 +126,15 @@ export class SeoPageEditComponent implements OnInit {
                     isActive: page.isActive !== undefined ? page.isActive : true,
                     culture: page.culture || '',
                 });
+
+                // Set image previews if they exist
+                if (page.ogImage) {
+                    this.ogImagePreview = this._fileUploadService.getImageUrl(page.ogImage, 'seo-pages');
+                }
+                if (page.twitterImage) {
+                    this.twitterImagePreview = this._fileUploadService.getImageUrl(page.twitterImage, 'seo-pages');
+                }
+
                 this.isLoading = false;
             },
             error: (err) => {
@@ -160,17 +177,52 @@ export class SeoPageEditComponent implements OnInit {
         confirmation.afterClosed().subscribe((result) => {
             if (result === 'confirmed') {
                 this.isSaving = true;
+
+                // Prepare SEO page data
                 const formData: CreateUpdateSeoPage = this.seoForm.value;
 
-                let saveObservable: Observable<SeoPage>;
+                // Upload files if selected
+                const uploadObservables: Observable<any>[] = [];
 
-                if (this.isEditMode && this.pageId) {
-                    saveObservable = this._seoPageService.update(this.pageId, formData);
-                } else {
-                    saveObservable = this._seoPageService.create(formData);
+                if (this.selectedOgImageFile) {
+                    uploadObservables.push(
+                        this._fileUploadService.uploadFile(this.selectedOgImageFile, 'seo-pages').pipe(
+                            switchMap((result) => {
+                                formData.ogImage = result.fileUrl;
+                                return of(result);
+                            })
+                        )
+                    );
                 }
 
-                saveObservable.subscribe({
+                if (this.selectedTwitterImageFile) {
+                    uploadObservables.push(
+                        this._fileUploadService.uploadFile(this.selectedTwitterImageFile, 'seo-pages').pipe(
+                            switchMap((result) => {
+                                formData.twitterImage = result.fileUrl;
+                                return of(result);
+                            })
+                        )
+                    );
+                }
+
+                // Wait for all uploads to complete (if any), then save
+                const uploadObservable = uploadObservables.length > 0
+                    ? forkJoin(uploadObservables)
+                    : of([]);
+
+                uploadObservable.pipe(
+                    switchMap(() => {
+                        // Save SEO page with file paths
+                        let saveObservable: Observable<SeoPage>;
+                        if (this.isEditMode && this.pageId) {
+                            saveObservable = this._seoPageService.update(this.pageId, formData);
+                        } else {
+                            saveObservable = this._seoPageService.create(formData);
+                        }
+                        return saveObservable;
+                    })
+                ).subscribe({
                     next: (response) => {
                         this.isSaving = false;
                         this._snackBar.open(
@@ -192,6 +244,82 @@ export class SeoPageEditComponent implements OnInit {
                 });
             }
         });
+    }
+
+    /**
+     * File input change handler for OG Image
+     */
+    onOgImageSelected(event: Event): void {
+        this.handleFileSelection(event, 'og');
+    }
+
+    /**
+     * File input change handler for Twitter Image
+     */
+    onTwitterImageSelected(event: Event): void {
+        this.handleFileSelection(event, 'twitter');
+    }
+
+    /**
+     * Handle file selection for both OG and Twitter images
+     */
+    private handleFileSelection(event: Event, type: 'og' | 'twitter'): void {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files.length > 0) {
+            const file = input.files[0];
+
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                this._snackBar.open('Geçersiz dosya formatı. Sadece jpg, jpeg, png, gif ve webp formatları desteklenir.', 'Kapat', { duration: 5000 });
+                return;
+            }
+
+            // Validate file size (10MB)
+            const maxSize = 10 * 1024 * 1024;
+            if (file.size > maxSize) {
+                this._snackBar.open('Dosya boyutu çok büyük. Maksimum 10MB olabilir.', 'Kapat', { duration: 5000 });
+                return;
+            }
+
+            // Store file for upload (path will be set after upload)
+            if (type === 'og') {
+                this.selectedOgImageFile = file;
+                // Don't set path yet, will be set after upload
+            } else {
+                this.selectedTwitterImageFile = file;
+                // Don't set path yet, will be set after upload
+            }
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = (e: any) => {
+                if (type === 'og') {
+                    this.ogImagePreview = e.target.result;
+                } else {
+                    this.twitterImagePreview = e.target.result;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    /**
+     * Remove selected OG Image file
+     */
+    removeOgImage(): void {
+        this.selectedOgImageFile = null;
+        this.ogImagePreview = null;
+        this.seoForm.patchValue({ ogImage: '' });
+    }
+
+    /**
+     * Remove selected Twitter Image file
+     */
+    removeTwitterImage(): void {
+        this.selectedTwitterImageFile = null;
+        this.twitterImagePreview = null;
+        this.seoForm.patchValue({ twitterImage: '' });
     }
 
     /**

@@ -85,6 +85,8 @@ export const appRoutes: Route[] = [
             {path: 'user/profile', loadChildren: () => import('app/modules/user/profile/profile.routes')},
             {path: 'degerlemelerim', loadChildren: () => import('app/modules/user/degerlemelerim/degerlemelerim.routes')},
             {path: 'randevularim', loadChildren: () => import('app/modules/user/randevularim/randevularim.routes')},
+            {path: 'admin/seo-pages', loadChildren: () => import('app/modules/admin/seo-pages/seo-pages.routes')},
+            {path: 'admin/seo-global', loadChildren: () => import('app/modules/admin/seo-global/seo-global.routes')},
             {path: 'blog/new', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
             {path: 'blog/edit/:id', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
             {path: 'offers/:id', loadChildren: () => import('app/modules/sell/offers/offers.routes')},
@@ -106,7 +108,6 @@ export const appRoutes: Route[] = [
         children: [
             {path: 'wizard', loadChildren: () => import('app/modules/sell/wizard/wizard.routes')},
             {path: 'example', loadChildren: () => import('app/modules/admin/example/example.routes')},
-            {path: 'admin/seo-pages', loadChildren: () => import('app/modules/admin/seo-pages/seo-pages.routes')},
             {path: 'blog', loadChildren: () => import('app/modules/blog/list/blog-list.routes')},
             {path: 'blog/:id', loadChildren: () => import('app/modules/blog/detail/blog-detail.routes')},
         ]

@@ -36,13 +36,6 @@ export const defaultNavigation: FuseNavigationItem[] = [
             },
         ],
     },
-    {
-        id: 'seo-pages',
-        title: 'SEO Yönetimi',
-        type: 'basic',
-        icon: 'heroicons_outline:magnifying-glass',
-        link: '/admin/seo-pages',
-    },
 ];
 
 export const compactNavigation: FuseNavigationItem[] = [
@@ -79,13 +72,6 @@ export const compactNavigation: FuseNavigationItem[] = [
                 link: '/blog/new',
             },
         ],
-    },
-    {
-        id: 'seo-pages',
-        title: 'SEO Yönetimi',
-        type: 'basic',
-        icon: 'heroicons_outline:magnifying-glass',
-        link: '/admin/seo-pages',
     },
 ];
 
@@ -124,13 +110,6 @@ export const futuristicNavigation: FuseNavigationItem[] = [
             },
         ],
     },
-    {
-        id: 'seo-pages',
-        title: 'SEO Yönetimi',
-        type: 'basic',
-        icon: 'heroicons_outline:magnifying-glass',
-        link: '/admin/seo-pages',
-    },
 ];
 
 export const horizontalNavigation: FuseNavigationItem[] = [
@@ -167,12 +146,5 @@ export const horizontalNavigation: FuseNavigationItem[] = [
                 link: '/blog/new',
             },
         ],
-    },
-    {
-        id: 'seo-pages',
-        title: 'SEO Yönetimi',
-        type: 'basic',
-        icon: 'heroicons_outline:magnifying-glass',
-        link: '/admin/seo-pages',
     },
 ];

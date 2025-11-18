@@ -11,6 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, switchMap, map, BehaviorSubject, tap } from 'rxjs';
 import { BlogService, BlogPostDetail } from 'app/core/services/blog.service';
+import { FileUploadService } from 'app/core/services/file-upload.service';
 import { FuseAlertComponent } from '@fuse/components/alert';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -41,6 +42,7 @@ export class BlogDetailComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private blogService: BlogService,
+        private fileUploadService: FileUploadService,
         private _router: Router,
         private _fuseConfirmationService: FuseConfirmationService,
         private _snackBar: MatSnackBar,
@@ -69,6 +71,16 @@ export class BlogDetailComponent implements OnInit {
                     return this.blogService.getBlogPostById(id);
                 }
                 return new Observable<undefined>();
+            }),
+            map(post => {
+                // Transform imageUrl to full URL if needed
+                if (post) {
+                    return {
+                        ...post,
+                        imageUrl: this.fileUploadService.getImageUrl(post.imageUrl, 'blogs')
+                    };
+                }
+                return post;
             }),
             tap(post => {
                 // Apply SEO when blog post is loaded

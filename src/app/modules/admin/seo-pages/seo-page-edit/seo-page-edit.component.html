@@ -147,13 +147,56 @@
                                         <mat-error *ngIf="seoForm.get('ogDescription')?.hasError('maxlength')">Maksimum 1024 karakter.</mat-error>
                                     </mat-form-field>
 
-                                    <mat-form-field appearance="outline" class="fuse-mat-dense w-full mb-6">
-                                        <mat-label>OG Görsel URL</mat-label>
-                                        <input matInput formControlName="ogImage" type="url" placeholder="https://example.com/image.jpg">
-                                        <mat-icon matPrefix [svgIcon]="'heroicons_outline:photo'"></mat-icon>
-                                        <mat-hint>Paylaşımda görünecek görsel (1200x630px önerilir)</mat-hint>
-                                        <mat-error *ngIf="seoForm.get('ogImage')?.hasError('maxlength')">Maksimum 1024 karakter.</mat-error>
-                                    </mat-form-field>
+                                    <div class="mb-6">
+                                        <label class="block text-secondary text-sm font-medium mb-2">OG Görsel</label>
+                                        
+                                        <!-- File Input -->
+                                        <div class="flex items-center gap-4 mb-4">
+                                            <input 
+                                                type="file" 
+                                                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                                (change)="onOgImageSelected($event)"
+                                                class="hidden"
+                                                #ogImageInput
+                                                id="ogImageInput">
+                                            
+                                            <button 
+                                                mat-stroked-button 
+                                                type="button"
+                                                (click)="ogImageInput.click()"
+                                                class="flex items-center gap-2">
+                                                <mat-icon [svgIcon]="'heroicons_outline:photo'"></mat-icon>
+                                                <span>{{ selectedOgImageFile ? selectedOgImageFile.name : 'Görsel Seç' }}</span>
+                                            </button>
+                                            
+                                            <span *ngIf="selectedOgImageFile" class="text-sm text-secondary">
+                                                {{ (selectedOgImageFile.size / 1024 / 1024).toFixed(2) }} MB
+                                            </span>
+                                            
+                                            <button 
+                                                *ngIf="selectedOgImageFile || ogImagePreview"
+                                                mat-icon-button 
+                                                type="button"
+                                                (click)="removeOgImage()"
+                                                color="warn">
+                                                <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Image Preview -->
+                                        <div *ngIf="ogImagePreview" class="mt-4">
+                                            <img 
+                                                [src]="ogImagePreview" 
+                                                alt="OG Image Preview" 
+                                                class="max-w-full h-auto max-h-64 rounded-lg border border-gray-200 dark:border-gray-700">
+                                        </div>
+                                        
+                                        <mat-hint class="block mt-2">Paylaşımda görünecek görsel (1200x630px önerilir)</mat-hint>
+                                        
+                                        <!-- Hidden input for form -->
+                                        <input type="hidden" formControlName="ogImage">
+                                        <mat-error *ngIf="seoForm.get('ogImage')?.hasError('maxlength')" class="mt-2 text-red-600 text-xs">Maksimum 1024 karakter.</mat-error>
+                                    </div>
                                 </div>
                             </mat-tab>
 
@@ -197,13 +240,56 @@
                                         <mat-error *ngIf="seoForm.get('twitterDescription')?.hasError('maxlength')">Maksimum 1024 karakter.</mat-error>
                                     </mat-form-field>
 
-                                    <mat-form-field appearance="outline" class="fuse-mat-dense w-full mb-6">
-                                        <mat-label>Twitter Görsel URL</mat-label>
-                                        <input matInput formControlName="twitterImage" type="url" placeholder="https://example.com/twitter-image.jpg">
-                                        <mat-icon matPrefix [svgIcon]="'heroicons_outline:photo'"></mat-icon>
-                                        <mat-hint>Twitter'da görünecek görsel (1200x600px önerilir)</mat-hint>
-                                        <mat-error *ngIf="seoForm.get('twitterImage')?.hasError('maxlength')">Maksimum 1024 karakter.</mat-error>
-                                    </mat-form-field>
+                                    <div class="mb-6">
+                                        <label class="block text-secondary text-sm font-medium mb-2">Twitter Görsel</label>
+                                        
+                                        <!-- File Input -->
+                                        <div class="flex items-center gap-4 mb-4">
+                                            <input 
+                                                type="file" 
+                                                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                                (change)="onTwitterImageSelected($event)"
+                                                class="hidden"
+                                                #twitterImageInput
+                                                id="twitterImageInput">
+                                            
+                                            <button 
+                                                mat-stroked-button 
+                                                type="button"
+                                                (click)="twitterImageInput.click()"
+                                                class="flex items-center gap-2">
+                                                <mat-icon [svgIcon]="'heroicons_outline:photo'"></mat-icon>
+                                                <span>{{ selectedTwitterImageFile ? selectedTwitterImageFile.name : 'Görsel Seç' }}</span>
+                                            </button>
+                                            
+                                            <span *ngIf="selectedTwitterImageFile" class="text-sm text-secondary">
+                                                {{ (selectedTwitterImageFile.size / 1024 / 1024).toFixed(2) }} MB
+                                            </span>
+                                            
+                                            <button 
+                                                *ngIf="selectedTwitterImageFile || twitterImagePreview"
+                                                mat-icon-button 
+                                                type="button"
+                                                (click)="removeTwitterImage()"
+                                                color="warn">
+                                                <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Image Preview -->
+                                        <div *ngIf="twitterImagePreview" class="mt-4">
+                                            <img 
+                                                [src]="twitterImagePreview" 
+                                                alt="Twitter Image Preview" 
+                                                class="max-w-full h-auto max-h-64 rounded-lg border border-gray-200 dark:border-gray-700">
+                                        </div>
+                                        
+                                        <mat-hint class="block mt-2">Twitter'da görünecek görsel (1200x600px önerilir)</mat-hint>
+                                        
+                                        <!-- Hidden input for form -->
+                                        <input type="hidden" formControlName="twitterImage">
+                                        <mat-error *ngIf="seoForm.get('twitterImage')?.hasError('maxlength')" class="mt-2 text-red-600 text-xs">Maksimum 1024 karakter.</mat-error>
+                                    </div>
                                 </div>
                             </mat-tab>
 

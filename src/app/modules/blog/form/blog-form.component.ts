@@ -17,7 +17,8 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 
 // Application Services
 import { BlogService, BlogPostDetail, CreateUpdateBlogPost } from 'app/core/services/blog.service';
-import { Observable } from 'rxjs';
+import { FileUploadService } from 'app/core/services/file-upload.service';
+import { Observable, switchMap, of } from 'rxjs';
 
 @Component({
     selector: 'app-blog-form',
@@ -45,6 +46,9 @@ export class BlogFormComponent implements OnInit {
     isSaving: boolean = false;
     isEditMode: boolean = false;
     postId: string | null = null;
+    selectedFile: File | null = null;
+    imagePreview: string | null = null;
+    isUploading: boolean = false;
 
     // Quill ayarları
     quillModules = {
@@ -61,6 +65,7 @@ export class BlogFormComponent implements OnInit {
     constructor(
         private _formBuilder: FormBuilder,
         private _blogService: BlogService,
+        private _fileUploadService: FileUploadService,
         private _router: Router,
         private _route: ActivatedRoute,
         private _fuseConfirmationService: FuseConfirmationService,
@@ -72,7 +77,7 @@ export class BlogFormComponent implements OnInit {
             title: ['', Validators.required],
             summary: ['', Validators.required],
             content: ['', Validators.required],
-            imageUrl: ['', [Validators.required, Validators.pattern('(https?://.*\\.(?:png|jpg|jpeg|gif|svg))')]],
+            imageUrl: ['', Validators.required],
             author: ['', Validators.required],
         });
 
@@ -94,12 +99,62 @@ export class BlogFormComponent implements OnInit {
         this._blogService.getBlogPostById(id).subscribe({
             next: (post: BlogPostDetail) => {
                 this.blogForm.patchValue(post);
+                // Set image preview if imageUrl exists
+                if (post.imageUrl) {
+                    this.imagePreview = this._fileUploadService.getImageUrl(post.imageUrl, 'blogs');
+                }
             },
             error: (err) => {
                 this._snackBar.open('Kayıt yüklenirken hata oluştu.', 'Kapat', { duration: 5000 });
                 this._router.navigate(['/blog']);
             }
         });
+    }
+
+    /**
+     * File input change handler
+     */
+    onFileSelected(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files.length > 0) {
+            const file = input.files[0];
+
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                this._snackBar.open('Geçersiz dosya formatı. Sadece jpg, jpeg, png, gif ve webp formatları desteklenir.', 'Kapat', { duration: 5000 });
+                return;
+            }
+
+            // Validate file size (10MB)
+            const maxSize = 10 * 1024 * 1024;
+            if (file.size > maxSize) {
+                this._snackBar.open('Dosya boyutu çok büyük. Maksimum 10MB olabilir.', 'Kapat', { duration: 5000 });
+                return;
+            }
+
+            this.selectedFile = file;
+
+            // Generate file path with GUID
+            const filePath = this._fileUploadService.generateFileName(file, 'blogs');
+            this.blogForm.patchValue({ imageUrl: filePath });
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = (e: any) => {
+                this.imagePreview = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    /**
+     * Remove selected file
+     */
+    removeFile(): void {
+        this.selectedFile = null;
+        this.imagePreview = null;
+        this.blogForm.patchValue({ imageUrl: '' });
     }
 
     /**
@@ -127,17 +182,33 @@ export class BlogFormComponent implements OnInit {
         confirmation.afterClosed().subscribe((result) => {
             if (result === 'confirmed') {
                 this.isSaving = true;
+
+                // Prepare blog post data
                 const postData: CreateUpdateBlogPost = this.blogForm.value;
 
-                let saveObservable: Observable<BlogPostDetail>;
+                // If a new file is selected, upload it first
+                const uploadObservable = this.selectedFile
+                    ? this._fileUploadService.uploadFile(this.selectedFile, 'blogs')
+                    : of(null);
 
-                if (this.isEditMode && this.postId) {
-                    saveObservable = this._blogService.updateBlogPost(this.postId, postData);
-                } else {
-                    saveObservable = this._blogService.createBlogPost(postData);
-                }
+                uploadObservable.pipe(
+                    switchMap((uploadResult) => {
+                        // If upload was successful, update imageUrl with the returned path
+                        if (uploadResult) {
+                            postData.imageUrl = uploadResult.fileUrl;
+                        }
 
-                saveObservable.subscribe({
+                        // Save blog post with file path
+                        let saveObservable: Observable<BlogPostDetail>;
+                        if (this.isEditMode && this.postId) {
+                            saveObservable = this._blogService.updateBlogPost(this.postId, postData);
+                        } else {
+                            saveObservable = this._blogService.createBlogPost(postData);
+                        }
+
+                        return saveObservable;
+                    })
+                ).subscribe({
                     next: (response) => {
                         this.isSaving = false;
                         this._snackBar.open('Blog yazısı başarıyla kaydedildi!', 'Kapat', { duration: 3000 });

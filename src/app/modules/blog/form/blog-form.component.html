@@ -31,13 +31,56 @@
 
             </div>
 
-            <mat-form-field appearance="outline" class="fuse-mat-dense">
-                <mat-label>Görsel URL (Örn: https://.../gorsel.jpg)</mat-label>
-                <input matInput formControlName="imageUrl" required>
-                <mat-icon matPrefix [svgIcon]="'heroicons_outline:photo'"></mat-icon>
-                <mat-error *ngIf="blogForm.get('imageUrl')?.hasError('required')">Görsel URL zorunludur.</mat-error>
-                <mat-error *ngIf="blogForm.get('imageUrl')?.hasError('pattern')">Geçerli bir görsel URL'si girin (http/https ve dosya uzantısı içermeli).</mat-error>
-            </mat-form-field>
+            <div class="mb-6">
+                <label class="block text-secondary text-sm font-medium mb-2">Blog Görseli *</label>
+                
+                <!-- File Input -->
+                <div class="flex items-center gap-4 mb-4">
+                    <input 
+                        type="file" 
+                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                        (change)="onFileSelected($event)"
+                        class="hidden"
+                        #fileInput
+                        id="blogImageInput">
+                    
+                    <button 
+                        mat-stroked-button 
+                        type="button"
+                        (click)="fileInput.click()"
+                        class="flex items-center gap-2">
+                        <mat-icon [svgIcon]="'heroicons_outline:photo'"></mat-icon>
+                        <span>{{ selectedFile ? selectedFile.name : 'Görsel Seç' }}</span>
+                    </button>
+                    
+                    <span *ngIf="selectedFile" class="text-sm text-secondary">
+                        {{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB
+                    </span>
+                    
+                    <button 
+                        *ngIf="selectedFile || imagePreview"
+                        mat-icon-button 
+                        type="button"
+                        (click)="removeFile()"
+                        color="warn">
+                        <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                    </button>
+                </div>
+                
+                <!-- Image Preview -->
+                <div *ngIf="imagePreview" class="mt-4">
+                    <img 
+                        [src]="imagePreview" 
+                        alt="Preview" 
+                        class="max-w-full h-auto max-h-64 rounded-lg border border-gray-200 dark:border-gray-700">
+                </div>
+                
+                <!-- Hidden input for form validation -->
+                <input type="hidden" formControlName="imageUrl">
+                <mat-error *ngIf="blogForm.get('imageUrl')?.hasError('required') && blogForm.get('imageUrl')?.touched" class="mt-2 text-red-600 text-xs">
+                    Görsel seçilmesi zorunludur.
+                </mat-error>
+            </div>
 
             <mat-form-field appearance="outline" class="fuse-mat-dense">
                 <mat-label>Özet</mat-label>

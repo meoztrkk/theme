@@ -16,7 +16,6 @@ export interface BlogPostDetail extends BlogPostList {
     content: string;
 }
 
-
 export interface CreateUpdateBlogPost {
     title: string;
     summary: string;
