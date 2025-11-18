@@ -1,36 +1,287 @@
-<div class="flex h-full w-full flex-col items-center justify-center">
-    <div class="w-full max-w-3xl">
-        <div class="prose prose-sm mx-auto max-w-none">
-            <img class="w-20" src="images/logo/logo.svg" alt="Logo image" />
-            <h1>Landing Module</h1>
-            <p>
-                This can be the landing or the welcome page of your application.
-                If you have an SSR (Server Side Rendering) setup, or if you
-                don't need to have Search engine visibility and optimizations,
-                you can even use this page as your primary landing page.
-            </p>
-            <p>
-                This is a separate "module", it has its own directory and
-                routing setup and also it's completely separated from the actual
-                application. This is also a simple example of a multiple
-                applications setup that uses the same codebase. You can have
-                different entry points and essentially have different
-                applications within the same codebase.
-            </p>
-        </div>
-        <div>
-            <a
-                class="mt-8"
-                mat-flat-button
-                [color]="'primary'"
-                [routerLink]="'/dashboards/project'"
-            >
-                <span>Launch the App</span>
-                <mat-icon
-                    class="ml-2 icon-size-5"
-                    [svgIcon]="'heroicons_mini:arrow-long-right'"
-                ></mat-icon>
-            </a>
+<div class="relative flex min-w-0 flex-auto flex-col overflow-hidden">
+
+    <div class="relative w-full overflow-hidden bg-white pb-20 pt-8 sm:pt-16 hero-background">
+
+        <div class="mx-auto w-full max-w-7xl px-6">
+            <div class="flex flex-col items-center lg:flex-row lg:justify-between lg:items-start pt-8 lg:pt-16">
+                <div class="max-w-xl text-center lg:text-left mb-8 lg:mb-0 lg:flex-1">
+                    <div class="text-3xl font-extrabold text-green-600 sm:text-4xl lg:text-5xl">
+                        Araç ekspertizi <span class="rounded-lg bg-orange-500 px-2 py-1 text-base text-white">Türkiye'de
+                            bir ilk</span>
+                    </div>
+                    <div class="mt-2 text-6xl font-extrabold leading-tight text-gray-800 sm:text-7xl lg:text-8xl">
+                        Dijitalleşti!
+                    </div>
+                    <p class="mt-6 text-xl text-gray-600">
+                        Artık aracınızın ne kadara satabileceğinizi öğrenmek için fiziksel ekspertize gitmenize gerek
+                        yok.
+                    </p>
+                </div>
+
+                <div class="w-full lg:w-auto flex justify-center lg:justify-center order-first lg:order-none mb-8 lg:mb-0">
+                    <div class="valuation-form-container">
+                        <mat-form-field appearance="outline" class="valuation-field">
+                            <mat-label>Model yılı</mat-label>
+                            <mat-select [(ngModel)]="selectedYear">
+                                <mat-option *ngFor="let year of years" [value]="year">{{ year }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="valuation-field">
+                            <mat-label>Marka</mat-label>
+                            <mat-select [(ngModel)]="selectedBrandId">
+                                <mat-option *ngFor="let brand of brands" [value]="brand.id">{{ brand.name }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <button mat-flat-button class="valuation-button secondary" type="button">
+                            Randevunuzu yönetin
+                        </button>
+
+                        <button mat-flat-button class="valuation-button primary" type="button" (click)="AracDegerle()">
+                            Aracımı değerle
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-10 lg:mt-0 lg:w-1/2 lg:flex-1">
+                    <div class="flex justify-center">
+                        <img src="https://tr.vava.cars/assets/images/homepage/tr/home-banner/online-car-sell.webp"
+                            alt="Dijital Ekspertiz Uygulaması" class="w-full max-w-md object-contain">
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
+
+    <div class="bg-white py-12">
+        <div class="mx-auto w-full max-w-7xl px-6 text-center">
+            <h2 class="text-3xl font-extrabold text-gray-800">Müşterilerimizin değerlendirmeleri</h2>
+
+            <div
+                class="mt-8 flex flex-col items-center justify-center space-y-6 md:flex-row md:space-x-12 md:space-y-0">
+                <div class="flex items-center space-x-2 p-4 rounded-xl bg-white shadow-md hover:shadow-lg transition-shadow">
+                    <img src="https://tr.vava.cars/assets/images/homepage/scores/google-tr.webp" alt="Google Logo"
+                        class="h-auto w-60">
+                </div>
+
+                <div class="flex items-center space-x-2 rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-shadow">
+                    <img src="https://tr.vava.cars/assets/images/homepage/scores/sikayetvar-tr.webp"
+                        alt="Şikayetvar Logo" class="h-auto w-60">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="py-20 bg-white">
+        <div class="mx-auto w-full max-w-7xl px-6 text-center">
+            <h2 class="text-4xl font-extrabold text-gray-800 sm:text-5xl">Dijital ekspertiz nedir?</h2>
+            <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">
+                Aracın değerini etkileyen unsurları, araç sahibi tarafından da girilen bilgileri, incelemeleri raporlar.
+                Direkt Satış, bu rapora bağlı olarak araç için fiyat sunar.
+            </p>
+
+            <div class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+
+                <div class="rounded-lg bg-gray-50 p-6 shadow-md">
+                    <div class="flex justify-center h-32 mb-4 rounded-lg">
+                        <img src="https://tr.vava.cars/assets/images/inspection/step-1.webp" alt="Bilgilerinizi girin"
+                            class="max-h-full object-contain rounded-lg">
+                    </div>
+                    <div class="mt-4 text-left">
+                        <div class="text-xl font-bold text-gray-800">1- Bilgilerinizi girin</div>
+                        <p class="mt-2 text-sm text-gray-600">Aracınızın değerini belirlemek için boya, değişen parça ve
+                            genel kondisyon gibi bilgileri girin.</p>
+                    </div>
+                </div>
+
+                <div class="rounded-lg bg-gray-50 p-6 shadow-md">
+                    <div class="flex justify-center h-32 mb-4 rounded-lg">
+                        <img src="https://tr.vava.cars/assets/images/inspection/step-2.webp" alt="Fiyat aralığını görün"
+                            class="max-h-full object-contain rounded-lg">
+                    </div>
+                    <div class="mt-4 text-left">
+                        <div class="text-xl font-bold text-gray-800">2- Aracınıza özel hassas fiyat aralığını görün
+                        </div>
+                        <p class="mt-2 text-sm text-gray-600">Girdiğiniz bilgilere göre size özel hesapladığımız fiyatı
+                            görün.</p>
+                    </div>
+                </div>
+
+                <div class="rounded-lg bg-gray-50 p-6 shadow-md">
+                    <div class="flex justify-center h-32 mb-4 rounded-lg">
+                        <img src="https://tr.vava.cars/assets/images/inspection/step-3.webp" alt="Randevu oluşturun"
+                            class="max-h-full object-contain rounded-lg">
+                    </div>
+                    <div class="mt-4 text-left">
+                        <div class="text-xl font-bold text-gray-800">3- Ücretsiz ekspertiz randevusu oluşturun</div>
+                        <p class="mt-2 text-sm text-gray-600">Size en yakın ücretsiz ekspertiz merkezini seçin,
+                            randevunuzu dakikalar içinde oluşturun.</p>
+                    </div>
+                </div>
+
+                <div class="rounded-lg bg-gray-50 p-6 shadow-md">
+                    <div class="flex justify-center h-32 mb-4 rounded-lg">
+                        <img src="https://tr.vava.cars/assets/images/inspection/step-4_tr.webp"
+                            alt="Ödemenizi anında alın" class="max-h-full object-contain rounded-lg">
+                    </div>
+                    <div class="mt-4 text-left">
+                        <div class="text-xl font-bold text-gray-800">4- Ödemenizi anında alın</div>
+                        <p class="mt-2 text-sm text-gray-600">Paranızı hızlı ve güvenli ödeme garantisi ile aynı gün
+                            kasasınızda görün.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="py-20 bg-white">
+        <div class="mx-auto w-full max-w-7xl px-6 text-center">
+            <h2 class="text-4xl font-extrabold text-gray-800">Müşterilerimizin Gözünden</h2>
+            <p class="mt-2 text-lg text-gray-600">Direkt Satış güvencesi müşterilerimizin yorumlarında gizli.</p>
+
+            <div class="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
+
+                <div class="rounded-xl bg-white p-6 shadow-lg text-left">
+                    <a href="https://www.youtube.com/watch?v=2jEUAjfnsSA&t=4s" target="_blank"
+                        class="h-32 bg-gray-200 rounded-lg flex items-center justify-center relative overflow-hidden group">
+                        <img src="https://img.youtube.com/vi/HQFXRegK_GU/hqdefault.jpg" alt="Müşteri Yorumu 1"
+                            class="absolute inset-0 w-full h-full object-cover">
+                        <div
+                            class="absolute inset-0 bg-black opacity-40 group-hover:opacity-50 transition duration-300">
+                        </div>
+                        <mat-icon [svgIcon]="'heroicons_solid:play-circle'"
+                            class="h-12 w-12 text-white relative z-10"></mat-icon>
+                    </a>
+                    <p class="mt-4 text-base italic text-gray-700">"Yıkanın, 2.el piyasasında aracımı satamıyordum,
+                        hoşçagörüsünle karşıladılar her şey güzeldi"</p>
+                    <div class="mt-4 text-sm font-semibold text-green-600">Direkt Satış'ı kesinlikle tavsiye ediyorum!
+                    </div>
+                </div>
+
+                <div class="rounded-xl bg-white p-6 shadow-lg text-left">
+                    <a href="https://www.youtube.com/watch?v=2jEUAjfnsSA&t=4s" target="_blank"
+                        class="h-32 bg-gray-200 rounded-lg flex items-center justify-center relative overflow-hidden group">
+                        <img src="https://img.youtube.com/vi/2jEUAjfnsSA/hqdefault.jpg" alt="Müşteri Yorumu 2"
+                            class="absolute inset-0 w-full h-full object-cover">
+                        <div
+                            class="absolute inset-0 bg-black opacity-40 group-hover:opacity-50 transition duration-300">
+                        </div>
+                        <mat-icon [svgIcon]="'heroicons_solid:play-circle'"
+                            class="h-12 w-12 text-white relative z-10"></mat-icon>
+                    </a>
+                    <p class="mt-4 text-base italic text-gray-700">"Arabamı da rahatlıkla görüyorum, çok bölündü. Fiyat
+                        çok uygun ve iyi bir fiyattı."</p>
+                    <div class="mt-4 text-sm font-semibold text-green-600">Direkt Satış'a arabamı anında sattım,
+                        kazandım!</div>
+                </div>
+
+                <div class="rounded-xl bg-white p-6 shadow-lg text-left">
+                    <a href="https://www.youtube.com/watch?v=2jEUAjfnsSA&t=4s" target="_blank"
+                        class="h-32 bg-gray-200 rounded-lg flex items-center justify-center relative overflow-hidden group">
+                        <img src="https://img.youtube.com/vi/gRcKoA0ZZtI/hqdefault.jpg" alt="Müşteri Yorumu 3"
+                            class="absolute inset-0 w-full h-full object-cover">
+                        <div
+                            class="absolute inset-0 bg-black opacity-40 group-hover:opacity-50 transition duration-300">
+                        </div>
+                        <mat-icon [svgIcon]="'heroicons_solid:play-circle'"
+                            class="h-12 w-12 text-white relative z-10"></mat-icon>
+                    </a>
+                    <p class="mt-4 text-base italic text-gray-700">"Alıcılığı gezip almak, fiyat pazarlık yapmak, aracı
+                        alıcıya teslim etmek, vesaire... oldukça zaman alıyordu."</p>
+                    <div class="mt-4 text-sm font-semibold text-green-600">Araç satmak isteyenlere tavsiyem: Direkt
+                        Satış!</div>
+                </div>
+            </div>
+
+            <button mat-button class="mt-8 text-green-600 hover:text-green-700 font-semibold">
+                Daha fazla yükle
+            </button>
+        </div>
+    </div>
+
+    <div class="py-12 bg-white">
+        <div class="mx-auto w-full max-w-7xl px-6">
+            <div class="direktbot-banner relative flex items-center justify-between rounded-xl border border-gray-200 p-6 shadow-sm">
+                <div class="text-left">
+                    <div class="text-xl font-bold text-gray-800">Bir sorununuz varsa, DirektBot yanınızda!</div>
+                    <p class="mt-1 text-gray-600">Yapay zeka desteğiyle anında çözüm sunuyoruz. Sizin en hızlı yanıtı
+                        DirektBot ile veriyoruz — hemen deneyin!</p>
+                </div>
+                <button mat-button
+                    class="text-green-600 hover:text-green-700 font-semibold flex items-center space-x-1">
+                    <span>DirektBot'u deneyin</span>
+                    <mat-icon [svgIcon]="'heroicons_outline:arrow-right'" class="w-4 h-4"></mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="py-20 bg-white">
+        <div class="mx-auto w-full max-w-7xl px-6 text-center">
+            <h2 class="text-4xl font-extrabold text-gray-800">DirektServis Deneyimi</h2>
+            <p class="mt-2 text-lg text-gray-600">Bu avantajlar bizi pazardaki diğer rakiplerimizden ayırıyor</p>
+
+            <div class="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
+
+                <div class="rounded-xl border border-gray-100 bg-white p-8 shadow-xl">
+                    <div class="flex justify-center">
+                        <mat-icon [svgIcon]="'heroicons_outline:currency-dollar'"
+                            class="h-16 w-16 text-green-600"></mat-icon>
+                    </div>
+                    <h3 class="mt-6 text-xl font-bold text-gray-800">Ekonomik çözüm</h3>
+                    <p class="mt-2 text-gray-600">Ekonomik, erişilebilir ve yüksek kalitede konforlu hizmet</p>
+                </div>
+
+                <div class="rounded-xl border border-gray-100 bg-white p-8 shadow-xl">
+                    <div class="flex justify-center">
+                        <mat-icon [svgIcon]="'heroicons_outline:wrench-screwdriver'"
+                            class="h-16 w-16 text-green-600"></mat-icon>
+                    </div>
+                    <h3 class="mt-6 text-xl font-bold text-gray-800">Kaliteli hizmet</h3>
+                    <p class="mt-2 text-gray-600">Güvenli, teknolojik ve kaliteli servis hizmetine kolay erişim</p>
+                </div>
+
+                <div class="rounded-xl border border-gray-100 bg-white p-8 shadow-xl">
+                    <div class="flex justify-center">
+                        <mat-icon [svgIcon]="'heroicons_outline:face-smile'"
+                            class="h-16 w-16 text-green-600"></mat-icon>
+                    </div>
+                    <h3 class="mt-6 text-xl font-bold text-gray-800">Kolaylık</h3>
+                    <p class="mt-2 text-gray-600">Hızlı, memnuniyet odaklı ve zahmetsiz servis deneyimi</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="py-20 bg-white">
+        <div class="mx-auto w-full max-w-7xl px-6 text-center">
+            <h2 class="text-4xl font-extrabold text-gray-800">Geleceğin Araçları, DirektSatış'ın Güvencesinde</h2>
+
+            <div class="mt-12 flex flex-col items-center justify-center lg:flex-row lg:space-x-16">
+
+                <div class="relative flex h-80 w-full max-w-sm justify-center lg:w-1/2">
+
+                    <img src="https://tr.vava.cars/assets/images/homepage/tesla_and_vava.webp" alt="Tesla Araç"
+                        class="relative z-10 object-contain">
+                </div>
+
+                <div class="mt-10 lg:mt-0 lg:w-1/2">
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-8 shadow-inner">
+                        <div class="text-center text-4xl font-extrabold text-gray-700 tracking-widest">
+                            T E S L A
+                        </div>
+                        <hr class="my-4 border-gray-400 w-full max-w-xs mx-auto" />
+                        <div class="text-center text-lg font-semibold text-gray-700 tracking-wider">
+                            APPROVED BODY SHOP
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>

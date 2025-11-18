@@ -198,7 +198,7 @@ export class UserComponent implements OnInit, OnDestroy {
             this.user = null;
             this._changeDetectorRef.markForCheck();
             // Navigate to home page after sign out
-            this._router.navigate(['/example']);
+            this._router.navigate(['/home']);
         });
     }
 }

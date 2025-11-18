@@ -3,11 +3,11 @@ import { FuseNavigationItem } from '@fuse/components/navigation';
 
 export const defaultNavigation: FuseNavigationItem[] = [
     {
-        id: 'example',
-        title: 'Example',
+        id: 'home',
+        title: 'Anasayfa',
         type: 'basic',
         icon: 'heroicons_outline:chart-pie',
-        link: '/example',
+        link: '/home',
     },
     {
         id: 'wizard',
@@ -35,16 +35,23 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link: '/blog/new',
             },
         ],
+    },
+    {
+        id: 'seo-pages',
+        title: 'SEO Yönetimi',
+        type: 'basic',
+        icon: 'heroicons_outline:magnifying-glass',
+        link: '/admin/seo-pages',
     },
 ];
 
 export const compactNavigation: FuseNavigationItem[] = [
     {
-        id: 'example',
-        title: 'Example',
+        id: 'home',
+        title: 'Anasayfa',
         type: 'basic',
         icon: 'heroicons_outline:chart-pie',
-        link: '/example',
+        link: '/home',
     },
     {
         id: 'wizard',
@@ -72,16 +79,23 @@ export const compactNavigation: FuseNavigationItem[] = [
                 link: '/blog/new',
             },
         ],
+    },
+    {
+        id: 'seo-pages',
+        title: 'SEO Yönetimi',
+        type: 'basic',
+        icon: 'heroicons_outline:magnifying-glass',
+        link: '/admin/seo-pages',
     },
 ];
 
 export const futuristicNavigation: FuseNavigationItem[] = [
     {
-        id: 'example',
-        title: 'Example',
+        id: 'home',
+        title: 'Anasayfa',
         type: 'basic',
         icon: 'heroicons_outline:chart-pie',
-        link: '/example',
+        link: '/home',
     },
     {
         id: 'wizard',
@@ -109,16 +123,23 @@ export const futuristicNavigation: FuseNavigationItem[] = [
                 link: '/blog/new',
             },
         ],
+    },
+    {
+        id: 'seo-pages',
+        title: 'SEO Yönetimi',
+        type: 'basic',
+        icon: 'heroicons_outline:magnifying-glass',
+        link: '/admin/seo-pages',
     },
 ];
 
 export const horizontalNavigation: FuseNavigationItem[] = [
     {
-        id: 'example',
+        id: 'home',
         title: 'Anasayfa',
         type: 'basic',
         icon: 'heroicons_outline:chart-pie',
-        link: '/example',
+        link: '/home',
     },
     {
         id: 'wizard',
@@ -146,5 +167,12 @@ export const horizontalNavigation: FuseNavigationItem[] = [
                 link: '/blog/new',
             },
         ],
+    },
+    {
+        id: 'seo-pages',
+        title: 'SEO Yönetimi',
+        type: 'basic',
+        icon: 'heroicons_outline:magnifying-glass',
+        link: '/admin/seo-pages',
     },
 ];

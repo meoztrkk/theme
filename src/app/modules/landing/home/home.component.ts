@@ -1,17 +1,93 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewEncapsulation,
+} from '@angular/core';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatOption, MatSelect } from '@angular/material/select';
+import { Router, RouterLink } from '@angular/router';
+import {
+    IdNameDto,
+    SellWizardService,
+} from 'app/core/services/sell-wizard.service';
+import { Subject } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
 
 @Component({
     selector: 'landing-home',
     templateUrl: './home.component.html',
+    styleUrls: ['./home.component.scss'],
+    styles: ' .mat-mdc-form-field-subscript-wrapper {  display: none;}',
     encapsulation: ViewEncapsulation.None,
-    imports: [MatButtonModule, RouterLink, MatIconModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        FormsModule,
+        MatFormField,
+        MatIcon,
+        MatIconModule,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        RouterLink,
+        MatButtonModule,
+    ],
 })
-export class LandingHomeComponent {
+export class LandingHomeComponent implements OnInit, OnDestroy {
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
+
+    years: number[] = [];
+    brands: IdNameDto[] = [];
+    selectedYear: number | null = null;
+    selectedBrandId: number | null = null;
+
     /**
      * Constructor
      */
-    constructor() {}
+    constructor(
+        private wiz: SellWizardService,
+        private _router: Router
+    ) {}
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Lifecycle hooks
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * On init
+     */
+    ngOnInit(): void {
+        // SEO is now handled automatically via route data (SeoRouteListener)
+        this.wiz.getYears().subscribe((y) => (this.years = y));
+        this.wiz.getBrands().subscribe((b) => (this.brands = b));
+    }
+
+    /**
+     * On destroy
+     */
+    ngOnDestroy(): void {
+        // Unsubscribe from all subscriptions
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.complete();
+    }
+
+    AracDegerle(): void {
+        if (this.selectedYear && this.selectedBrandId) {
+            // URL Parametreleri ile /wizard sayfasına yönlendirme
+            this._router.navigate(['/wizard'], {
+                queryParams: {
+                    year: this.selectedYear,
+                    brandId: this.selectedBrandId
+                }
+            });
+        } else {
+            // Kullanıcıya bir uyarı gösterebilir veya varsayılan bir aksiyon alabilirsiniz
+            console.log('Lütfen Model Yılı ve Marka Seçiniz.');
+        }
+    }
 }

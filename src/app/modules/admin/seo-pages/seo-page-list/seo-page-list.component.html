@@ -1,0 +1,107 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Header -->
+    <div class="relative pt-8 pb-12 sm:pt-16 sm:pb-20 bg-default">
+        <div class="flex flex-col sm:flex-row items-center justify-between w-full max-w-7xl mx-auto px-6 lg:px-8">
+            <div>
+                <div class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-none">SEO Yönetimi</div>
+                <div class="mt-0.5 font-medium text-secondary">SEO sayfalarını yönetin ve düzenleyin.</div>
+            </div>
+            <div class="flex items-center mt-4 sm:mt-0">
+                <button mat-flat-button color="primary" (click)="createNew()">
+                    <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                    <span class="ml-2">Yeni SEO Sayfası</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="flex flex-col flex-auto w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 md:py-12">
+        <div *ngIf="!isLoading; else loading" class="w-full">
+            <div class="bg-card rounded-lg shadow overflow-hidden">
+                <table mat-table [dataSource]="seoPages" class="w-full">
+                    <!-- Name Column -->
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef>Ad</th>
+                        <td mat-cell *matCellDef="let page">{{ page.name }}</td>
+                    </ng-container>
+
+                    <!-- RouteName Column -->
+                    <ng-container matColumnDef="routeName">
+                        <th mat-header-cell *matHeaderCellDef>Route Adı</th>
+                        <td mat-cell *matCellDef="let page">
+                            <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ page.routeName }}</code>
+                        </td>
+                    </ng-container>
+
+                    <!-- Title Column -->
+                    <ng-container matColumnDef="title">
+                        <th mat-header-cell *matHeaderCellDef>Başlık</th>
+                        <td mat-cell *matCellDef="let page" class="max-w-xs truncate">{{ page.title }}</td>
+                    </ng-container>
+
+                    <!-- Culture Column -->
+                    <ng-container matColumnDef="culture">
+                        <th mat-header-cell *matHeaderCellDef>Kültür</th>
+                        <td mat-cell *matCellDef="let page">
+                            <span *ngIf="page.culture; else noCulture" class="text-xs">{{ page.culture }}</span>
+                            <ng-template #noCulture>
+                                <span class="text-secondary text-xs">-</span>
+                            </ng-template>
+                        </td>
+                    </ng-container>
+
+                    <!-- IsActive Column -->
+                    <ng-container matColumnDef="isActive">
+                        <th mat-header-cell *matHeaderCellDef>Durum</th>
+                        <td mat-cell *matCellDef="let page">
+                            <mat-chip *ngIf="page.isActive; else inactive" color="primary" selected>
+                                Aktif
+                            </mat-chip>
+                            <ng-template #inactive>
+                                <mat-chip color="warn" selected>Pasif</mat-chip>
+                            </ng-template>
+                        </td>
+                    </ng-container>
+
+                    <!-- Actions Column -->
+                    <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef class="text-right">İşlemler</th>
+                        <td mat-cell *matCellDef="let page" class="text-right">
+                            <button mat-icon-button color="primary" (click)="edit(page.id!)" title="Düzenle">
+                                <mat-icon [svgIcon]="'heroicons_outline:pencil'"></mat-icon>
+                            </button>
+                            <button mat-icon-button color="warn" (click)="delete(page.id!, page.name)" title="Sil">
+                                <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                </table>
+
+                <div *ngIf="seoPages.length === 0" class="p-8 text-center text-secondary">
+                    Henüz SEO sayfası bulunmamaktadır.
+                </div>
+
+                <mat-paginator
+                    *ngIf="totalCount > 0"
+                    [length]="totalCount"
+                    [pageSize]="pageSize"
+                    [pageIndex]="pageIndex"
+                    [pageSizeOptions]="pageSizeOptions"
+                    [showFirstLastButtons]="true"
+                    (page)="onPageChange($event)">
+                </mat-paginator>
+            </div>
+        </div>
+
+        <ng-template #loading>
+            <div class="flex items-center justify-center p-8">
+                <mat-progress-spinner [diameter]="40" mode="indeterminate"></mat-progress-spinner>
+            </div>
+        </ng-template>
+    </div>
+</div>
+

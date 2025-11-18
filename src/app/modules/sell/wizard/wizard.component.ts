@@ -262,6 +262,7 @@ export class WizardComponent implements OnInit, AfterViewChecked {
     }
 
     ngOnInit(): void {
+        // SEO is now handled automatically via route data (SeoRouteListener)
         this.wiz.getYears().subscribe((y) => (this.years = y));
         this.wiz.getBrands().subscribe((b) => (this.brands = b));
         this.wiz.getColors().subscribe((c) => (this.colors = c));

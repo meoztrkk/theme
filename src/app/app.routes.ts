@@ -3,23 +3,21 @@ import { initialDataResolver } from 'app/app.resolvers';
 import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
-import { WizardComponent } from './modules/sell/wizard/wizard.component';
-import { OffersComponent } from './modules/sell/offers/offers.component';
 
 // @formatter:off
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 export const appRoutes: Route[] = [
 
-    // Redirect empty path to '/example'
-    {path: '', pathMatch : 'full', redirectTo: 'example'},
+    // Redirect empty path to '/home'
+    {path: '', pathMatch : 'full', redirectTo: 'home'},
 
-    // Redirect signed-in user to the '/example'
+    // Redirect signed-in user to the '/home'
     //
     // After the user signs in, the sign-in page will redirect the user to the 'signed-in-redirect'
     // path. Below is another redirection for that path to redirect the user to the desired
     // location. This is a small convenience to keep all main routes together here on this file.
-    {path: 'signed-in-redirect', pathMatch : 'full', redirectTo: 'example'},
+    {path: 'signed-in-redirect', pathMatch : 'full', redirectTo: 'home'},
 
     // Auth routes for guests
     {
@@ -89,7 +87,8 @@ export const appRoutes: Route[] = [
             {path: 'randevularim', loadChildren: () => import('app/modules/user/randevularim/randevularim.routes')},
             {path: 'blog/new', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
             {path: 'blog/edit/:id', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
-            {path: 'offers/:id', component: OffersComponent},
+            {path: 'offers/:id', loadChildren: () => import('app/modules/sell/offers/offers.routes')},
+
         ]
     },
 
@@ -105,8 +104,9 @@ export const appRoutes: Route[] = [
             initialData: initialDataResolver
         },
         children: [
-            {path: 'wizard', component: WizardComponent},
+            {path: 'wizard', loadChildren: () => import('app/modules/sell/wizard/wizard.routes')},
             {path: 'example', loadChildren: () => import('app/modules/admin/example/example.routes')},
+            {path: 'admin/seo-pages', loadChildren: () => import('app/modules/admin/seo-pages/seo-pages.routes')},
             {path: 'blog', loadChildren: () => import('app/modules/blog/list/blog-list.routes')},
             {path: 'blog/:id', loadChildren: () => import('app/modules/blog/detail/blog-detail.routes')},
         ]

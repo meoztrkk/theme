@@ -1,0 +1,381 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Header -->
+    <div class="relative pt-8 pb-12 sm:pt-16 sm:pb-20 bg-default">
+        <div class="w-full max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10">
+                    <mat-icon [svgIcon]="'heroicons_outline:magnifying-glass'" class="text-primary" style="width: 24px; height: 24px;"></mat-icon>
+                </div>
+                <div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-none">
+                        {{ isEditMode ? 'SEO Sayfasını Düzenle' : 'Yeni SEO Sayfası Oluştur' }}
+                    </h1>
+                    <div class="mt-0.5 font-medium text-secondary">
+                        {{ isEditMode ? 'Mevcut SEO ayarlarını güncelleyin.' : 'Yeni bir SEO sayfası yapılandırması oluşturun.' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="flex flex-col flex-auto w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 md:py-12">
+        <div *ngIf="!isLoading; else loading">
+            <form [formGroup]="seoForm" (ngSubmit)="save()" class="flex flex-col">
+                <!-- Card Container -->
+                <mat-card class="mb-6">
+                    <mat-card-content class="p-0">
+                        <mat-tab-group class="seo-form-tabs" animationDuration="300ms">
+                            <!-- Tab 1: Temel Bilgiler -->
+                            <mat-tab>
+                                <ng-template mat-tab-label>
+                                    <div class="flex items-center gap-2">
+                                        <mat-icon [svgIcon]="'heroicons_outline:document-text'" style="width: 20px; height: 20px;"></mat-icon>
+                                        <span>Temel Bilgiler</span>
+                                    </div>
+                                </ng-template>
+                                <div class="tab-content p-6">
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold mb-1">Sayfa Bilgileri</h3>
+                                        <p class="text-sm text-secondary">SEO sayfası için temel tanımlayıcı bilgileri girin.</p>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                        <mat-form-field appearance="outline" class="fuse-mat-dense">
+                                            <mat-label>Sayfa Adı *</mat-label>
+                                            <input matInput formControlName="name" required placeholder="örn: Ana Sayfa, Blog Listesi">
+                                            <mat-icon matPrefix [svgIcon]="'heroicons_outline:tag'"></mat-icon>
+                                            <mat-hint>Bu sayfanın tanımlayıcı adı (sadece yönetim için)</mat-hint>
+                                            <mat-error *ngIf="seoForm.get('name')?.hasError('required')">Sayfa adı zorunludur.</mat-error>
+                                            <mat-error *ngIf="seoForm.get('name')?.hasError('maxlength')">Maksimum 256 karakter.</mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="fuse-mat-dense">
+                                            <mat-label>Route Adı *</mat-label>
+                                            <mat-select formControlName="routeName" required>
+                                                <mat-option *ngFor="let option of seoKeyOptions" [value]="option.value">
+                                                    <div class="flex flex-col">
+                                                        <span class="font-medium">{{ option.label }}</span>
+                                                        <span class="text-xs text-secondary font-mono"> - {{ option.value }}</span>
+                                                    </div>
+                                                </mat-option>
+                                            </mat-select>
+                                            <mat-icon matPrefix [svgIcon]="'heroicons_outline:link'"></mat-icon>
+                                            <mat-hint>Frontend route adı (router'larda kullanılan seoKey ile aynı olmalı)</mat-hint>
+                                            <mat-error *ngIf="seoForm.get('routeName')?.hasError('required')">Route adı zorunludur.</mat-error>
+                                            <mat-error *ngIf="seoForm.get('routeName')?.hasError('maxlength')">Maksimum 256 karakter.</mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div class="mt-6">
+                                        <h3 class="text-lg font-semibold mb-1">SEO Meta Bilgileri</h3>
+                                        <p class="text-sm text-secondary mb-4">Arama motorları için temel SEO bilgileri.</p>
+
+                                        <mat-form-field appearance="outline" class="fuse-mat-dense w-full mb-6">
+                                            <mat-label>Sayfa Başlığı (Title) *</mat-label>
+                                            <input matInput formControlName="title" required placeholder="Sayfanın görünen başlığı">
+                                            <mat-icon matPrefix [svgIcon]="'heroicons_outline:document-text'"></mat-icon>
+                                            <mat-hint>Tarayıcı sekmesinde ve arama sonuçlarında görünecek başlık (50-60 karakter önerilir)</mat-hint>
+                                            <mat-error *ngIf="seoForm.get('title')?.hasError('required')">Başlık zorunludur.</mat-error>
+                                            <mat-error *ngIf="seoForm.get('title')?.hasError('maxlength')">Maksimum 256 karakter.</mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="fuse-mat-dense w-full mb-6">
+                                            <mat-label>Açıklama (Meta Description)</mat-label>
+                                            <textarea matInput formControlName="description" rows="3" placeholder="Sayfanın kısa açıklaması"></textarea>
+                                            <mat-icon matPrefix [svgIcon]="'heroicons_outline:document-duplicate'"></mat-icon>
+                                            <mat-hint>Arama sonuçlarında görünecek açıklama (150-160 karakter önerilir)</mat-hint>
+                                            <mat-error *ngIf="seoForm.get('description')?.hasError('maxlength')">Maksimum 1024 karakter.</mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="fuse-mat-dense w-full mb-6">
+                                            <mat-label>Anahtar Kelimeler (Keywords)</mat-label>
+                                            <input matInput formControlName="keywords" placeholder="araç, satış, değerleme">
+                                            <mat-icon matPrefix [svgIcon]="'heroicons_outline:key'"></mat-icon>
+                                            <mat-hint>Virgülle ayrılmış anahtar kelimeler (örn: araç satış, ikinci el, değerleme)</mat-hint>
+                                            <mat-error *ngIf="seoForm.get('keywords')?.hasError('maxlength')">Maksimum 512 karakter.</mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="fuse-mat-dense w-full mb-6">
+                                            <mat-label>Canonical URL</mat-label>
+                                            <input matInput formControlName="canonicalUrl" type="url" placeholder="https://example.com/page">
+                                            <mat-icon matPrefix [svgIcon]="'heroicons_outline:globe-alt'"></mat-icon>
+                                            <mat-hint>Bu sayfanın kanonik URL'si (duplicate content önleme için)</mat-hint>
+                                            <mat-error *ngIf="seoForm.get('canonicalUrl')?.hasError('maxlength')">Maksimum 1024 karakter.</mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </mat-tab>
+
+                            <!-- Tab 2: Open Graph -->
+                            <mat-tab>
+                                <ng-template mat-tab-label>
+                                    <div class="flex items-center gap-2">
+                                        <mat-icon [svgIcon]="'heroicons_outline:share'" style="width: 20px; height: 20px;"></mat-icon>
+                                        <span>Open Graph</span>
+                                    </div>
+                                </ng-template>
+                                <div class="tab-content p-6">
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold mb-1">Open Graph Ayarları</h3>
+                                        <p class="text-sm text-secondary">Facebook, LinkedIn ve diğer sosyal medya platformlarında paylaşım görünümü için.</p>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                        <mat-form-field appearance="outline" class="fuse-mat-dense">
+                                            <mat-label>OG Başlık</mat-label>
+                                            <input matInput formControlName="ogTitle" placeholder="Sosyal medyada görünecek başlık">
+                                            <mat-icon matPrefix [svgIcon]="'heroicons_outline:document-text'"></mat-icon>
+                                            <mat-hint>Boş bırakılırsa Title kullanılır</mat-hint>
+                                            <mat-error *ngIf="seoForm.get('ogTitle')?.hasError('maxlength')">Maksimum 256 karakter.</mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="fuse-mat-dense">
+                                            <mat-label>OG Tip</mat-label>
+                                            <input matInput formControlName="ogType" placeholder="website, article, product">
+                                            <mat-icon matPrefix [svgIcon]="'heroicons_outline:tag'"></mat-icon>
+                                            <mat-hint>İçerik tipi (website, article, product vb.)</mat-hint>
+                                            <mat-error *ngIf="seoForm.get('ogType')?.hasError('maxlength')">Maksimum 50 karakter.</mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <mat-form-field appearance="outline" class="fuse-mat-dense w-full mt-6  mb-6">
+                                        <mat-label>OG Açıklama</mat-label>
+                                        <textarea matInput formControlName="ogDescription" rows="3" placeholder="Sosyal medyada görünecek açıklama"></textarea>
+                                        <mat-icon matPrefix [svgIcon]="'heroicons_outline:document-duplicate'"></mat-icon>
+                                        <mat-hint>Boş bırakılırsa Description kullanılır</mat-hint>
+                                        <mat-error *ngIf="seoForm.get('ogDescription')?.hasError('maxlength')">Maksimum 1024 karakter.</mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" class="fuse-mat-dense w-full mb-6">
+                                        <mat-label>OG Görsel URL</mat-label>
+                                        <input matInput formControlName="ogImage" type="url" placeholder="https://example.com/image.jpg">
+                                        <mat-icon matPrefix [svgIcon]="'heroicons_outline:photo'"></mat-icon>
+                                        <mat-hint>Paylaşımda görünecek görsel (1200x630px önerilir)</mat-hint>
+                                        <mat-error *ngIf="seoForm.get('ogImage')?.hasError('maxlength')">Maksimum 1024 karakter.</mat-error>
+                                    </mat-form-field>
+                                </div>
+                            </mat-tab>
+
+                            <!-- Tab 3: Twitter Card -->
+                            <mat-tab>
+                                <ng-template mat-tab-label>
+                                    <div class="flex items-center gap-2">
+                                        <mat-icon [svgIcon]="'heroicons_outline:at-symbol'" style="width: 20px; height: 20px;"></mat-icon>
+                                        <span>Twitter Card</span>
+                                    </div>
+                                </ng-template>
+                                <div class="tab-content p-6">
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold mb-1">Twitter Card Ayarları</h3>
+                                        <p class="text-sm text-secondary">Twitter'da paylaşım görünümü için özel ayarlar.</p>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                        <mat-form-field appearance="outline" class="fuse-mat-dense">
+                                            <mat-label>Twitter Card Tipi</mat-label>
+                                            <input matInput formControlName="twitterCard" placeholder="summary, summary_large_image">
+                                            <mat-icon matPrefix [svgIcon]="'heroicons_outline:tag'"></mat-icon>
+                                            <mat-hint>summary veya summary_large_image</mat-hint>
+                                            <mat-error *ngIf="seoForm.get('twitterCard')?.hasError('maxlength')">Maksimum 50 karakter.</mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="fuse-mat-dense">
+                                            <mat-label>Twitter Başlık</mat-label>
+                                            <input matInput formControlName="twitterTitle" placeholder="Twitter'da görünecek başlık">
+                                            <mat-icon matPrefix [svgIcon]="'heroicons_outline:document-text'"></mat-icon>
+                                            <mat-hint>Boş bırakılırsa Title kullanılır</mat-hint>
+                                            <mat-error *ngIf="seoForm.get('twitterTitle')?.hasError('maxlength')">Maksimum 256 karakter.</mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <mat-form-field appearance="outline" class="fuse-mat-dense w-full mt-6 mb-6">
+                                        <mat-label>Twitter Açıklama</mat-label>
+                                        <textarea matInput formControlName="twitterDescription" rows="3" placeholder="Twitter'da görünecek açıklama"></textarea>
+                                        <mat-icon matPrefix [svgIcon]="'heroicons_outline:document-duplicate'"></mat-icon>
+                                        <mat-hint>Boş bırakılırsa Description kullanılır</mat-hint>
+                                        <mat-error *ngIf="seoForm.get('twitterDescription')?.hasError('maxlength')">Maksimum 1024 karakter.</mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" class="fuse-mat-dense w-full mb-6">
+                                        <mat-label>Twitter Görsel URL</mat-label>
+                                        <input matInput formControlName="twitterImage" type="url" placeholder="https://example.com/twitter-image.jpg">
+                                        <mat-icon matPrefix [svgIcon]="'heroicons_outline:photo'"></mat-icon>
+                                        <mat-hint>Twitter'da görünecek görsel (1200x600px önerilir)</mat-hint>
+                                        <mat-error *ngIf="seoForm.get('twitterImage')?.hasError('maxlength')">Maksimum 1024 karakter.</mat-error>
+                                    </mat-form-field>
+                                </div>
+                            </mat-tab>
+
+                            <!-- Tab 4: JSON-LD -->
+                            <mat-tab>
+                                <ng-template mat-tab-label>
+                                    <div class="flex items-center gap-2">
+                                        <mat-icon [svgIcon]="'heroicons_outline:code-bracket'" style="width: 20px; height: 20px;"></mat-icon>
+                                        <span>JSON-LD</span>
+                                    </div>
+                                </ng-template>
+                                <div class="tab-content p-6">
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold mb-1">JSON-LD Yapılandırılmış Veri</h3>
+                                        <p class="text-sm text-secondary">Schema.org uyumlu JSON-LD yapılandırılmış veri. Arama motorları için ek bilgi sağlar.</p>
+                                    </div>
+
+                                    <!-- Şablon Ekle Butonu -->
+                                    <div class="mb-4">
+                                        <button mat-stroked-button [matMenuTriggerFor]="templateMenu" type="button">
+                                            <mat-icon [svgIcon]="'heroicons_outline:document-plus'"></mat-icon>
+                                            <span class="ml-2">Şablon Ekle</span>
+                                        </button>
+                                        <mat-menu #templateMenu="matMenu">
+                                            <button mat-menu-item (click)="insertTemplate('faqpage')">
+                                                <mat-icon [svgIcon]="'heroicons_outline:question-mark-circle'"></mat-icon>
+                                                <span>FAQPage (Sıkça Sorulan Sorular)</span>
+                                            </button>
+                                            <button mat-menu-item (click)="insertTemplate('howto')">
+                                                <mat-icon [svgIcon]="'heroicons_outline:academic-cap'"></mat-icon>
+                                                <span>HowTo (Nasıl Yapılır)</span>
+                                            </button>
+                                            <button mat-menu-item (click)="insertTemplate('product')">
+                                                <mat-icon [svgIcon]="'heroicons_outline:cube'"></mat-icon>
+                                                <span>Product (Ürün)</span>
+                                            </button>
+                                            <button mat-menu-item (click)="insertTemplate('recipe')">
+                                                <mat-icon [svgIcon]="'heroicons_outline:book-open'"></mat-icon>
+                                                <span>Recipe (Yemek Tarifi)</span>
+                                            </button>
+                                            <button mat-menu-item (click)="insertTemplate('localbusiness')">
+                                                <mat-icon [svgIcon]="'heroicons_outline:building-storefront'"></mat-icon>
+                                                <span>LocalBusiness (Yerel İşletme)</span>
+                                            </button>
+                                            <button mat-menu-item (click)="insertTemplate('jobposting')">
+                                                <mat-icon [svgIcon]="'heroicons_outline:briefcase'"></mat-icon>
+                                                <span>JobPosting (İş İlanı)</span>
+                                            </button>
+                                            <button mat-menu-item (click)="insertTemplate('event')">
+                                                <mat-icon [svgIcon]="'heroicons_outline:calendar'"></mat-icon>
+                                                <span>Event (Etkinlik)</span>
+                                            </button>
+                                            <button mat-menu-item (click)="insertTemplate('movie')">
+                                                <mat-icon [svgIcon]="'heroicons_outline:film'"></mat-icon>
+                                                <span>Movie (Film/Yorum)</span>
+                                            </button>
+                                            <button mat-menu-item (click)="insertTemplate('video')">
+                                                <mat-icon [svgIcon]="'heroicons_outline:video-camera'"></mat-icon>
+                                                <span>VideoObject (Video)</span>
+                                            </button>
+                                            <button mat-menu-item (click)="insertTemplate('article')">
+                                                <mat-icon [svgIcon]="'heroicons_outline:newspaper'"></mat-icon>
+                                                <span>Article (Makale)</span>
+                                            </button>
+                                        </mat-menu>
+                                    </div>
+
+                                    <mat-form-field appearance="outline" class="fuse-mat-dense w-full mb-6">
+                                        <mat-label>JSON-LD</mat-label>
+                                        <textarea matInput formControlName="jsonLd" rows="15" placeholder='[{"@context":"https://schema.org","@type":"Organization",...}]' style="font-family: monospace; font-size: 0.875rem;"></textarea>
+                                        <mat-icon matPrefix [svgIcon]="'heroicons_outline:code-bracket'"></mat-icon>
+                                        <mat-hint>Geçerli JSON formatında yapılandırılmış veri girin. Tek bir obje veya obje dizisi olabilir.</mat-hint>
+                                    </mat-form-field>
+
+                                    <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                        <div class="flex items-start gap-3">
+                                            <mat-icon [svgIcon]="'heroicons_outline:information-circle'" class="text-blue-600 dark:text-blue-400 mt-0.5" style="width: 20px; height: 20px;"></mat-icon>
+                                            <div class="flex-1">
+                                                <p class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">JSON-LD Hakkında</p>
+                                                <p class="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                                                    JSON-LD, arama motorlarının içeriğinizi daha iyi anlamasına yardımcı olan yapılandırılmış veri formatıdır.
+                                                    Schema.org standartlarına uygun olmalıdır.
+                                                </p>
+                                                <p class="text-sm text-blue-700 dark:text-blue-300">
+                                                    Örnek: Organization, WebSite, HowTo, FAQPage gibi şemalar kullanılabilir.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-tab>
+
+                            <!-- Tab 5: Ek Ayarlar -->
+                            <mat-tab>
+                                <ng-template mat-tab-label>
+                                    <div class="flex items-center gap-2">
+                                        <mat-icon [svgIcon]="'heroicons_outline:cog-6-tooth'" style="width: 20px; height: 20px;"></mat-icon>
+                                        <span>Ek Ayarlar</span>
+                                    </div>
+                                </ng-template>
+                                <div class="tab-content p-6">
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold mb-1">Ek Ayarlar</h3>
+                                        <p class="text-sm text-secondary">Sayfa durumu ve dil ayarları.</p>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                        <mat-form-field appearance="outline" class="fuse-mat-dense">
+                                            <mat-label>Kültür (Culture)</mat-label>
+                                            <input matInput formControlName="culture" placeholder="tr-TR, en-US">
+                                            <mat-icon matPrefix [svgIcon]="'heroicons_outline:language'"></mat-icon>
+                                            <mat-hint>Dil ve bölge kodu (çoklu dil desteği için)</mat-hint>
+                                            <mat-error *ngIf="seoForm.get('culture')?.hasError('maxlength')">Maksimum 10 karakter.</mat-error>
+                                        </mat-form-field>
+
+                                        <div class="flex items-center">
+                                            <mat-checkbox formControlName="isActive" class="mt-4 mb-6">
+                                                <span class="ml-2">Sayfa Aktif</span>
+                                            </mat-checkbox>
+                                            <mat-icon [svgIcon]="'heroicons_outline:information-circle'" class="ml-2 text-secondary" style="width: 20px; height: 20px;" matTooltip="Pasif sayfalar SEO için kullanılmaz"></mat-icon>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                        <div class="flex items-start gap-3">
+                                            <mat-icon [svgIcon]="'heroicons_outline:information-circle'" class="text-blue-600 dark:text-blue-400 mt-0.5" style="width: 20px; height: 20px;"></mat-icon>
+                                            <div class="flex-1">
+                                                <p class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">İpucu</p>
+                                                <p class="text-sm text-blue-700 dark:text-blue-300">
+                                                    Zorunlu alanlar (*) işaretlidir. Open Graph ve Twitter Card alanları boş bırakılırsa,
+                                                    temel SEO bilgileri (Title, Description) otomatik olarak kullanılır.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-tab>
+                        </mat-tab-group>
+                    </mat-card-content>
+                </mat-card>
+
+                <!-- Actions -->
+                <div class="flex items-center justify-between border-t border-solid border-gray-200 dark:border-gray-700 pt-6 mt-6">
+                    <div class="text-sm text-secondary">
+                        <span *ngIf="seoForm.invalid" class="text-warn">Lütfen zorunlu alanları doldurun.</span>
+                        <span *ngIf="seoForm.valid" class="text-green-600 dark:text-green-400">Form geçerli, kaydedebilirsiniz.</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <a mat-stroked-button [routerLink]="['/admin/seo-pages']">
+                            <mat-icon [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                            <span class="ml-2">İptal</span>
+                        </a>
+                        <button
+                            mat-flat-button
+                            color="primary"
+                            type="submit"
+                            [disabled]="seoForm.invalid || isSaving">
+                            <mat-icon *ngIf="!isSaving" [svgIcon]="isEditMode ? 'heroicons_outline:arrow-path' : 'heroicons_outline:check-circle'"></mat-icon>
+                            <mat-progress-spinner *ngIf="isSaving" [diameter]="20" mode="indeterminate" class="mr-2"></mat-progress-spinner>
+                            <span class="ml-2">
+                                {{ isSaving ? 'Kaydediliyor...' : (isEditMode ? 'Güncelle' : 'Kaydet') }}
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <ng-template #loading>
+            <div class="flex items-center justify-center p-8">
+                <mat-progress-spinner [diameter]="40" mode="indeterminate"></mat-progress-spinner>
+            </div>
+        </ng-template>
+    </div>
+</div>
