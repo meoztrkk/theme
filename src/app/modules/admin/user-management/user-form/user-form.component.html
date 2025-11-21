@@ -1,0 +1,180 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Header -->
+    <div class="relative pt-8 pb-12 sm:pt-16 sm:pb-20 bg-default">
+        <div class="flex flex-col sm:flex-row items-center justify-between w-full max-w-7xl mx-auto px-6 lg:px-8">
+            <div>
+                <div class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-none">
+                    {{ isEditMode ? 'Kullanıcı Düzenle' : 'Yeni Kullanıcı' }}
+                </div>
+                <div class="mt-0.5 font-medium text-secondary">
+                    {{ isEditMode ? 'Kullanıcı bilgilerini düzenleyin.' : 'Yeni bir kullanıcı oluşturun.' }}
+                </div>
+            </div>
+            <div class="flex items-center gap-2 mt-4 sm:mt-0">
+                <button mat-stroked-button (click)="cancel()">
+                    <mat-icon [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                    <span class="ml-2">İptal</span>
+                </button>
+                <button mat-flat-button color="primary" (click)="save()" [disabled]="isSaving || isLoading">
+                    <mat-icon [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                    <span class="ml-2">{{ isSaving ? 'Kaydediliyor...' : 'Kaydet' }}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="flex flex-col flex-auto w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 md:py-12">
+        <div *ngIf="!isLoading; else loading" class="w-full">
+            <form [formGroup]="userForm" class="space-y-6">
+                <!-- Basic Information Card -->
+                <mat-card class="mb-6">
+                    <mat-card-header>
+                        <mat-card-title>Temel Bilgiler</mat-card-title>
+                    </mat-card-header>
+                    <mat-divider></mat-divider>
+                    <mat-card-content class="pt-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- User Name -->
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Kullanıcı Adı</mat-label>
+                                <input matInput formControlName="userName" required />
+                                <mat-error *ngIf="userForm.get('userName')?.hasError('required')">
+                                    Kullanıcı adı zorunludur
+                                </mat-error>
+                                <mat-error *ngIf="userForm.get('userName')?.hasError('maxlength')">
+                                    Maksimum 256 karakter
+                                </mat-error>
+                            </mat-form-field>
+
+                            <!-- Email -->
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>E-posta</mat-label>
+                                <input matInput type="email" formControlName="email" required />
+                                <mat-error *ngIf="userForm.get('email')?.hasError('required')">
+                                    E-posta zorunludur
+                                </mat-error>
+                                <mat-error *ngIf="userForm.get('email')?.hasError('email')">
+                                    Geçerli bir e-posta adresi girin
+                                </mat-error>
+                            </mat-form-field>
+
+                            <!-- Name -->
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Ad</mat-label>
+                                <input matInput formControlName="name" />
+                                <mat-error *ngIf="userForm.get('name')?.hasError('maxlength')">
+                                    Maksimum 64 karakter
+                                </mat-error>
+                            </mat-form-field>
+
+                            <!-- Surname -->
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Soyad</mat-label>
+                                <input matInput formControlName="surname" />
+                                <mat-error *ngIf="userForm.get('surname')?.hasError('maxlength')">
+                                    Maksimum 64 karakter
+                                </mat-error>
+                            </mat-form-field>
+
+                            <!-- Phone Number -->
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Telefon Numarası</mat-label>
+                                <input matInput formControlName="phoneNumber" />
+                                <mat-error *ngIf="userForm.get('phoneNumber')?.hasError('maxlength')">
+                                    Maksimum 16 karakter
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <!-- Password Card (only for create) -->
+                <mat-card *ngIf="!isEditMode" class="mb-6">
+                    <mat-card-header>
+                        <mat-card-title>Şifre</mat-card-title>
+                    </mat-card-header>
+                    <mat-divider></mat-divider>
+                    <mat-card-content class="pt-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Password -->
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Şifre</mat-label>
+                                <input matInput type="password" formControlName="password" required />
+                                <mat-error *ngIf="userForm.get('password')?.hasError('required')">
+                                    Şifre zorunludur
+                                </mat-error>
+                                <mat-error *ngIf="userForm.get('password')?.hasError('minlength')">
+                                    Minimum 6 karakter
+                                </mat-error>
+                            </mat-form-field>
+
+                            <!-- Confirm Password -->
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Şifre Tekrar</mat-label>
+                                <input matInput type="password" formControlName="confirmPassword" required />
+                                <mat-error *ngIf="userForm.get('confirmPassword')?.hasError('required')">
+                                    Şifre tekrarı zorunludur
+                                </mat-error>
+                                <mat-error *ngIf="userForm.hasError('passwordMismatch') && userForm.get('confirmPassword')?.touched">
+                                    Şifreler eşleşmiyor
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <!-- Roles Card -->
+                <mat-card class="mb-6">
+                    <mat-card-header>
+                        <mat-card-title>Roller</mat-card-title>
+                    </mat-card-header>
+                    <mat-divider></mat-divider>
+                    <mat-card-content class="pt-6">
+                        <mat-form-field appearance="outline" class="w-full">
+                            <mat-label>Kullanıcı Rolleri</mat-label>
+                            <mat-select formControlName="roleNames" multiple>
+                                <mat-option *ngFor="let role of roles" [value]="role.name">
+                                    {{ role.name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </mat-card-content>
+                </mat-card>
+
+                <!-- Settings Card -->
+                <mat-card>
+                    <mat-card-header>
+                        <mat-card-title>Ayarlar</mat-card-title>
+                    </mat-card-header>
+                    <mat-divider></mat-divider>
+                    <mat-card-content class="pt-6">
+                        <div class="space-y-4">
+                            <!-- Is Active -->
+                            <mat-checkbox formControlName="isActive">
+                                Kullanıcı aktif
+                            </mat-checkbox>
+
+                            <!-- Lockout Enabled -->
+                            <mat-checkbox formControlName="lockoutEnabled">
+                                Hesap kilitleme etkin
+                            </mat-checkbox>
+
+                            <!-- Should Change Password -->
+                            <mat-checkbox formControlName="shouldChangePasswordOnNextLogin">
+                                Bir sonraki girişte şifre değiştirilsin
+                            </mat-checkbox>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </form>
+        </div>
+
+        <ng-template #loading>
+            <div class="flex items-center justify-center py-12">
+                <mat-spinner diameter="50"></mat-spinner>
+            </div>
+        </ng-template>
+    </div>
+</div>
+
