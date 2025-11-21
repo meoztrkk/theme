@@ -107,7 +107,18 @@ export class BlogDetailComponent implements OnInit {
 
         const imageUrl = post.imageUrl || null;
         const authorName = post.author || 'Direkt Satış';
-        const publishedDate = post.publishDate ? new Date(post.publishDate).toISOString() : undefined;
+        const publishedDate = post.publishDate
+            ? (() => {
+                const date = new Date(post.publishDate);
+                // Check if date is valid
+                if (isNaN(date.getTime())) {
+                    console.warn('Invalid publish date:', post.publishDate);
+                    return undefined;
+                }
+                // Return ISO 8601 format (e.g., "2025-11-18T10:15:00.000Z")
+                return date.toISOString();
+            })()
+            : undefined;
 
         // Build canonical URL from current location (without query string and hash)
         const origin = window.location.origin;
