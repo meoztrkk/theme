@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
-import { AuthPhoneService } from 'app/core/auth/auth-phone.service';
+import { AuthService } from 'app/core/auth/auth.service';
 import { catchError, finalize } from 'rxjs/operators';
 import { of, throwError } from 'rxjs';
 
@@ -48,7 +48,7 @@ export class ProfileComponent implements OnInit {
 
     constructor(
         private fb: FormBuilder,
-        private authPhoneService: AuthPhoneService,
+        private authService: AuthService,
         private snackBar: MatSnackBar
     ) {
         this.profileForm = this.fb.group({
@@ -71,7 +71,7 @@ export class ProfileComponent implements OnInit {
 
     loadUserProfile(): void {
         this.loading = true;
-        this.authPhoneService.me().pipe(
+        this.authService.me().pipe(
             catchError((err) => {
                 console.error('Error loading user profile:', err);
                 this.snackBar.open('Profil bilgileri yüklenirken bir hata oluştu.', 'Kapat', { duration: 5000 });
@@ -132,7 +132,7 @@ export class ProfileComponent implements OnInit {
         this.savingProfile = true;
         const { name, surname } = this.profileForm.value;
 
-        this.authPhoneService.updateProfile(name, surname).pipe(
+        this.authService.updateProfile(name, surname).pipe(
             catchError((err) => {
                 console.error('Error updating profile:', err);
                 const errorMessage = err.error?.message || 'Profil güncellenirken bir hata oluştu.';
@@ -162,7 +162,7 @@ export class ProfileComponent implements OnInit {
         this.changingPassword = true;
         const { currentPassword, newPassword } = this.passwordForm.value;
 
-        this.authPhoneService.changePassword(currentPassword, newPassword).pipe(
+        this.authService.changePassword(currentPassword, newPassword).pipe(
             catchError((err) => {
                 console.error('Error changing password:', err);
                 const errorMessage = err.error?.message || 'Şifre değiştirilirken bir hata oluştu.';
