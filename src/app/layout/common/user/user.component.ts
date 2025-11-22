@@ -15,6 +15,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router, RouterModule } from '@angular/router';
+import { AuthPhoneService } from 'app/core/auth/auth-phone.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { UserService } from 'app/core/user/user.service';
 import { User } from 'app/core/user/user.types';
@@ -56,6 +57,7 @@ export class UserComponent implements OnInit, OnDestroy {
         private _router: Router,
         private _userService: UserService,
         private _authService: AuthService,
+        private _authPhoneService: AuthPhoneService,
         private _dialog: MatDialog
     ) {}
 
@@ -81,7 +83,7 @@ export class UserComponent implements OnInit, OnDestroy {
             });
 
         // Subscribe to authentication state changes
-        this._authService.authenticated$
+        this._authService.authenticationStateChanged$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((isAuthenticated) => {
                 console.log('[UserComponent] Authentication state changed, isAuthenticated:', isAuthenticated);
@@ -101,14 +103,24 @@ export class UserComponent implements OnInit, OnDestroy {
             if (isAuthenticated) {
                 console.log('[UserComponent._checkAuthentication] User is authenticated, fetching user info...');
                 // Try to get user info
-                this._authService.getUser().subscribe({
-                    next: (user: User) => {
-                        console.log('[UserComponent._checkAuthentication] User info fetched:', user);
+                this._authPhoneService.me().subscribe({
+                    next: (userData: any) => {
+                        console.log('[UserComponent._checkAuthentication] User info fetched:', userData);
+                        // Map user data to User type
+                        const user: User = {
+                            id: userData.id || '',
+                            name: `${userData.name || ''} ${userData.surname || ''}`.trim() || userData.userName || '',
+                            email: userData.email,
+                            phoneNumber: userData.phoneNumber,
+                            avatar: userData.avatar,
+                            status: 'online',
+                        };
+                        this._userService.user = user;
                         this.user = user;
                         this._changeDetectorRef.markForCheck();
                     },
                     error: (err) => {
-                        // If getUser() fails, user might still be authenticated
+                        // If me() fails, user might still be authenticated
                         // Just mark as authenticated without user data
                         console.warn('[UserComponent._checkAuthentication] Could not fetch user info, but user is authenticated. Error:', err);
                         // User authenticated ama bilgisi alınamadı, yine de authenticated olarak işaretle

@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { AuthPhoneService } from 'app/core/auth/auth-phone.service';
 import { AppointmentDialogComponent, AppointmentDialogData } from 'app/modules/sell/appointment-dialog/appointment-dialog.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -46,6 +47,7 @@ export class RandevularimComponent implements OnInit {
 
     constructor(
         private http: HttpClient,
+        private authPhoneService: AuthPhoneService,
         public router: Router,
         private dialog: MatDialog,
         private _fuseConfirmationService: FuseConfirmationService,

@@ -1,36 +1,29 @@
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { AuthService } from 'app/core/auth/auth.service';
 import { User } from 'app/core/user/user.types';
-import { Observable } from 'rxjs';
+import { map, Observable, ReplaySubject, tap } from 'rxjs';
 
-/**
- * User Service
- * Delegates to AuthService for user state management
- * Provides a single source of truth for user data
- */
 @Injectable({ providedIn: 'root' })
 export class UserService {
-    private _authService = inject(AuthService);
+    private _httpClient = inject(HttpClient);
+    private _user: ReplaySubject<User> = new ReplaySubject<User>(1);
 
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
     // -----------------------------------------------------------------------------------------------------
 
     /**
-     * Setter for user (delegates to AuthService)
+     * Setter & getter for user
+     *
      * @param value
      */
     set user(value: User) {
-        // Note: This is kept for backward compatibility
-        // The AuthService manages user state internally
-        // If needed, we can emit to a local subject, but it's better to use AuthService.user$ directly
+        // Store the value
+        this._user.next(value);
     }
 
-    /**
-     * Getter for user observable (delegates to AuthService)
-     */
-    get user$(): Observable<User | null> {
-        return this._authService.user$;
+    get user$(): Observable<User> {
+        return this._user.asObservable();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -39,25 +32,25 @@ export class UserService {
 
     /**
      * Get the current signed-in user data
-     * Delegates to AuthService.getUser()
      */
     get(): Observable<User> {
-        return this._authService.getUser();
+        return this._httpClient.get<User>('api/common/user').pipe(
+            tap((user) => {
+                this._user.next(user);
+            })
+        );
     }
 
     /**
      * Update the user
-     * Note: This method is kept for backward compatibility
-     * In a real implementation, you would call an update endpoint
+     *
      * @param user
      */
-    update(user: User): Observable<User> {
-        // This would typically call an API endpoint to update user
-        // For now, we'll just return the user as-is
-        // TODO: Implement actual update endpoint call
-        return new Observable((subscriber) => {
-            subscriber.next(user);
-            subscriber.complete();
-        });
+    update(user: User): Observable<any> {
+        return this._httpClient.patch<User>('api/common/user', { user }).pipe(
+            map((response) => {
+                this._user.next(response);
+            })
+        );
     }
 }

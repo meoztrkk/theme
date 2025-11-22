@@ -10,6 +10,7 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { AuthService } from 'app/core/auth/auth.service';
 import { AuthUtils } from 'app/core/auth/auth.utils';
+import { AuthPhoneService } from 'app/core/auth/auth-phone.service';
 import { SellWizardService, IdNameDto } from 'app/core/services/sell-wizard.service';
 import { AppointmentDialogComponent, AppointmentDialogData } from 'app/modules/sell/appointment-dialog/appointment-dialog.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -61,6 +62,7 @@ export class DegerlemelerimComponent implements OnInit {
     constructor(
         private wizardService: SellWizardService,
         private authService: AuthService,
+        private authPhoneService: AuthPhoneService,
         public router: Router,
         private dialog: MatDialog,
         private _fuseConfirmationService: FuseConfirmationService,
@@ -75,7 +77,7 @@ export class DegerlemelerimComponent implements OnInit {
         this.loading = true;
 
         // Get current user ID
-        this.authService.me().pipe(
+        this.authPhoneService.me().pipe(
             switchMap((userData: any) => {
                 if (!userData?.id) {
                     throw new Error('User not authenticated');

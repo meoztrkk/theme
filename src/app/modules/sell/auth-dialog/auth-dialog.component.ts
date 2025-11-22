@@ -18,6 +18,7 @@ import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
+import { AuthPhoneService } from 'app/core/auth/auth-phone.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -90,7 +91,8 @@ export class AuthDialogComponent implements OnDestroy {
     constructor(
         private dialogRef: MatDialogRef<AuthDialogComponent>,
         private fb: FormBuilder,
-        private authService: AuthService,
+        private authPhone: AuthPhoneService,
+        private appAuth: AuthService,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) {
         console.log('[AuthDialog.constructor] Dialog initialized with data:', data);
@@ -165,8 +167,8 @@ export class AuthDialogComponent implements OnDestroy {
         this.isSending = true;
 
         this.errorMessage = null;
-        this.authService
-            .signUpByPhone({
+        this.authPhone
+            .registerByPhone({
                 phoneNumber: normalizedPhone,
                 password: password!,
                 firstName: firstName,
@@ -182,8 +184,8 @@ export class AuthDialogComponent implements OnDestroy {
                     this.savedPhoneForLogin = normalizedPhone;
                     this.savedPasswordForLogin = password!;
                     // SMS gönder
-                    this.authService
-                        .sendPhoneCode(normalizedPhone)
+                    this.authPhone
+                        .sendSms(normalizedPhone)
                         .pipe(takeUntil(this.destroy$))
                         .subscribe({
                             next: () => {
@@ -238,22 +240,62 @@ export class AuthDialogComponent implements OnDestroy {
         const password = (raw.password || '').trim();
         const normalizedPhone = this.normalizePhone(phone);
 
-        console.log('[AuthDialog.submitLogin] Calling signInWithPhone with phone:', normalizedPhone);
+        console.log('[AuthDialog.submitLogin] Calling loginByPhone with phone:', normalizedPhone);
         this.isSending = true;
 
         this.errorMessage = null;
-        this.authService
-            .signInWithPhone({
+        this.authPhone
+            .loginByPhone({
                 phoneNumber: normalizedPhone,
                 password: password,
             })
             .pipe(takeUntil(this.destroy$))
             .subscribe({
-                next: () => {
+                next: (res: any) => {
                     this.isSending = false;
-                    console.log('[AuthDialog] Login successful');
-                    // AuthService already handles token storage and user fetching
-                    this.dialogRef.close('authenticated');
+                    const token = res?.accessToken || res?.access_token;
+
+                    if (!token) {
+                        this.errorMessage = 'Giriş başarısız oldu. Token alınamadı.';
+                        console.error('Login failed - no token received');
+                        return;
+                    }
+
+                    console.log('[AuthDialog] Login successful, token received:', token.substring(0, 20) + '...');
+                    const isJwt = token && token.split('.').length === 3;
+
+                    // Token'ı önce kaydet
+                    this.appAuth.accessToken = token;
+                    console.log('[AuthDialog] Token saved to localStorage');
+
+                    if (isJwt) {
+                        // JWT token ise kullanıcı bilgisini almayı dene
+                        // Token kaydedildi, interceptor otomatik header'a ekleyecek
+                        console.log('[AuthDialog] JWT token detected, fetching user profile...');
+                        this.authPhone
+                            .me()
+                            .pipe(takeUntil(this.destroy$))
+                            .subscribe({
+                            next: (profile) => {
+                                console.log('[AuthDialog] User profile fetched successfully:', profile);
+                                this.appAuth.signInWithExternalToken(token, profile);
+                                this.dialogRef.close('authenticated');
+                            },
+                            error: (err) => {
+                                // me() başarısız olsa bile token kaydedildi, giriş başarılı sayılabilir
+                                // 403 hatası gelirse bile token geçerli olabilir (endpoint yetkilendirme sorunu olabilir)
+                                console.warn('[AuthDialog] Could not fetch user profile, but login successful. Error:', err);
+                                console.log('[AuthDialog] Proceeding with login without user profile');
+                                this.appAuth.signInWithExternalToken(token, null);
+                                this.dialogRef.close('authenticated');
+                            },
+                        });
+                    } else {
+                        // JWT değilse direkt token ile giriş yap
+                        console.log('[AuthDialog] Non-JWT token, proceeding with login');
+                        this.appAuth.signInWithExternalToken(token, null);
+                        this.dialogRef.close('authenticated');
+                    }
                 },
                 error: (err) => {
                     this.isSending = false;
@@ -297,11 +339,8 @@ export class AuthDialogComponent implements OnDestroy {
         // 2) gerçek endpoint
         this.isSending = true;
         this.errorMessage = null;
-        this.authService
-            .verifyPhoneCode({
-                phoneNumber: this.phoneForVerify,
-                code: code,
-            })
+        this.authPhone
+            .verifySms(this.phoneForVerify, code)
             .pipe(takeUntil(this.destroy$))
             .subscribe({
             next: () => {
@@ -338,18 +377,57 @@ export class AuthDialogComponent implements OnDestroy {
         this.isSending = true;
         this.errorMessage = null;
 
-        this.authService
-            .signInWithPhone({
+        this.authPhone
+            .loginByPhone({
                 phoneNumber: this.savedPhoneForLogin,
                 password: this.savedPasswordForLogin,
             })
             .pipe(takeUntil(this.destroy$))
             .subscribe({
-                next: () => {
+                next: (res: any) => {
                     this.isSending = false;
-                    console.log('[AuthDialog.autoLoginAfterVerify] Auto login successful');
-                    // AuthService already handles token storage and user fetching
-                    this.dialogRef.close('authenticated');
+                    const token = res?.accessToken || res?.access_token;
+
+                    if (!token) {
+                        console.error('[AuthDialog.autoLoginAfterVerify] Login failed - no token received');
+                        // Token alınamadı ama doğrulama başarılı, dialog'u kapat
+                        this.dialogRef.close('authenticated');
+                        return;
+                    }
+
+                    console.log('[AuthDialog.autoLoginAfterVerify] Auto login successful, token received:', token.substring(0, 20) + '...');
+                    const isJwt = token && token.split('.').length === 3;
+
+                    // Token'ı önce kaydet
+                    this.appAuth.accessToken = token;
+                    console.log('[AuthDialog.autoLoginAfterVerify] Token saved to localStorage');
+
+                    if (isJwt) {
+                        // JWT token ise kullanıcı bilgisini almayı dene
+                        console.log('[AuthDialog.autoLoginAfterVerify] JWT token detected, fetching user profile...');
+                        this.authPhone
+                            .me()
+                            .pipe(takeUntil(this.destroy$))
+                            .subscribe({
+                            next: (profile) => {
+                                console.log('[AuthDialog.autoLoginAfterVerify] User profile fetched successfully:', profile);
+                                this.appAuth.signInWithExternalToken(token, profile);
+                                this.dialogRef.close('authenticated');
+                            },
+                            error: (err) => {
+                                console.warn('[AuthDialog.autoLoginAfterVerify] Could not fetch user profile, but login successful. Error:', err);
+                                console.log('[AuthDialog.autoLoginAfterVerify] Proceeding with login without user profile');
+                                this.appAuth.signInWithExternalToken(token, null);
+                                this.dialogRef.close('authenticated');
+                            },
+                        });
+                    } else {
+                        // JWT değilse direkt token ile giriş yap
+                        console.log('[AuthDialog.autoLoginAfterVerify] Non-JWT token, proceeding with login');
+                        this.appAuth.signInWithExternalToken(token, null);
+                        this.dialogRef.close('authenticated');
+                    }
+
                     // Bilgileri temizle
                     this.savedPhoneForLogin = '';
                     this.savedPasswordForLogin = '';
@@ -394,8 +472,8 @@ export class AuthDialogComponent implements OnDestroy {
 
     resendCode() {
         if (!this.phoneForVerify) return;
-        this.authService
-            .sendPhoneCode(this.phoneForVerify)
+        this.authPhone
+            .sendSms(this.phoneForVerify)
             .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: () => {
@@ -459,8 +537,8 @@ export class AuthDialogComponent implements OnDestroy {
         this.errorMessage = null;
 
         // SMS gönder ve verify ekranına yönlendir
-        this.authService
-            .sendPhoneCode(normalizedPhone)
+        this.authPhone
+            .sendSms(normalizedPhone)
             .pipe(takeUntil(this.destroy$))
             .subscribe({
             next: () => {
