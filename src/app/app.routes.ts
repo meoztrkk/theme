@@ -87,6 +87,7 @@ export const appRoutes: Route[] = [
             {path: 'randevularim', loadChildren: () => import('app/modules/user/randevularim/randevularim.routes')},
             {path: 'admin/seo-pages', loadChildren: () => import('app/modules/admin/seo-pages/seo-pages.routes')},
             {path: 'admin/seo-global', loadChildren: () => import('app/modules/admin/seo-global/seo-global.routes')},
+            {path: 'admin/users', loadChildren: () => import('app/modules/admin/user-management/user-management.routes')},
             {path: 'blog/new', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
             {path: 'blog/edit/:id', loadChildren: () => import('app/modules/blog/form/blog-form.routes')},
             {path: 'offers/:id', loadChildren: () => import('app/modules/sell/offers/offers.routes')},

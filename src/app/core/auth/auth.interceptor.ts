@@ -36,10 +36,24 @@ export const authInterceptor = (
         catchError((error: unknown) => {
             // Handle 401 Unauthorized responses
             if (error instanceof HttpErrorResponse && error.status === 401) {
-                // Clear authentication state
-                authService.signOut();
-                // Reload the page to reset application state
-                location.reload();
+                // Only logout on authentication-related endpoints
+                // Don't logout on API endpoints that might return 401 for permission issues
+                const url = error.url || '';
+                const isAuthEndpoint =
+                    url.includes('/connect/token') ||
+                    url.includes('/api/account/') ||
+                    url.includes('/api/app/app-account/current-user') ||
+                    url.includes('/api/identity/my-profile');
+
+                // If it's an auth endpoint, the token is invalid - logout
+                if (isAuthEndpoint) {
+                    // Clear authentication state
+                    authService.signOut();
+                    // Reload the page to reset application state
+                    location.reload();
+                }
+                // For other endpoints, 401 might be a permission issue, not authentication
+                // Just throw the error without logging out
             }
             return throwError(() => error);
         })

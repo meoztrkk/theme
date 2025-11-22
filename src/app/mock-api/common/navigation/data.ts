@@ -36,6 +36,32 @@ export const defaultNavigation: FuseNavigationItem[] = [
             },
         ],
     },
+    {
+        id: 'admin',
+        title: 'YÖNETİM',
+        type: 'collapsable',
+        icon: 'heroicons_outline:cog-6-tooth',
+        children: [
+            {
+                id: 'admin.users',
+                title: 'Kullanıcı Yönetimi',
+                type: 'basic',
+                link: '/admin/users',
+            },
+            {
+                id: 'admin.seo-pages',
+                title: 'SEO Yönetimi',
+                type: 'basic',
+                link: '/admin/seo-pages',
+            },
+            {
+                id: 'admin.seo-global',
+                title: 'SEO Global',
+                type: 'basic',
+                link: '/admin/seo-global',
+            },
+        ],
+    },
 ];
 
 export const compactNavigation: FuseNavigationItem[] = [
@@ -70,6 +96,32 @@ export const compactNavigation: FuseNavigationItem[] = [
                 title: 'Blog Ekle',
                 type: 'basic',
                 link: '/blog/new',
+            },
+        ],
+    },
+    {
+        id: 'admin',
+        title: 'YÖNETİM',
+        type: 'collapsable',
+        icon: 'heroicons_outline:cog-6-tooth',
+        children: [
+            {
+                id: 'admin.users',
+                title: 'Kullanıcı Yönetimi',
+                type: 'basic',
+                link: '/admin/users',
+            },
+            {
+                id: 'admin.seo-pages',
+                title: 'SEO Yönetimi',
+                type: 'basic',
+                link: '/admin/seo-pages',
+            },
+            {
+                id: 'admin.seo-global',
+                title: 'SEO Global',
+                type: 'basic',
+                link: '/admin/seo-global',
             },
         ],
     },
@@ -110,6 +162,32 @@ export const futuristicNavigation: FuseNavigationItem[] = [
             },
         ],
     },
+    {
+        id: 'admin',
+        title: 'YÖNETİM',
+        type: 'collapsable',
+        icon: 'heroicons_outline:cog-6-tooth',
+        children: [
+            {
+                id: 'admin.users',
+                title: 'Kullanıcı Yönetimi',
+                type: 'basic',
+                link: '/admin/users',
+            },
+            {
+                id: 'admin.seo-pages',
+                title: 'SEO Yönetimi',
+                type: 'basic',
+                link: '/admin/seo-pages',
+            },
+            {
+                id: 'admin.seo-global',
+                title: 'SEO Global',
+                type: 'basic',
+                link: '/admin/seo-global',
+            },
+        ],
+    },
 ];
 
 export const horizontalNavigation: FuseNavigationItem[] = [
@@ -144,6 +222,32 @@ export const horizontalNavigation: FuseNavigationItem[] = [
                 title: 'Blog Ekle',
                 type: 'basic',
                 link: '/blog/new',
+            },
+        ],
+    },
+    {
+        id: 'admin',
+        title: 'YÖNETİM',
+        type: 'collapsable',
+        icon: 'heroicons_outline:cog-6-tooth',
+        children: [
+            {
+                id: 'admin.users',
+                title: 'Kullanıcı Yönetimi',
+                type: 'basic',
+                link: '/admin/users',
+            },
+            {
+                id: 'admin.seo-pages',
+                title: 'SEO Yönetimi',
+                type: 'basic',
+                link: '/admin/seo-pages',
+            },
+            {
+                id: 'admin.seo-global',
+                title: 'SEO Global',
+                type: 'basic',
+                link: '/admin/seo-global',
             },
         ],
     },
